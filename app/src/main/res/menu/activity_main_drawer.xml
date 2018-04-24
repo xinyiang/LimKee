@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view" android:layout_height="100dp"  android:layout_width="50dp">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_catalogue"
+            android:title="Catalogue" />
+        <item
+            android:id="@+id/footer_spacer_2"
+            android:checkable="false"
+            android:enabled="false"
+            android:orderInCategory="200"
+            android:title="" />
+
+        <item
+        android:id="@+id/nav_quickreorder"
+        android:title="Quick Reorder" />
+
+        <item
+            android:id="@+id/footer_spacer_3"
+            android:checkable="false"
+            android:enabled="false"
+            android:orderInCategory="200"
+            android:title="" />
+        <item
+            android:id="@+id/nav_logout"
+            android:title="Logout" />
+
+    </group>
+</menu>

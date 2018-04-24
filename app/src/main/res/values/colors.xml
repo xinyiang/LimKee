@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#A0522D</color>
+    <color name="colorPrimaryDark">#8B4513</color>
+    <color name="colorAccent">#404041</color>
+    <color name="colorAccentAlpha">#7f404041</color>
+    <color name="background">#ecf0f1</color>
+
+    <color name="colorPrimaryBg">#A0522D</color>
+    <color name="colorPrimaryFont">#ffffff</color>
+    <color name="colorSecondaryFont">#a9a9a9</color>
+    <color name="grey500">#9E9E9E</color>
+
+    <color name="item_name">#9E9E9E</color>
+    <color name="price">#dd0000</color>
+    <color name="bg_row_background">#fa315b</color>
+
+</resources>
