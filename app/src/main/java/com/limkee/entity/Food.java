@@ -7,32 +7,62 @@ import android.support.annotation.NonNull;
  */
 
 public class Food {
-    private String name;
-    private int id;
+    private int itemCode;
+    private String description;
+    private String description2;
+    private double unitPrice;
+    private  int minQty;
     private String imageUrl;
-    private double price;
 
-    public Food(int id, String name, String imageUrl, double price){
+    public Food(int itemCode, String description, String description2, double unitPrice, int minQty, String imageUrl){
+        this.itemCode = itemCode;
+        this.description = description;
+        this.description2 = description2;
+        this.unitPrice = unitPrice;
+        this.minQty = minQty;
+        this.imageUrl = imageUrl;
+    }
+    public int getItemCode() {
+        return itemCode;
     }
 
-    public String getName() {
-        return name;
+    public void setItemCode(int itemCode) {
+        this.itemCode = itemCode;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public int getitemCode() {
+        return itemCode;
     }
 
-    public int getId() {
-        return id;
+    public String getDescription() {
+        return description;
     }
 
-    public double getPrice() {
-        return price;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getDescription2() {
+        return description2;
+    }
+
+    public void setDescription2(String description2) {
+        this.description2 = description2;
+    }
+
+    public double getUnitPrice() {
+        return unitPrice;
+    }
+    public void setUnitPrice(double unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public int getMinQty() {
+        return minQty;
+    }
+
+    public void setMinQty(int minQty) {
+        this.minQty = minQty;
     }
 
     public String getImageUrl() { return imageUrl; }
@@ -41,8 +71,6 @@ public class Food {
         this.imageUrl = imageUrl;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
-    }
+
 
 }

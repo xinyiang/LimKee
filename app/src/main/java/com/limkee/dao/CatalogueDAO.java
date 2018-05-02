@@ -9,12 +9,12 @@ import java.util.ArrayList;
  */
 
 public class CatalogueDAO {
-        public static ArrayList<Food> catalogue_list = new ArrayList<Food>();
+    public static ArrayList<Food> catalogue_list = new ArrayList<Food>();
 
-        public static Food create(int id, String name, String imageURL, double price) {
-            Food food = new Food(id, name, imageURL,price);
-            catalogue_list.add(food);
-            return food;
-        }
+    public static Food create(int itemCode, String description, String description2, double unitPrice, int minQty, String imageURL) {
+        Food food = new Food(itemCode, description, description2, unitPrice, minQty, imageURL);
+        catalogue_list.add(food);
+        return food;
+    }
 }
 

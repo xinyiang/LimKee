@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import com.limkee.entity.Food;
 import com.squareup.picasso.Picasso;
@@ -34,33 +35,38 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.MyVi
     }
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         Food food = catalogueList.get(position);
-        System.out.println("FOOOOOD " + food + " NAME IS  " + food.getName());
         holder.bindContent(food);
 
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView name, price;
-        ImageView thumbnail;
+        TextView description,description2, unitPrice;
+        Spinner minQty;
+
+        ImageView image;
 
         public MyViewHolder(View view) {
             super(view);
-            name = (TextView) view.findViewById(R.id.itemName);
-            price = (TextView) view.findViewById(R.id.price);
-            thumbnail = (ImageView) view.findViewById(R.id.image);
+            description = (TextView) view.findViewById(R.id.description);
+            description2 = (TextView) view.findViewById(R.id.description2);
+            //  minQty = (Spinner) findViewById(R.id.minQty);
+            unitPrice = (TextView) view.findViewById(R.id.price);
+            image = (ImageView) view.findViewById(R.id.image);
         }
 
         public void bindContent(Food food) {
             DecimalFormat df = new DecimalFormat("#.00");
-            name.setText(food.getName());
-            price.setText("$" + df.format(food.getPrice()));
+            description.setText(food.getDescription());
+            description2.setText(food.getDescription2());
+            //minQty.setText(food.getMinQty());
+            unitPrice.setText("$" + df.format(food.getUnitPrice()));
 
-            /*
+
             Picasso.with(fragment.getContext()).load(food.getImageUrl())
-                    .error(R.drawable.img_placeholder_oneshop)
-                    .placeholder(R.drawable.img_placeholder_oneshop)
-                    .into(thumbnail);
-              */
+                    .error(R.mipmap.ic_launcher)
+                    .placeholder(R.mipmap.ic_launcher)
+                    .into(image);
+
         }
     }
 
