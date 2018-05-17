@@ -4,9 +4,9 @@
     <color name="colorPrimaryDark">#8B4513</color>
     <color name="colorAccent">#404041</color>
     <color name="colorAccentAlpha">#7f404041</color>
-    <color name="background">#ecf0f1</color>
+    <color name="background">#f0eddc</color>
 
-    <color name="colorPrimaryBg">#A0522D</color>
+    <color name="colorPrimaryBg">#bd8642</color>
     <color name="colorPrimaryFont">#ffffff</color>
     <color name="colorSecondaryFont">#a9a9a9</color>
     <color name="grey500">#9E9E9E</color>

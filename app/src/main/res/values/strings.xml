@@ -7,7 +7,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_logout">LogoutActivity</string>
     <string-array name="qty">
-        <item>1</item>
         <item>5</item>
         <item>10</item>
         <item>15</item>

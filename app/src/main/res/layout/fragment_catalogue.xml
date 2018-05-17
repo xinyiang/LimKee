@@ -23,6 +23,7 @@
 
 
         <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -30,7 +31,7 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="405dp"
                 android:clipToPadding="false"
                 android:scrollbars="vertical"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -40,48 +41,48 @@
             android:id="@+id/lblSubtotalAmt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginBottom="64dp"
+            android:layout_marginStart="84dp"
             android:layout_marginTop="8dp"
             android:text="Subtotal:"
-            android:textSize="22dp"
+            android:textSize="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.028"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.969" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+            app:layout_constraintVertical_bias="0.465"
+            android:layout_marginLeft="84dp" />
 
         <TextView
             android:id="@+id/subtotalAmt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="180dp"
-            android:layout_marginRight="180dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="64dp"
             android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:text="299.90"
-            android:textSize="22dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="24dp"
+            app:layout_constraintBottom_toTopOf="@+id/btnNext"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.428"
             app:layout_constraintStart_toEndOf="@+id/lblSubtotalAmt"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.969" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+            app:layout_constraintVertical_bias="1.0"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="64dp" />
 
         <Button
             android:id="@+id/btnNext"
             android:layout_width="120dp"
             android:layout_height="61dp"
+            android:layout_marginTop="8dp"
             android:text="Next"
             android:textSize="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toBottomOf="@+id/lblSubtotalAmt"
+            app:layout_constraintVertical_bias="0.0" />
 
     </android.support.constraint.ConstraintLayout>
 

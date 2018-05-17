@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="190dp"
-        android:layout_height="167dp"
+        android:layout_width="232dp"
+        android:layout_height="186dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -30,9 +30,9 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Company Code:"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.029"
+        app:layout_constraintEnd_toStartOf="@+id/companyCode"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.483" />
@@ -46,16 +46,17 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Password:"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.079"
+        app:layout_constraintEnd_toStartOf="@+id/password"
+        app:layout_constraintHorizontal_bias="0.81"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.607" />
+        app:layout_constraintVertical_bias="0.625" />
 
     <EditText
         android:id="@+id/companyCode"
-        android:layout_width="wrap_content"
+        android:layout_width="151dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -73,7 +74,7 @@
 
     <EditText
         android:id="@+id/password"
-        android:layout_width="wrap_content"
+        android:layout_width="151dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -84,10 +85,10 @@
         android:text="123"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.823"
+        app:layout_constraintHorizontal_bias="0.815"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.621" />
+        app:layout_constraintVertical_bias="0.629" />
 
     <Button
         android:id="@+id/login_btn"
@@ -101,9 +102,25 @@
         android:text="Login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.45"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.767" />
+        app:layout_constraintVertical_bias="0.866" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="144dp"
+        android:layout_height="27dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Forgot Password?"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.79"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/password"
+        app:layout_constraintVertical_bias="0.056" />
 
 </android.support.constraint.ConstraintLayout>
