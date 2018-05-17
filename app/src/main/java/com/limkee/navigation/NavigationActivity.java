@@ -23,6 +23,8 @@ import com.limkee.dao.CatalogueDAO;
 import com.limkee.login.LoginActivity;
 import com.limkee.login.LogoutActivity;
 import com.limkee.order.QuickReorderFragment;
+import com.limkee.userProfile.UserProfileActivity;
+
 import io.reactivex.disposables.CompositeDisposable;
 
 
@@ -126,7 +128,6 @@ public class NavigationActivity extends AppCompatActivity implements
         int id = item.getItemId();
         Class fragmentClass = null;
         if (id == R.id.nav_catalogue) {
-
             fragmentClass = CatalogueFragment.class;
             //  ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
             //  constraintLayout.setVisibility(View.VISIBLE);
@@ -136,6 +137,9 @@ public class NavigationActivity extends AppCompatActivity implements
             // constraintLayout.setVisibility(View.GONE);
         } else if (id == R.id.nav_logout) {
             Intent intent = new Intent(this,LogoutActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_userprofile) {
+            Intent intent = new Intent(this,UserProfileActivity.class);
             startActivity(intent);
         }
 
