@@ -32,6 +32,17 @@
             android:title="Quick Reorder" />
 
         <item
+            android:id="@+id/footer_spacer_4"
+            android:checkable="false"
+            android:enabled="false"
+            android:orderInCategory="200"
+            android:title=""/>
+
+        <item
+            android:id="@+id/nav_orderhistory"
+            android:title="Order History"/>
+
+        <item
             android:id="@+id/footer_spacer_3"
             android:checkable="false"
             android:enabled="false"

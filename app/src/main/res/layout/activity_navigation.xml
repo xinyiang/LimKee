@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="@color/background"
     tools:openDrawer="start">
 
     <include
@@ -25,18 +26,15 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="left|start"
-        android:background="@color/colorPrimaryBg"
         android:fitsSystemWindows="true"
         android:scrollbarThumbVertical="@android:color/white"
-        app:itemBackground="@color/colorPrimaryBg"
-        app:itemTextColor="@color/colorPrimaryFont"
+        app:itemTextColor="@color/colorPrimary"
         app:menu="@menu/activity_main_drawer">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@color/colorPrimary"
             android:clickable="true"
             android:orientation="vertical">
 
