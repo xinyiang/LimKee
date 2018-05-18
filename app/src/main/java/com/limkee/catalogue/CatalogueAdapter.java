@@ -61,7 +61,6 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.MyVi
             //minQty.setText(food.getMinQty());
             unitPrice.setText("$" + df.format(food.getUnitPrice()));
 
-
             Picasso.with(fragment.getContext()).load(food.getImageUrl())
                     .error(R.mipmap.ic_launcher)
                     .placeholder(R.mipmap.ic_launcher)

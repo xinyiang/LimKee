@@ -22,14 +22,16 @@ import com.limkee.R;
 import com.limkee.dao.CatalogueDAO;
 import com.limkee.login.LoginActivity;
 import com.limkee.login.LogoutActivity;
+import com.limkee.order.OrderHistoryFragment;
 import com.limkee.order.QuickReorderFragment;
-import com.limkee.userProfile.UserProfileActivity;
+import com.limkee.userProfile.UserProfileFragment;
 
 import io.reactivex.disposables.CompositeDisposable;
 
 
 public class NavigationActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener, CatalogueFragment.OnFragmentInteractionListener,
+        UserProfileFragment.OnFragmentInteractionListener,OrderHistoryFragment.OnFragmentInteractionListener,
         QuickReorderFragment.OnFragmentInteractionListener{
 
     public static Bundle myBundle = new Bundle();
@@ -70,11 +72,9 @@ public class NavigationActivity extends AppCompatActivity implements
         CatalogueDAO.create(8,"Coffee Pau", "咖啡包", 1.20, 5, "http://www.limkee.com/images/coffeepau.jpg");
         CatalogueDAO.create(9,"Vegetable Pau", "香菇菜包", 1, 5, "http://www.limkee.com/images/vegetablepau.jpg");
         CatalogueDAO.create(10,"Pumpkin Pau", "金瓜包", 1, 5, "http://www.limkee.com/images/pumpkinpau.jpg");
-        //   CatalogueDAO.create(11,"Siew Mai", "烧卖", 1, 10, "http://www.limkee.com/images/sm.jpg");
+        //  CatalogueDAO.create(11,"Siew Mai", "烧卖", 1, 10, "http://www.limkee.com/images/sm.jpg");
         // CatalogueDAO.create(13,"Loh Mai Kai", "糯米鸡饭", 1, 10, "http://www.limkee.com/images/lmk.jpg");
         //CatalogueDAO.create(14,"Fan Choy", "叉烧饭菜", 1, 5, "http://www.limkee.com/images/fc.jpg");
-
-
 
         //check if user is login
         Intent intent = getIntent();
@@ -139,8 +139,10 @@ public class NavigationActivity extends AppCompatActivity implements
             Intent intent = new Intent(this,LogoutActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_userprofile) {
-            Intent intent = new Intent(this,UserProfileActivity.class);
-            startActivity(intent);
+            fragmentClass = UserProfileFragment.class;
+        } else if (id == R.id.nav_orderhistory) {
+            fragmentClass = OrderHistoryFragment.class;
+
         }
 
         loadFragment(fragmentClass);
