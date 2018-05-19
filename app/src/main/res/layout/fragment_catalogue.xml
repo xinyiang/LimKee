@@ -14,31 +14,31 @@
             android:id="@+id/subtotalAmt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="96dp"
-            android:text="299.90"
+            android:layout_marginEnd="16dp"
+            android:text="$30.00"
             android:textColor="@color/price"
             android:textSize="24dp"
             app:layout_constraintBottom_toTopOf="@+id/btnNext"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout"
             app:layout_constraintVertical_bias="0.705"
-            android:layout_marginRight="96dp" />
+            android:layout_marginRight="16dp" />
 
         <TextView
             android:id="@+id/lblSubtotalAmt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="64dp"
+            android:layout_marginStart="8dp"
             android:text="Subtotal:"
             android:textColor="@color/colorPrimary"
             android:textSize="24dp"
             app:layout_constraintBottom_toTopOf="@+id/btnNext"
             app:layout_constraintEnd_toStartOf="@+id/subtotalAmt"
-            app:layout_constraintHorizontal_bias="0.533"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout"
             app:layout_constraintVertical_bias="0.705"
-            android:layout_marginLeft="64dp" />
+            android:layout_marginLeft="8dp" />
 
         <Button
             android:id="@+id/btnNext"
