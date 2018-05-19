@@ -118,7 +118,7 @@
                 android:layout_marginStart="12dp"
                 android:ems="10"
                 android:inputType="numberSigned"
-                android:text="10"
+                android:text="5"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/image"

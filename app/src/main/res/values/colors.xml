@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#A0522D</color>
-    <color name="colorPrimaryDark">#8B4513</color>
+    <color name="colorPrimary">#bd8643</color>
+    <color name="colorPrimaryDark">#bd8643</color>
     <color name="colorAccent">#404041</color>
     <color name="colorAccentAlpha">#7f404041</color>
     <color name="background">#f0eddc</color>
@@ -12,7 +12,7 @@
     <color name="grey500">#9E9E9E</color>
 
     <color name="item_name">#9E9E9E</color>
-    <color name="price">#dd0000</color>
+    <color name="price">#404041</color>
     <color name="bg_row_background">#fa315b</color>
 
 </resources>
