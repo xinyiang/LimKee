@@ -1,14 +1,13 @@
 package com.limkee.login;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import com.limkee.R;
+        import android.content.Intent;;
+        import android.os.Bundle;
 
-import com.limkee.navigation.NavigationActivity;
+        import com.limkee.BaseActivity;
+        import com.limkee.R;
 
-public class LogoutActivity extends AppCompatActivity {
 
+public class LogoutActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,11 +16,5 @@ public class LogoutActivity extends AppCompatActivity {
         Intent intent = new Intent(this,LoginActivity.class);
         startActivity(intent);
         finish();
-
-      //  Intent intent2 = new Intent(this,NavigationActivity.class);
-      //  startActivity(intent2);
-      //  finish();
-
-
     }
 }

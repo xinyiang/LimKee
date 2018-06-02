@@ -17,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.support.design.widget.NavigationView;
+
+import com.limkee.BaseActivity;
 import com.limkee.catalogue.CatalogueFragment;
 import com.limkee.R;
 import com.limkee.dao.CatalogueDAO;
@@ -29,7 +31,7 @@ import com.limkee.userProfile.UserProfileFragment;
 import io.reactivex.disposables.CompositeDisposable;
 
 
-public class NavigationActivity extends AppCompatActivity implements
+public class NavigationActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener, CatalogueFragment.OnFragmentInteractionListener,
         UserProfileFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener{
 

@@ -13,8 +13,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.ToggleButton;
 
 import com.limkee.R;
 import com.limkee.catalogue.CatalogueAdapter;
@@ -40,8 +42,6 @@ public class UserProfileFragment extends Fragment {
     public static Bundle myBundle = new Bundle();
     private View view;
     private CatalogueAdapter mAdapter;
-    private ProgressBar progressBar;
-    private RecyclerView recyclerView;
     private String user;
     public UserProfileFragment(){}
 
@@ -63,7 +63,6 @@ public class UserProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_user_profile, container, false);
-
         return view;
     }
 

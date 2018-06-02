@@ -1,11 +1,21 @@
 package com.limkee.login;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.widget.Toast;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
 
-import java.io.BufferedInputStream;
+import com.limkee.R;
+import com.limkee.entity.Customer;
+import com.limkee.navigation.NavigationActivity;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -13,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -24,22 +35,22 @@ import java.net.URLEncoder;
  */
 
 public class BackgroundLogin extends AsyncTask<String,Void,String> {
-    Context context;
-    AlertDialog ad;
+    private Context context;
+    private String companyCode;
+    private String password;
 
-    public BackgroundLogin(Context ctx) {
+    BackgroundLogin(Context ctx) {
         context = ctx;
     }
 
     @Override
     protected String doInBackground(String... params) {
         String type = params[0];
-        //String login_url = "http://10.0.2.2/login.php";
-        String login_url = "http://localhost/login.php";
+        String login_url = "http://172.20.10.8/login.php";
         if(type.equals("login")){
             try {
-                String username = params[1];
-                String password = params[2];
+                companyCode = params[1];
+                password = params[2];
                 URL url = new URL(login_url);
                 HttpURLConnection huc = (HttpURLConnection)url.openConnection();
                 huc.setRequestMethod("POST");
@@ -47,7 +58,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
                 huc.setDoOutput(true);
                 OutputStream ops = huc.getOutputStream();
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(ops,"UTF-8"));
-                String post_data = URLEncoder.encode("username","UTF-8")+"="+URLEncoder.encode(username,"UTF-8")
+                String post_data = URLEncoder.encode("companyCode","UTF-8")+"="+URLEncoder.encode(companyCode,"UTF-8")
                         +"&"+URLEncoder.encode("password","UTF-8")+"="+URLEncoder.encode(password,"UTF-8");
                 bw.write(post_data);
                 bw.flush();
@@ -56,7 +67,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
                 InputStream is = huc.getInputStream();
                 BufferedReader br = new BufferedReader(new InputStreamReader(is,"iso-8859-1"));
                 String result = "";
-                String line = "";
+                String line;
                 while((line = br.readLine())!=null){
                     result += line;
                 }
@@ -77,16 +88,22 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
 
     @Override
     protected void onPostExecute(String result) {
-        ad.setMessage(result);
-        ad.show();
-        System.out.println("LOGIN " + result);
+       // TextView pwdValidate = ((Activity)context).findViewById(R.id.pwvalidation);
+
+        //redirect
+        if (result.equals("login success")){
+            Customer customer = new Customer(companyCode,password,"","","");
+            Intent it = new Intent(context.getApplicationContext(), NavigationActivity.class);
+            it.putExtra("isLogin", true);
+            it.putExtra("customer", (Serializable) customer);
+            context.startActivity(it);
+        }else{
+            //pwdValidate.setText("Invalid Company Code or Password");
+        }
     }
 
     @Override
     protected void onPreExecute() {
-        ad = new AlertDialog.Builder(context).create();
-        ad.setTitle("Login Status");
-        System.out.println("Trying to login....");
     }
 
     @Override
