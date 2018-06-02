@@ -1,0 +1,114 @@
+package com.limkee.payment;
+
+import android.net.Uri;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.limkee.R;
+import com.limkee.catalogue.CatalogueFragment;
+import com.limkee.entity.Product;
+import com.limkee.order.ConfirmOrderFragment;
+import com.limkee.order.QuickReorderFragment;
+
+import java.util.ArrayList;
+
+public class PaymentActivity extends AppCompatActivity implements  ConfirmOrderFragment.OnFragmentInteractionListener,
+        CatalogueFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener, PaymentFragment.OnFragmentInteractionListener{
+
+    private View rootView;
+    private QuickReorderFragment quickOrderFragment = new QuickReorderFragment();
+    private PaymentFragment paymentFragment = new PaymentFragment();
+    private double subtotal;
+    private double taxAmt;
+    private double totalPayable;
+    public static Bundle myBundle = new Bundle();
+    private ArrayList<Product> orderList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_payment);
+
+        Toolbar toolbar = findViewById(com.limkee.R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Make Payment");
+
+        myBundle = getIntent().getExtras();
+        orderList  = myBundle.getParcelableArrayList("orderList");
+        subtotal = myBundle.getDouble("subtotal");
+        taxAmt = myBundle.getDouble("taxAmt");
+        totalPayable = myBundle.getDouble("totalPayable");
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("orderList", orderList);
+        bundle.putDouble("subtotal", subtotal);
+        bundle.putDouble("taxAmt", taxAmt);
+        bundle.putDouble("totalPayable", totalPayable);
+        paymentFragment.setArguments(myBundle);
+        loadFragment(paymentFragment);
+
+    }
+
+    public View onCreate(LayoutInflater inflater, ViewGroup container,
+                         Bundle savedInstanceState) {
+
+        rootView = inflater.inflate(R.layout.fragment_payment, container, false);
+
+        return rootView;
+    }
+
+    private void loadFragment(Fragment fragment) {
+
+        //Change screen to option selected (using fragments)
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(com.limkee.R.id.flContent, fragment);
+        fragmentTransaction.commit();
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        //
+        //  HANDLE BACK BUTTON
+        //
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            // Back button clicked
+            this.finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
+    public void setActionBarTitle(String title){
+        TextView titleTextView = findViewById(com.limkee.R.id.toolbar_title);
+        if (titleTextView != null) {
+            titleTextView.setText(title);
+        }
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+}

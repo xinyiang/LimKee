@@ -31,8 +31,7 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class NavigationActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener, CatalogueFragment.OnFragmentInteractionListener,
-        UserProfileFragment.OnFragmentInteractionListener,OrderHistoryFragment.OnFragmentInteractionListener,
-        QuickReorderFragment.OnFragmentInteractionListener{
+        UserProfileFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener{
 
     public static Bundle myBundle = new Bundle();
     CompositeDisposable compositeDisposable;
@@ -62,19 +61,18 @@ public class NavigationActivity extends AppCompatActivity implements
         navigationView.setNavigationItemSelectedListener(this);
 
         //Create temporary Food Products
-        CatalogueDAO.create(1,"Curry Chicken Pau","咖喱鸡肉包",2.50, 5,"http://www.limkee.com/images/charsiewpau.jpg");
-        CatalogueDAO.create(2,"Big Pau", "大肉包", 1, 5, "http://www.limkee.com/images/bigpau.jpg");
-        CatalogueDAO.create(3,"Chicken Pau", "鸡肉包", 1, 5, "http://www.limkee.com/images/chickenpau.jpg");
-        CatalogueDAO.create(4,"Char Siew Pau","叉烧包",2.50, 5,"http://www.limkee.com/images/charsiewpau.jpg");
-        CatalogueDAO.create(5,"Tau Sar Pau", "豆沙包", 0.5, 5, "http://www.limkee.com/images/tarsarpau.jpg");
-        CatalogueDAO.create(6,"Lian Yong Pau", "莲蓉包", 0.60, 5,  "http://www.limkee.com/images/charsiewpau.jpg");
-        CatalogueDAO.create(7,"Big Pau", "大肉包", 1, 5, "http://www.limkee.com/images/bigpau.jpg");
-        CatalogueDAO.create(8,"Coffee Pau", "咖啡包", 1.20, 5, "http://www.limkee.com/images/coffeepau.jpg");
-        CatalogueDAO.create(9,"Vegetable Pau", "香菇菜包", 1, 5, "http://www.limkee.com/images/vegetablepau.jpg");
-        CatalogueDAO.create(10,"Pumpkin Pau", "金瓜包", 1, 5, "http://www.limkee.com/images/pumpkinpau.jpg");
-        //  CatalogueDAO.create(11,"Siew Mai", "烧卖", 1, 10, "http://www.limkee.com/images/sm.jpg");
-        // CatalogueDAO.create(13,"Loh Mai Kai", "糯米鸡饭", 1, 10, "http://www.limkee.com/images/lmk.jpg");
-        //CatalogueDAO.create(14,"Fan Choy", "叉烧饭菜", 1, 5, "http://www.limkee.com/images/fc.jpg");
+        CatalogueDAO.create("001","Curry Chicken Pau","咖喱鸡肉包",2.50, "http://www.limkee.com/images/charsiewpau.jpg", 5, 5 );
+        CatalogueDAO.create("002","Big Pau", "大肉包", 1, "http://www.limkee.com/images/bigpau.jpg", 5, 5);
+        CatalogueDAO.create("003","Chicken Pau", "鸡肉包", 1, "http://www.limkee.com/images/chickenpau.jpg", 5, 5);
+        CatalogueDAO.create("004","Char Siew Pau","叉烧包",2.50, "http://www.limkee.com/images/charsiewpau.jpg", 5, 5);
+        CatalogueDAO.create("005", "Tau Sar Pau", "豆沙包", 0.5, "http://www.limkee.com/images/tarsarpau.jpg", 5, 5);
+        CatalogueDAO.create("006","Lian Yong Pau", "莲蓉包", 0.60, "http://www.limkee.com/images/charsiewpau.jpg", 5, 5);
+        CatalogueDAO.create("007","Coffee Pau", "咖啡包", 1.20, "http://www.limkee.com/images/coffeepau.jpg", 5, 5);
+        CatalogueDAO.create("008","Vegetable Pau", "香菇菜包", 1, "http://www.limkee.com/images/vegetablepau.jpg", 5, 5);
+        CatalogueDAO.create("009","Pumpkin Pau", "金瓜包", 1, "http://www.limkee.com/images/pumpkinpau.jpg", 5, 5);
+        CatalogueDAO.create("010","Siew Mai", "烧卖", 1, "http://www.limkee.com/images/sm.jpg", 0, 10);
+        CatalogueDAO.create("012","Loh Mai Kai", "糯米鸡饭", 1, "http://www.limkee.com/images/lmk.jpg", 0, 1);
+        CatalogueDAO.create("013","Fan Choy", "叉烧饭菜", 1, "http://www.limkee.com/images/fc.jpg", 0, 1);
 
         //check if user is login
         Intent intent = getIntent();
@@ -131,21 +129,24 @@ public class NavigationActivity extends AppCompatActivity implements
             fragmentClass = CatalogueFragment.class;
             //  ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
             //  constraintLayout.setVisibility(View.VISIBLE);
+            loadFragment(fragmentClass);
         } else if (id == R.id.nav_quickreorder) {
             fragmentClass = QuickReorderFragment.class;
             // ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
             // constraintLayout.setVisibility(View.GONE);
+            loadFragment(fragmentClass);
         } else if (id == R.id.nav_logout) {
             Intent intent = new Intent(this,LogoutActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_userprofile) {
             fragmentClass = UserProfileFragment.class;
+            loadFragment(fragmentClass);
         } else if (id == R.id.nav_orderhistory) {
             fragmentClass = OrderHistoryFragment.class;
-
+            loadFragment(fragmentClass);
         }
 
-        loadFragment(fragmentClass);
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -176,9 +177,5 @@ public class NavigationActivity extends AppCompatActivity implements
 
     @Override
     public void onFragmentInteraction(Uri uri) {}
-
-    private void handleResponse(Object object) {}
-
-    private void handleError(Throwable error) {}
 
 }

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.limkee">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,8 +18,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".navigation.NavigationActivity" />
-        <activity android:name=".login.LogoutActivity" />
+        <activity
+            android:name=".navigation.NavigationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".login.LogoutActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".order.ConfirmOrderActivity" />
+        <activity android:name=".payment.PaymentActivity"></activity>
     </application>
 
 </manifest>

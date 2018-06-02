@@ -16,38 +16,44 @@ import com.limkee.R;
 import com.limkee.catalogue.CatalogueFragment;
 import com.limkee.navigation.NavigationActivity;
 
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import static java.security.AccessController.getContext;
+
 
 public class LoginActivity extends AppCompatActivity implements
-         CatalogueFragment.OnFragmentInteractionListener {
+        CatalogueFragment.OnFragmentInteractionListener {
     public static Bundle myBundle = new Bundle();
-
+    EditText companycode, password;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        companycode = (EditText) findViewById(R.id.companyCode);
+        password = (EditText) findViewById(R.id.password);
     }
 
+    public void login(View view) {
+        //validate credentials to login
+        String code = companycode.getText().toString();
+        String pwd = password.getText().toString();
+
+
+        String type = "login";
+        BackgroundLogin bl = new BackgroundLogin(this);
+        bl.execute(type,code,pwd);
+
+        //redirect if success login
+        Intent it = new Intent(this, NavigationActivity.class);
+        it.putExtra("isLogin", true);
+        startActivity(it);
+
+    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
 
-    }
-
-    public void login(View view) {
-
-       EditText companyCode = (EditText) findViewById(R.id.companyCode);
-       EditText password = (EditText) findViewById(R.id.password);
-
-       //validate credentials to login
-       String code = companyCode.getText().toString();
-       String pw = password.getText().toString();
-
-        //if valid
-        //show delivery cut off time
-
-        //redirect
-        Intent it = new Intent(this, NavigationActivity.class);
-        it.putExtra("isLogin", true);
-        startActivity(it);
     }
 }

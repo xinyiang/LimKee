@@ -1,6 +1,6 @@
 package com.limkee.dao;
 
-import com.limkee.entity.Food;
+import com.limkee.entity.Product;
 
 import java.util.ArrayList;
 
@@ -9,10 +9,14 @@ import java.util.ArrayList;
  */
 
 public class CatalogueDAO {
-    public static ArrayList<Food> catalogue_list = new ArrayList<Food>();
+    public static ArrayList<Product> catalogue_list = new ArrayList<Product>();
+    public static ArrayList<Product> order_list = new ArrayList<Product>();
 
-    public static Food create(int itemCode, String description, String description2, double unitPrice, int minQty, String imageURL) {
-        Food food = new Food(itemCode, description, description2, unitPrice, minQty, imageURL);
+    public static Product create(String itemCode, String description, String description2, double unitPrice, String imageURL, int defaultQty, int qtyMultiples) {
+        if (catalogue_list == null) {
+            catalogue_list = new ArrayList<>();
+        }
+        Product food = new Product(itemCode, description, description2, unitPrice, imageURL, defaultQty, qtyMultiples);
         catalogue_list.add(food);
         return food;
     }
