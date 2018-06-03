@@ -100,7 +100,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
             this.qty.addTextChangedListener(quantityEditTextListener);
         }
 
-        public void bindContent(Product product) {
+        public void bindContent(final Product product) {
             DecimalFormat df = new DecimalFormat("#0.00");
             description.setText(product.getDescription());
             description2.setText(product.getDescription2());

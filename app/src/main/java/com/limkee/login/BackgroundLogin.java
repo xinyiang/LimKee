@@ -46,7 +46,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
     @Override
     protected String doInBackground(String... params) {
         String type = params[0];
-        String login_url = "http://172.20.10.8/login.php";
+        String login_url = "http://116.86.112.218/login.php";
         if(type.equals("login")){
             try {
                 companyCode = params[1];
@@ -59,7 +59,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
                 OutputStream ops = huc.getOutputStream();
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(ops,"UTF-8"));
                 String post_data = URLEncoder.encode("companyCode","UTF-8")+"="+URLEncoder.encode(companyCode,"UTF-8")
-                        +"&"+URLEncoder.encode("password","UTF-8")+"="+URLEncoder.encode(password,"UTF-8");
+                        +"&"+URLEncoder.encode("HashPassword","UTF-8")+"="+URLEncoder.encode(password,"UTF-8");
                 bw.write(post_data);
                 bw.flush();
                 bw.close();
@@ -88,7 +88,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
 
     @Override
     protected void onPostExecute(String result) {
-       // TextView pwdValidate = ((Activity)context).findViewById(R.id.pwvalidation);
+        TextView pwdValidate = ((Activity)context).findViewById(R.id.pwdvalidation);
 
         //redirect
         if (result.equals("login success")){
@@ -98,7 +98,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
             it.putExtra("customer", (Serializable) customer);
             context.startActivity(it);
         }else{
-            //pwdValidate.setText("Invalid Company Code or Password");
+            pwdValidate.setText("Invalid Company Code or Password");
         }
     }
 
