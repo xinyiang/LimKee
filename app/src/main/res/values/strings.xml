@@ -1,11 +1,13 @@
 <resources>
-    <string name="app_name">LimKee</string>
+    <string name="app_name">林记</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_logout">LogoutActivity</string>
+    <string name="company_code">公司代码</string>
+    <string name="password">密码</string>
+    <string name="login">登陆</string>
     <string-array name="qty">
         <item>5</item>
         <item>10</item>

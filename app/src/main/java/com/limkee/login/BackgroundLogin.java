@@ -46,7 +46,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
     @Override
     protected String doInBackground(String... params) {
         String type = params[0];
-        String login_url = "http://116.86.112.218/login.php";
+        String login_url = "http://13.229.114.72:80/JavaBridge/login.php";
         if(type.equals("login")){
             try {
                 companyCode = params[1];

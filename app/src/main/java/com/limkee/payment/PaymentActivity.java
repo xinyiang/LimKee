@@ -1,25 +1,34 @@
 package com.limkee.payment;
 
+import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.limkee.R;
 import com.limkee.catalogue.CatalogueFragment;
 import com.limkee.entity.Product;
 import com.limkee.order.ConfirmOrderFragment;
 import com.limkee.order.QuickReorderFragment;
+import com.stripe.android.TokenCallback;
+import com.stripe.android.model.Card;
+import com.stripe.android.view.CardInputWidget;
+import com.stripe.android.Stripe;
+import com.stripe.android.model.Token;
 
 import java.util.ArrayList;
+
+import static java.security.AccessController.getContext;
 
 public class PaymentActivity extends AppCompatActivity implements  ConfirmOrderFragment.OnFragmentInteractionListener,
         CatalogueFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener, PaymentFragment.OnFragmentInteractionListener{
@@ -38,25 +47,31 @@ public class PaymentActivity extends AppCompatActivity implements  ConfirmOrderF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
 
-        Toolbar toolbar = findViewById(com.limkee.R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Make Payment");
+        CardInputWidget mCardInputWidget = (CardInputWidget) findViewById(R.id.card_input_widget);
 
-        myBundle = getIntent().getExtras();
-        orderList  = myBundle.getParcelableArrayList("orderList");
-        subtotal = myBundle.getDouble("subtotal");
-        taxAmt = myBundle.getDouble("taxAmt");
-        totalPayable = myBundle.getDouble("totalPayable");
-
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("orderList", orderList);
-        bundle.putDouble("subtotal", subtotal);
-        bundle.putDouble("taxAmt", taxAmt);
-        bundle.putDouble("totalPayable", totalPayable);
-        paymentFragment.setArguments(myBundle);
-        loadFragment(paymentFragment);
-
+        Card card = mCardInputWidget.getCard();
+        card.setName("Customer Name");
+        if (card == null) {
+            //mErrorDialogHandler.showError("Invalid Card Data");
+        }
+        else {
+            Stripe stripe = new Stripe(getApplicationContext(), "pk_test_FPldW3NRDq68iu1drr2o7Anb");
+            stripe.createToken(
+                    card,
+                    new TokenCallback() {
+                        public void onSuccess(Token token) {
+                            // Send token to your server
+                        }
+                        public void onError(Exception error) {
+                            // Show localized error message
+                            //Toast.makeText(getContext(),
+                                    //error.getLocalizedString(getContext()),
+                                    //Toast.LENGTH_LONG
+                            //).show();
+                        }
+                    }
+            );
+        }
     }
 
     public View onCreate(LayoutInflater inflater, ViewGroup container,

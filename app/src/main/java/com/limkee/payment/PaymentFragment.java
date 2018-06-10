@@ -1,27 +1,23 @@
 package com.limkee.payment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.limkee.R;
-import com.limkee.catalogue.CatalogueFragment;
-import com.limkee.dao.CatalogueDAO;
 import com.limkee.entity.Product;
-import com.limkee.navigation.NavigationActivity;
-import com.limkee.order.ConfirmOrderFragment;
+import com.stripe.android.TokenCallback;
+import com.stripe.android.model.Card;
+import com.stripe.android.Stripe;
+import com.stripe.android.model.Token;
+import com.stripe.android.view.CardInputWidget;
 
 import java.util.ArrayList;
 
@@ -85,24 +81,42 @@ public class PaymentFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        /*
         Button next = view.findViewById(R.id.btnNext);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View rootView) {
-
                //add in stripe code
-
                 //add in insert SQL code
-
                 //reset order list to be the same as catalogue by default
                 CatalogueDAO.order_list = CatalogueDAO.catalogue_list;
 
                 Toast.makeText(view.getContext(), "Payment Successful! Please view your orders under My Orders.", Toast.LENGTH_SHORT).show();
                 //redirect
-
             }
         });
+        */
+        CardInputWidget mCardInputWidget = (CardInputWidget) view.findViewById(R.id.card_input_widget);
+        Card cardToSave = mCardInputWidget.getCard();
+        cardToSave.setName("Customer Name");
+        if (cardToSave == null) {
+            System.out.println("Invalid Card Data");
+            return;
+        }
+        Stripe stripe = new Stripe(getContext(), "pk_test_6pRNASCoBOKtIshFeQd4XMUh");
+        stripe.createToken(
+                cardToSave,
+                new TokenCallback() {
+                    public void onSuccess(Token token) {
+                    }
+                    public void onError(Exception error) {
+                        // Show localized error message
+                        //Toast.makeText(getContext(),
+                        //error.getLocalizedString(getContext()),
+                        //Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
     }
     @Override
     public void onAttach(Context context) {
