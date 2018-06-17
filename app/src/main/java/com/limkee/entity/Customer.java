@@ -10,6 +10,7 @@ public class Customer implements Serializable{
     private String password;
     private String debtorCode;
     private String debtorName;
+    private  String companyName;
     private String deliveryContact;
     private String deliverFax1;
     private String invAddr1;
@@ -31,11 +32,11 @@ public class Customer implements Serializable{
         this.debtorName = debtorName;
         this.deliveryContact = deliveryContact;
     }
-
-    public Customer(String companyCode, String password,String debtorCode,String debtorName,String deliveryContact,String deliverFax1,String invAddr1, String invAddr2,String invAddr3,String invAddr4,String deliverAddr1,String deliverAddr2, String deliverAddr3,String deliverAddr4, String displayTerm,String status,int routeNo) {
+    public Customer(String companyCode, String password,String debtorCode,String companyName, String debtorName,String deliveryContact,String deliverFax1,String invAddr1, String invAddr2,String invAddr3,String invAddr4,String deliverAddr1,String deliverAddr2, String deliverAddr3,String deliverAddr4, String displayTerm,String status,int routeNo) {
         this.companyCode = companyCode;
         this.password = password;
         this.debtorCode = debtorCode;
+        this.companyName = companyName;
         this.debtorName = debtorName;
         this.deliveryContact = deliveryContact;
         this.deliverFax1 = deliverFax1;
@@ -97,6 +98,14 @@ public class Customer implements Serializable{
 
     public void setCompanyCode(String companyCode) {
         this.companyCode = companyCode;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     public String getDeliverFax1() {
