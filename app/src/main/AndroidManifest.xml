@@ -27,6 +27,7 @@
             android:name=".login.LogoutActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".order.ConfirmOrderActivity" />
+        <activity android:name=".order.CurrentOrderDetailActivity" />
         <activity android:name=".payment.PaymentActivity" />
         <activity
             android:name=".payment.ConfirmationActivity"
