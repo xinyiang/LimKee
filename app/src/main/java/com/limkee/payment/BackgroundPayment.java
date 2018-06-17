@@ -74,7 +74,7 @@ import java.net.URLEncoder;
     @Override
     protected void onPostExecute(String result) {
         System.out.println(result+"lollllllllll");
-        System.out.println("helllo");
+        System.out.println("changename");
         Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
         it.putExtra("result",result);
         context.startActivity(it);
