@@ -1,7 +1,6 @@
 package com.limkee.order;
 
 import android.net.Uri;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -18,7 +17,6 @@ import com.limkee.R;
 import com.limkee.catalogue.CatalogueFragment;
 import com.limkee.entity.Product;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class ConfirmOrderActivity extends AppCompatActivity implements ConfirmOrderFragment.OnFragmentInteractionListener,

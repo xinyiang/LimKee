@@ -3,8 +3,9 @@
     package="com.limkee">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -26,7 +27,11 @@
             android:name=".login.LogoutActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".order.ConfirmOrderActivity" />
-        <activity android:name=".payment.PaymentActivity"></activity>
+        <activity android:name=".payment.PaymentActivity" />
+        <activity
+            android:name=".payment.ConfirmationActivity"
+            android:label="@string/title_activity_confirmation"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

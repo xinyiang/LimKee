@@ -49,7 +49,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@android:color/white" />
 
-
         </android.support.constraint.ConstraintLayout>
     </android.support.design.widget.NavigationView>
 

@@ -18,7 +18,7 @@
 
         <item
             android:id="@+id/nav_catalogue"
-            android:title="Catalogue" />
+            android:title="Order Slip" />
 
         <item
             android:id="@+id/footer_spacer_2"
@@ -32,6 +32,17 @@
             android:title="Quick Reorder" />
 
         <item
+            android:id="@+id/footer_spacer_3"
+            android:checkable="false"
+            android:enabled="false"
+            android:orderInCategory="200"
+            android:title=""/>
+
+        <item
+            android:id="@+id/nav_currentorder"
+            android:title="My Orders"/>
+
+        <item
             android:id="@+id/footer_spacer_4"
             android:checkable="false"
             android:enabled="false"
@@ -43,7 +54,7 @@
             android:title="Order History"/>
 
         <item
-            android:id="@+id/footer_spacer_3"
+            android:id="@+id/footer_spacer_5"
             android:checkable="false"
             android:enabled="false"
             android:orderInCategory="200"

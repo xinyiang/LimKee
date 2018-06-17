@@ -4,17 +4,29 @@ package com.limkee.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
+
 /**
  * Created by Xin Yi on 20/5/2018.
  */
 
 public class Product implements Parcelable{
+
+    @SerializedName("itemCode")
         private String itemCode;
+    @SerializedName("description")
         private String description;
+    @SerializedName("description2")
         private String description2;
+    @SerializedName("unitPrice")
         private double unitPrice;
+    @SerializedName("defaultQty")
         private  int defaultQty;
+    @SerializedName("qtyMultiples")
         private  int qtyMultiples;
+    @SerializedName("imageUrl")
         private String imageUrl;
 
         public Product(String itemCode, String description, String description2, double unitPrice, String imageUrl, int defaultQty, int qtyMultiples){
@@ -124,5 +136,13 @@ public class Product implements Parcelable{
         dest.writeInt(qtyMultiples);
         dest.writeString(imageUrl);
     }
+    private ArrayList<Product> productList;
 
+    public ArrayList<Product> getProductList() {
+        return productList;
+    }
+
+    public void setNoticeArrayList(ArrayList<Product> productList) {
+        this.productList = productList;
+    }
 }

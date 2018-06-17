@@ -1,5 +1,6 @@
 package com.limkee.userProfile;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -57,12 +58,22 @@ public class UserProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         ((NavigationActivity)getActivity()).setActionBarTitle("User Profile");
         compositeDisposable = new CompositeDisposable();
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_user_profile, container, false);
+        Button logout = view.findViewById(R.id.logout_btn);
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(),LogoutActivity.class);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 

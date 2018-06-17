@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import com.limkee.entity.Product;
 import io.reactivex.Observable;
+import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 import io.reactivex.Observable;
@@ -17,9 +19,9 @@ import io.reactivex.Observable;
 
 
 public interface PostData {
-        @FormUrlEncoded
-        @POST("catalogue/get-catalogue")
+
+        @GET("get-catalogue")
        // Observable<ArrayList<Product>> getCatalogue(@FieldMap Map<String, String> fieldsMap);
-        Observable<ArrayList<Product>> getCatalogue();
+        Call<Product> getCatalogue();
 
 }

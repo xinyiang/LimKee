@@ -1,7 +1,9 @@
 package com.limkee.order;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -16,6 +18,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,15 +38,18 @@ import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import io.reactivex.disposables.CompositeDisposable;
 
 
-public class ConfirmOrderFragment extends Fragment {
+public class ConfirmOrderFragment extends Fragment{
 
     private ConfirmOrderFragment.OnFragmentInteractionListener mListener;
     CompositeDisposable compositeDisposable;
     private View view;
+    private EditText deliveryDate;
+    Calendar mCurrentDate;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private Button next;
@@ -51,6 +59,8 @@ public class ConfirmOrderFragment extends Fragment {
     private double totalPayable;
     private ConfirmOrderAdapter mAdapter;
     private ArrayList<Product> orderList;
+
+
 
     public ConfirmOrderFragment() {
         // Required empty public constructor
@@ -68,7 +78,10 @@ public class ConfirmOrderFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if(getActivity() instanceof ConfirmOrderActivity){
-            ((ConfirmOrderActivity)getActivity()).setActionBarTitle("Confirm Order");
+            //check for language
+
+            ((ConfirmOrderActivity)getActivity()).setActionBarTitle("确认订单");
+            //((ConfirmOrderActivity)getActivity()).setActionBarTitle("Confirm Order");
         }
 
         //  Instantiate CompositeDisposable for retrofit
@@ -96,6 +109,7 @@ public class ConfirmOrderFragment extends Fragment {
         lblFinalTotal.setText("Total Payable:");
         */
 
+
         recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
         mAdapter = new ConfirmOrderAdapter(this, orderList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
@@ -103,7 +117,8 @@ public class ConfirmOrderFragment extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
-       // mAdapter.notifyDataSetChanged();
+        recyclerView.setNestedScrollingEnabled(false);
+        // mAdapter.notifyDataSetChanged();
 
         new CountDownTimer(400, 100) {
 
@@ -124,12 +139,55 @@ public class ConfirmOrderFragment extends Fragment {
         subtotalAmt.setText("$" + df.format(subtotal));
 
         TextView tax = view.findViewById(R.id.taxAmt);
-        taxAmt = subtotal*0.07;
+        taxAmt = subtotal * 0.07;
         tax.setText("$" + df.format(taxAmt));
 
         TextView totalAmt = view.findViewById(R.id.totalAmt);
         totalPayable = taxAmt + subtotal;
         totalAmt.setText("$" + df.format(totalPayable));
+
+        //if english, change label to english
+        /*
+        if (){
+            TextView lbl_subtotal_amt, lbl_total_amt, lbl_tax_amt;
+            TextView lbl_delivery_details.lbl_name, lbl_contact, lbl_address, lbl_date, lbl_time;
+            Button btnNext;
+
+            lbl_subtotal_amt = (TextView) view.findViewById(R.id.lbl_subtotal_amt);
+            lbl_total_amt = (TextView) view.findViewById(R.id.lbl_total_amt);
+            lbl_tax_amt = (TextView) view.findViewById(R.id.lbl_tax_amt);
+            lbl_delivery_details = (TextView) view.findViewById(R.id.lbl_delivery_details);
+            lbl_name = (TextView) view.findViewById(R.id.lbl_name);
+            lbl_contact = (TextView) view.findViewById(R.id.lbl_phone);
+            lbl_address = (TextView) view.findViewById(R.id.lbl_address);
+            lbl_date = (TextView) view.findViewById(R.id.lbl_date);
+            lbl_time = (TextView) view.findViewById(R.id.lbl_time);
+            btnNext = (Button) view.findViewById(R.id.btnNext);
+
+            lbl_subtotal_amt.setText("Subtotal");
+            lbl_tax_amt.setText("GST (7%)");
+            lbl_total_amt.setText("Total Payable");
+            lbl_delivery_details.setText("Delivery Details");
+            lbl_name.setText("Name");
+            lbl_contact.setText("Contact No");
+            lbl_address.setText("Delivery Address");
+            lbl_date.setText("Delivery Date");
+            lbl_time.setText("Delivery Time");
+            btnNext.setText("Place Order");
+        }
+        */
+
+        //display delivery details data
+        TextView name, contact, address, deliveryTime;
+        name = (TextView) view.findViewById(R.id.name);
+        contact = (TextView) view.findViewById(R.id.phone);
+        address = (TextView) view.findViewById(R.id.address);
+        deliveryTime = (TextView) view.findViewById(R.id.time);
+
+        name.setText("Ang Xin Yi");
+        contact.setText("97597790");
+        address.setText("Blk 123 Ang Mo Kio Industrial Park #02-551 Singapore 740123");
+        deliveryTime.setText("4am to 9.30am");
 
         return view;
     }
@@ -137,6 +195,31 @@ public class ConfirmOrderFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        deliveryDate = (EditText) view.findViewById(R.id.date);
+
+        //choose delivery date
+        deliveryDate.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+
+                mCurrentDate = Calendar.getInstance();
+                int year = mCurrentDate.get(Calendar.YEAR);
+                int month = mCurrentDate.get(Calendar.MONTH);
+                int day = mCurrentDate.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog mDatePicker = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int selectedYear, int selectedMonth, int selectedDay) {
+                        //month index start from 0, so + 1 to get correct actual month number
+                        selectedMonth +=1;
+                        deliveryDate.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
+                        mCurrentDate.set(selectedDay, selectedMonth, selectedYear);
+                    }
+                }, year, month, day);
+                mDatePicker.show();
+        }
+        });
 
         next = view.findViewById(R.id.btnNext);
         next.setOnClickListener(new View.OnClickListener() {
@@ -191,6 +274,9 @@ public class ConfirmOrderFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+
+
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);

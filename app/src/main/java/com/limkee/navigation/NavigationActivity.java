@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -22,8 +21,13 @@ import com.limkee.BaseActivity;
 import com.limkee.catalogue.CatalogueFragment;
 import com.limkee.R;
 import com.limkee.dao.CatalogueDAO;
+import com.limkee.dao.OrderDAO;
+import com.limkee.dao.OrderDetailDAO;
+import com.limkee.dao.OrderHistoryDAO;
+import com.limkee.dao.OrderQuantityDAO;
 import com.limkee.login.LoginActivity;
 import com.limkee.login.LogoutActivity;
+import com.limkee.order.CurrentOrderFragment;
 import com.limkee.order.OrderHistoryFragment;
 import com.limkee.order.QuickReorderFragment;
 import com.limkee.userProfile.UserProfileFragment;
@@ -33,7 +37,8 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class NavigationActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener, CatalogueFragment.OnFragmentInteractionListener,
-        UserProfileFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener{
+        UserProfileFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener,
+        OrderHistoryFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener{
 
     public static Bundle myBundle = new Bundle();
     CompositeDisposable compositeDisposable;
@@ -76,6 +81,23 @@ public class NavigationActivity extends BaseActivity implements
         CatalogueDAO.create("012","Loh Mai Kai", "糯米鸡饭", 1, "http://www.limkee.com/images/lmk.jpg", 0, 1);
         CatalogueDAO.create("013","Fan Choy", "叉烧饭菜", 1, "http://www.limkee.com/images/fc.jpg", 0, 1);
 
+        //create temporary sales order details
+        OrderDetailDAO.create("1", "2018-06-22 10:15:30", 125, "Pending Delivery", "");
+        OrderDetailDAO.create("2", "2018-06-25 11:00:00", 34.80, "Pending Delivery", "");
+        OrderDetailDAO.create("3", "2018-06-24 10:00:00", 54.80, "Delivered", "");
+
+        //create temporary sales order quantity
+        OrderQuantityDAO.create("1", "1", 100,0,  0.65);
+        OrderQuantityDAO.create("1", "7", 150,0,  0.40);
+        OrderQuantityDAO.create("2", "2", 30,0,  0.72);
+        OrderQuantityDAO.create("2", "5", 40,0,  0.33);
+        OrderQuantityDAO.create("3", "5", 1000,0,  0.33);
+
+        //create temporary sales order
+        OrderDAO.create("1","2018-06-22", 2);
+        OrderDAO.create("2","2018-06-26", 2);
+        OrderHistoryDAO.create("3","2018-06-27", 3);
+
         //check if user is login
         Intent intent = getIntent();
         boolean isLogin = intent.getExtras().getBoolean("isLogin");
@@ -96,19 +118,19 @@ public class NavigationActivity extends BaseActivity implements
         //fragment back button
         if(getFragmentManager().getBackStackEntryCount() > 0){
             getFragmentManager().popBackStack();
-        }
-        else{
 
+        }else{
             new AlertDialog.Builder(this)
-                    .setMessage("Are you sure you want to exit?")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            NavigationActivity.super.onBackPressed();
-                        }
-                    })
-                    .setNegativeButton("No", null)
-                    .show();
+                .setMessage("Are you sure you want to exit?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getBaseContext(),LogoutActivity.class);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
         }
     }
 
@@ -146,9 +168,11 @@ public class NavigationActivity extends BaseActivity implements
         } else if (id == R.id.nav_orderhistory) {
             fragmentClass = OrderHistoryFragment.class;
             loadFragment(fragmentClass);
+        } else if (id == R.id.nav_currentorder) {
+            fragmentClass = CurrentOrderFragment.class;
+            System.out.println("LOADED");
+            loadFragment(fragmentClass);
         }
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

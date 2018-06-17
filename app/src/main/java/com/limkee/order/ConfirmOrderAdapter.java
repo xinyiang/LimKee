@@ -40,8 +40,8 @@ public class ConfirmOrderAdapter extends RecyclerView.Adapter<ConfirmOrderAdapte
                     .inflate(R.layout.confirm_order_products, parent, false);
             return new MyViewHolder(itemView);
         }
-        public void onBindViewHolder(final MyViewHolder holder, int position) {
 
+        public void onBindViewHolder(final MyViewHolder holder, int position) {
             Product product = orderList.get(position);
             holder.bindContent(product);
 
