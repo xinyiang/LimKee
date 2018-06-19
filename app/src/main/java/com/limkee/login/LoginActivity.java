@@ -1,5 +1,6 @@
 package com.limkee.login;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +10,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.net.Uri;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.limkee.BaseActivity;
 import com.limkee.R;
@@ -48,13 +50,21 @@ public class LoginActivity extends BaseActivity implements
     }
 
     public void login(View view){
-        //validate credentials to login
+
         String code = companycode.getText().toString();
         String pwd = password.getText().toString();
-        pwd = getSha256(pwd);
-        String type = "login";
-        BackgroundLogin bl = new BackgroundLogin(this);
-        bl.execute(type,code,pwd);
+
+        //validate fields are not blank
+         if (code.equals("") || pwd.equals("")){
+            TextView pwdValidate = findViewById(R.id.pwdvalidation);
+            pwdValidate.setText("Please fill in Company Code and/or Password");
+        } else {
+            //validate credentials to login
+            pwd = getSha256(pwd);
+            String type = "login";
+            BackgroundLogin bl = new BackgroundLogin(this);
+            bl.execute(type, code, pwd);
+        }
     }
 
     public static String getSha256(String value) {
