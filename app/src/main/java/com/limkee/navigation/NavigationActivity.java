@@ -46,6 +46,7 @@ public class NavigationActivity extends BaseActivity implements
     CompositeDisposable compositeDisposable;
     boolean logined = true;
     Customer customer;
+    Bundle bundle;
 
     @Override
     public void onResume() {
@@ -108,11 +109,11 @@ public class NavigationActivity extends BaseActivity implements
             ArrayList<Customer> cust = intent.getExtras().getParcelableArrayList("customer");
             customer = cust.get(0);
 
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList("customer", cust);
-            System.out.println("CUSTOMERRR" + customer.getDebtorName());
+            bundle = new Bundle();
+            bundle.putParcelable("customer", customer);
 
             loadFragment(CatalogueFragment.class);
+
 
         } else {
             Intent it = new Intent(this, LoginActivity.class);
@@ -193,11 +194,13 @@ public class NavigationActivity extends BaseActivity implements
     private void loadFragment(Class fragmentClass) {
         Fragment fragment = null;
         try {
+
             fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        fragment.setArguments(bundle);
         //Change screen to option selected (using fragments)
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
