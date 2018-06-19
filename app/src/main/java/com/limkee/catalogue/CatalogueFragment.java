@@ -28,6 +28,8 @@ import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
 import com.limkee.navigation.NavigationActivity;
 import com.limkee.order.ConfirmOrderActivity;
+import com.limkee.userProfile.UserProfileFragment;
+
 import android.support.annotation.Nullable;
 
 import java.text.DecimalFormat;
@@ -46,8 +48,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CatalogueFragment extends Fragment {
     private CatalogueFragment.OnFragmentInteractionListener mListener;
     CompositeDisposable compositeDisposable;
-    public static Bundle myBundle = new Bundle();
-    //public static CatalogueFragment fragment;
     public static View view;
     private CatalogueAdapter mAdapter;
     private ProgressBar progressBar;
@@ -55,8 +55,6 @@ public class CatalogueFragment extends Fragment {
     public static Button confirmOrder;
     public static TextView subtotalAmt;
     public static double subtotal;
-    private Customer customer;
-    private ArrayList<Customer> custList;
     public static ArrayList<Product> tempOrderList = new ArrayList<>();
 
     public CatalogueFragment(){
@@ -75,12 +73,6 @@ public class CatalogueFragment extends Fragment {
         ((NavigationActivity)getActivity()).setActionBarTitle("Catalogue");
         compositeDisposable = new CompositeDisposable();
 
-        /*
-        Bundle bundle = getArguments();
-        custList = bundle.getParcelableArrayList("customer");
-        customer = custList.get(0);
-        myBundle.putParcelableArrayList("customer", custList);
-        */
     }
 
     @Override
@@ -155,60 +147,6 @@ public class CatalogueFragment extends Fragment {
                 }
         });
     }
-/*
-    private void doGetCatalogue() {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
-
-        PostData postData = new Retrofit.Builder()
-                .baseUrl(HttpConstant.BASE_URL)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build().create(PostData.class);
-
-        Map<String, String> fieldsMap = new HashMap<>();
-        //fieldsMap.put("api", HttpConstant.API_KEY);
-
-
-        //compositeDisposable.add(postData.getProducts(fieldsMap)
-                compositeDisposable.add(postData.getCatalogue()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(this::handleResponse,this::handleError));
-    }
-
-    private void handleResponse(ArrayList<Product> productList) {
-        CatalogueDAO.catalogue_list = productList;
-        recyclerView.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-        recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
-        mAdapter = new CatalogueAdapter(this, CatalogueDAO.catalogue_list);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        recyclerView.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
-
-        new CountDownTimer(400, 100) {
-
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            public void onFinish() {
-                progressBar.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.VISIBLE);
-            }
-        }.start();
-    }
-
-    private void handleError(Throwable error) {
-
-    }
-*/
 
     private void doGetCatalogue() {
         recyclerView.setVisibility(View.GONE);
@@ -222,7 +160,6 @@ public class CatalogueFragment extends Fragment {
             Product p = tempOrderList.get(i);
             qtyDataSet[i] = Integer.toString(p.getDefaultQty());
         }
-
 
         mAdapter = new CatalogueAdapter(this, CatalogueDAO.catalogue_list, qtyDataSet, tempOrderList);
         recyclerView.setItemViewCacheSize(qtyDataSet.length);
