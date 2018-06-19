@@ -17,15 +17,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.limkee.R;
 import com.limkee.catalogue.CatalogueAdapter;
 import com.limkee.catalogue.CatalogueFragment;
 import com.limkee.dao.CatalogueDAO;
+import com.limkee.entity.Customer;
 import com.limkee.login.LoginActivity;
 import com.limkee.login.LogoutActivity;
 import com.limkee.navigation.NavigationActivity;
+
+import java.util.ArrayList;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -40,10 +44,10 @@ import io.reactivex.disposables.CompositeDisposable;
 public class UserProfileFragment extends Fragment {
     private UserProfileFragment.OnFragmentInteractionListener mListener;
     CompositeDisposable compositeDisposable;
-    public static Bundle myBundle = new Bundle();
     private View view;
-    private CatalogueAdapter mAdapter;
-    private String user;
+    private Customer customer;
+    private ArrayList<Customer> custList;
+
     public UserProfileFragment(){}
 
     public static UserProfileFragment newInstance() {
@@ -59,6 +63,13 @@ public class UserProfileFragment extends Fragment {
         ((NavigationActivity)getActivity()).setActionBarTitle("User Profile");
         compositeDisposable = new CompositeDisposable();
 
+        /*
+        Bundle bundle = getArguments();
+        custList = bundle.getParcelable("customer");
+        customer = custList.get(0);
+        Bundle myBundle = new Bundle();
+        myBundle.putParcelableArrayList("customer", custList);
+        */
     }
 
     @Override
@@ -66,7 +77,20 @@ public class UserProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_user_profile, container, false);
         Button logout = view.findViewById(R.id.logout_btn);
+        TextView name, phone,company, companyCode,  address;
 
+        name = view.findViewById(R.id.companyName);
+        phone = view.findViewById(R.id.phone);
+        company = view.findViewById(R.id.companyName);
+        companyCode = view.findViewById(R.id.companyCode);
+        address = view.findViewById(R.id.address);
+        /*
+        name.setText(customer.getDebtorName());
+        phone.setText(customer.getDeliverFax1());
+        company.setText(customer.getCompanyName());
+        companyCode.setText(customer.getCompanyCode());
+        address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + customer.getDeliverAddr3() + " " + customer.getDeliverAddr1());
+        */
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

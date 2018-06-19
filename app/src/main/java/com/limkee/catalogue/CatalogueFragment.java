@@ -24,6 +24,7 @@ import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
 import com.limkee.dao.CatalogueDAO;
+import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
 import com.limkee.navigation.NavigationActivity;
 import com.limkee.order.ConfirmOrderActivity;
@@ -46,7 +47,7 @@ public class CatalogueFragment extends Fragment {
     private CatalogueFragment.OnFragmentInteractionListener mListener;
     CompositeDisposable compositeDisposable;
     public static Bundle myBundle = new Bundle();
-    public static CatalogueFragment fragment;
+    //public static CatalogueFragment fragment;
     public static View view;
     private CatalogueAdapter mAdapter;
     private ProgressBar progressBar;
@@ -54,13 +55,15 @@ public class CatalogueFragment extends Fragment {
     public static Button confirmOrder;
     public static TextView subtotalAmt;
     public static double subtotal;
+    private Customer customer;
+    private ArrayList<Customer> custList;
     public static ArrayList<Product> tempOrderList = new ArrayList<>();
 
     public CatalogueFragment(){
     }
 
     public static CatalogueFragment newInstance() {
-        fragment = new CatalogueFragment();
+        CatalogueFragment fragment = new CatalogueFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -71,6 +74,13 @@ public class CatalogueFragment extends Fragment {
         super.onCreate(savedInstanceState);
         ((NavigationActivity)getActivity()).setActionBarTitle("Catalogue");
         compositeDisposable = new CompositeDisposable();
+
+        /*
+        Bundle bundle = getArguments();
+        custList = bundle.getParcelableArrayList("customer");
+        customer = custList.get(0);
+        myBundle.putParcelableArrayList("customer", custList);
+        */
     }
 
     @Override

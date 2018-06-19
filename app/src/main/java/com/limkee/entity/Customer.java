@@ -1,11 +1,14 @@
 package com.limkee.entity;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 /**
  * Created by Miaozi on 21/5/18.
  */
 @SuppressWarnings("serial")
-public class Customer implements Serializable{
+public class Customer implements Parcelable{
     private String companyCode;
     private String password;
     private String debtorCode;
@@ -202,5 +205,69 @@ public class Customer implements Serializable{
 
     public void setRouteNo(int routeNo) {
         this.routeNo = routeNo;
+    }
+
+    public Customer(Parcel in) {
+        super();
+        readFromParcel(in);
+    }
+
+    public static final Parcelable.Creator<Customer> CREATOR = new Parcelable.Creator<Customer>() {
+        public Customer createFromParcel(Parcel in) {
+            return new Customer(in);
+        }
+
+        public Customer[] newArray(int size) {
+
+            return new Customer[size];
+        }
+
+    };
+
+    public void readFromParcel(Parcel in) {
+        companyCode = in.readString();
+        password = in.readString();
+        debtorCode = in.readString();
+        debtorName = in.readString();
+        companyName = in.readString();
+        deliveryContact = in.readString();
+        deliverFax1 = in.readString();
+        invAddr1 = in.readString();
+        invAddr2 = in.readString();
+        invAddr3 = in.readString();
+        invAddr4 = in.readString();
+        deliverAddr1 = in.readString();
+        deliverAddr2 = in.readString();
+        deliverAddr3 = in.readString();
+        deliverAddr4 = in.readString();
+        displayTerm = in.readString();
+        status = in.readString();
+        routeNo = in.readInt();
+
+
+    }
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(companyCode);
+        dest.writeString(password);
+        dest.writeString(debtorCode);
+        dest.writeString(debtorName);
+        dest.writeString(companyName);
+        dest.writeString(deliveryContact);
+        dest.writeString(deliverFax1);
+        dest.writeString(invAddr1);
+        dest.writeString(invAddr2);
+        dest.writeString(invAddr3);
+        dest.writeString(invAddr4);
+        dest.writeString(deliverAddr1);
+        dest.writeString(deliverAddr2);
+        dest.writeString(deliverAddr3);
+        dest.writeString(deliverAddr4);
+        dest.writeString(displayTerm);
+        dest.writeString(status);
+        dest.writeInt(routeNo);
     }
 }

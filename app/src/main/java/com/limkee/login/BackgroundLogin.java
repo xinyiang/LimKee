@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -114,20 +115,23 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
             int routeNo = Integer.parseInt(array[18]);
             final Customer customer = new Customer(companyCode, password, debtorCode, companyName, debtorName, deliveryContact, deliverFax1, invAddr1, invAddr2, invAddr3, invAddr4, deliverAddr1, deliverAddr2, deliverAddr3, deliverAddr4, displayTerm, status, routeNo);
             builder= new AlertDialog.Builder(context);
-            builder.setMessage("Next order cutoff time will be "+cutoffTime);
+            //format cut off time to remove seconds
+            builder.setMessage("For today's order delivery, please place your order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM");
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Intent it = new Intent(context.getApplicationContext(), NavigationActivity.class);
                     it.putExtra("isLogin", true);
-                    it.putExtra("customer", customer);
+                    ArrayList<Customer> cust = new ArrayList<>();
+                    cust.add(customer);
+                    it.putParcelableArrayListExtra("customer", cust);
                     context.startActivity(it);
                     dialog.dismiss();
                 }
             });
             final AlertDialog ad = builder.create();
             ad.show();
-        }else{
-            pwdValidate.setText("Invalid Company Code or Password");
+        } else{
+            pwdValidate.setText("Invalid Company Code and/or Password");
         }
     }
 

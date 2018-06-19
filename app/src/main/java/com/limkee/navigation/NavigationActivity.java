@@ -25,12 +25,15 @@ import com.limkee.dao.OrderDAO;
 import com.limkee.dao.OrderDetailDAO;
 import com.limkee.dao.OrderHistoryDAO;
 import com.limkee.dao.OrderQuantityDAO;
+import com.limkee.entity.Customer;
 import com.limkee.login.LoginActivity;
 import com.limkee.login.LogoutActivity;
 import com.limkee.order.CurrentOrderFragment;
 import com.limkee.order.OrderHistoryFragment;
 import com.limkee.order.QuickReorderFragment;
 import com.limkee.userProfile.UserProfileFragment;
+
+import java.util.ArrayList;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -40,10 +43,9 @@ public class NavigationActivity extends BaseActivity implements
         UserProfileFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener,
         OrderHistoryFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener{
 
-    public static Bundle myBundle = new Bundle();
     CompositeDisposable compositeDisposable;
     boolean logined = true;
-    String username;
+    Customer customer;
 
     @Override
     public void onResume() {
@@ -103,7 +105,15 @@ public class NavigationActivity extends BaseActivity implements
         boolean isLogin = intent.getExtras().getBoolean("isLogin");
 
         if(isLogin) {
+            ArrayList<Customer> cust = intent.getExtras().getParcelableArrayList("customer");
+            customer = cust.get(0);
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList("customer", cust);
+            System.out.println("CUSTOMERRR" + customer.getDebtorName());
+
             loadFragment(CatalogueFragment.class);
+
         } else {
             Intent it = new Intent(this, LoginActivity.class);
             startActivity(it);
@@ -151,6 +161,8 @@ public class NavigationActivity extends BaseActivity implements
         Class fragmentClass = null;
         if (id == R.id.nav_catalogue) {
             fragmentClass = CatalogueFragment.class;
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("customer", customer);
             //  ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
             //  constraintLayout.setVisibility(View.VISIBLE);
             loadFragment(fragmentClass);
@@ -170,7 +182,6 @@ public class NavigationActivity extends BaseActivity implements
             loadFragment(fragmentClass);
         } else if (id == R.id.nav_currentorder) {
             fragmentClass = CurrentOrderFragment.class;
-            System.out.println("LOADED");
             loadFragment(fragmentClass);
         }
 
