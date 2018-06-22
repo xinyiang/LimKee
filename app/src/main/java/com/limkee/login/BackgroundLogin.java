@@ -32,7 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Created by Miaozi on 22/5/18.
+ * Created by Miaozi on 21/6/18.
  */
 
 public class BackgroundLogin extends AsyncTask<String,Void,String> {
@@ -40,6 +40,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
     private String password;
     private String companyCode;
     private AlertDialog.Builder builder;
+    private String isEnglish;
 
     BackgroundLogin(Context ctx) {
         context = ctx;
@@ -53,6 +54,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
             try {
                 companyCode = params[1];
                 password = params[2];
+                isEnglish = params[3];
                 URL url = new URL(login_url);
                 HttpURLConnection huc = (HttpURLConnection)url.openConnection();
                 huc.setRequestMethod("POST");
@@ -92,7 +94,6 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
     protected void onPostExecute(String result) {
         TextView pwdValidate = ((Activity)context).findViewById(R.id.pwdvalidation);
         if (!result.equals("login unsuccess")){
-            System.out.println(result);
             String[] array = result.split(",");
             String cutoffTime = array[0];
             String companyCode = array[2];
@@ -116,7 +117,11 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
             final Customer customer = new Customer(companyCode, password, debtorCode, companyName, debtorName, deliveryContact, deliverFax1, invAddr1, invAddr2, invAddr3, invAddr4, deliverAddr1, deliverAddr2, deliverAddr3, deliverAddr4, displayTerm, status, routeNo);
             builder= new AlertDialog.Builder(context);
             //format cut off time to remove seconds
-            builder.setMessage("For today's order delivery, please place your order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM");
+            if(isEnglish.equals("Yes")){
+                builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
+            } else {
+                builder.setMessage("今日订单请在" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
+            }
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Intent it = new Intent(context.getApplicationContext(), NavigationActivity.class);
@@ -124,6 +129,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
                     ArrayList<Customer> cust = new ArrayList<>();
                     cust.add(customer);
                     it.putParcelableArrayListExtra("customer", cust);
+                    it.putExtra("language", isEnglish);
                     context.startActivity(it);
                     dialog.dismiss();
                 }
@@ -131,8 +137,79 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
             final AlertDialog ad = builder.create();
             ad.show();
         } else{
-            pwdValidate.setText("Invalid Company Code and/or Password");
+            if(isEnglish.equals("Yes")) {
+                pwdValidate.setText("Invalid Company Code and/or Password");
+            } else {
+                pwdValidate.setText("公司代码和/或密码错误");
+            }
+
         }
+    }
+
+    public static String getChineseTime(String time){
+        String minutes = time.substring(3,time.length());
+        System.out.println("XX mins IS " + minutes);
+        String chineseHour = "";
+        String chineseTime;
+
+        time = time.substring(0,2);
+        //check hour
+        if (time.equals("04")){
+            chineseHour = "四";
+        }  else if (time.equals("05")){
+            chineseHour = "五";
+        } else if (time.equals("06")){
+            chineseHour = "六";
+        } else if (time.equals("07")){
+            chineseHour = "七";
+        } else if (time.equals("08")){
+            chineseHour = "八";
+        } else if (time.equals("09")){
+            chineseHour = "九";
+        } else if (time.equals("10")) {
+            chineseHour = "十";
+        } else {
+            chineseHour = "";
+        }
+
+        //check if got mins
+        if (minutes.equals("00")){
+            chineseTime = chineseHour + "点";
+        } else if (minutes.equals("30")){
+            chineseTime = chineseHour + "点半";
+        } else{
+            chineseTime = chineseHour + "点" + getNumber(minutes) + "分";
+        }
+        return chineseTime;
+    }
+
+    public static String getNumber(String number){
+        String chineseNumber = "";
+
+        if (number.equals("05")){
+            chineseNumber = "零五";
+        } else if (number.equals("10")){
+            chineseNumber = "十";
+        } else if (number.equals("15")){
+            chineseNumber = "十五";
+        } else if (number.equals("20")){
+            chineseNumber = "二十";
+        } else if (number.equals("25")){
+            chineseNumber = "二十五";
+        } else if (number.equals("35")){
+            chineseNumber = "三十五";
+        } else if (number.equals("40")){
+            chineseNumber = "四十";
+        } else if (number.equals("45")){
+            chineseNumber = "四十五";
+        } else if (number.equals("50")){
+            chineseNumber = "五十";
+        } else if (number.equals("55")){
+            chineseNumber = "五十五";
+        }  else {
+            chineseNumber = "零";
+        }
+        return chineseNumber;
     }
 
     @Override
@@ -143,4 +220,5 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
     protected void onProgressUpdate(Void... values) {
         super.onProgressUpdate(values);
     }
+
 }
