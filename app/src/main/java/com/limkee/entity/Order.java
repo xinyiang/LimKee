@@ -1,11 +1,9 @@
 package com.limkee.entity;
 
-import java.util.ArrayList;
-import java.util.Date;
+import com.limkee.entity.OrderDetails;
+import com.limkee.entity.OrderQuantity;
 
-/**
- * Created by Xin Yi on 4/6/2018.
- */
+import java.util.ArrayList;
 
 public class Order {
 
