@@ -3,9 +3,11 @@ package com.limkee.login;
 import android.content.Intent;;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-        import com.limkee.BaseActivity;
-        import com.limkee.R;
+import com.limkee.BaseActivity;
+import com.limkee.R;
+import android.os.Bundle;
+import com.limkee.BaseActivity;
+import com.limkee.R;
 
 
 public class LogoutActivity extends BaseActivity {

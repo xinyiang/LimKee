@@ -41,7 +41,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
     boolean valueChanged;
     View itemView;
     boolean focus = true;
-
+    String isEnglish;
     private RecyclerView mRecyclerView;
 
     @Override
@@ -50,11 +50,12 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         mRecyclerView = recyclerView;
     }
 
-    public CatalogueAdapter(CatalogueFragment fragment, ArrayList<Product> catalogueList, String[] qtyDataSet, ArrayList<Product> tempOrderList) {
+    public CatalogueAdapter(CatalogueFragment fragment, ArrayList<Product> catalogueList, String[] qtyDataSet, ArrayList<Product> tempOrderList, String isEnglish) {
         this.fragment = fragment;
         this.catalogueList = catalogueList;
         this.qtyDataSet = qtyDataSet;
         this.orderList = tempOrderList;
+        this.isEnglish = isEnglish;
     }
 
     @Override
@@ -63,7 +64,6 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                 .inflate(R.layout.catalogue_products, parent, false);
         ViewHolder vh = new ViewHolder(itemView, new QuantityEditTextListener());
         CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
-        //return new ViewHolder(itemView);
         return vh;
     }
     public void onBindViewHolder(final ViewHolder holder, int position) {
@@ -75,7 +75,6 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         DecimalFormat df = new DecimalFormat("#0.00");
         double unitSub = product.getDefaultQty() * product.getUnitPrice();
         holder.unitSubtotal.setText("$" + df.format(unitSub));
-
 
     }
 
@@ -90,7 +89,6 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         public ViewHolder(View view, QuantityEditTextListener quantityEditTextListener) {
             super(view);
             description = (TextView) view.findViewById(R.id.description);
-            description2 = (TextView) view.findViewById(R.id.description2);
             qty = (EditText) view.findViewById(R.id.qty);
             unitPrice = (TextView) view.findViewById(R.id.price);
             image = (ImageView) view.findViewById(R.id.image);
@@ -102,8 +100,12 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
         public void bindContent(final Product product) {
             DecimalFormat df = new DecimalFormat("#0.00");
-            description.setText(product.getDescription());
-            description2.setText(product.getDescription2());
+
+            if (isEnglish.equals("Yes")) {
+                description.setText(product.getDescription());
+            } else {
+                description.setText(product.getDescription2());
+            }
             qty.setText(Integer.toString(product.getDefaultQty()));
             unitPrice.setText(df.format(product.getUnitPrice()));
             double unitSub = product.getDefaultQty() * product.getUnitPrice();
@@ -137,30 +139,9 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
                         //check that quantity is not left blank. If not, reset it back to default prefix quantity
                         if (qty.getText().toString().equals("")){
-                            final Toast tag = Toast.makeText(itemView.getContext(), "Cannot leave blank for " + product.getDescription() + " quantity.",  Toast.LENGTH_SHORT);
-                            new CountDownTimer(10000, 1000) {
-                                public void onTick(long millisUntilFinished) {
-                                    tag.show();
-                                }
 
-                                public void onFinish() {
-                                    tag.show();
-                                }
-
-                            }.start();
-
-                            qty.setText(Integer.toString(product.getDefaultQty()));
-
-                        } else {
-
-                            //check if qty is in correct multiples
-                            int qtyMultiples = product.getQtyMultiples();
-                            int quantity = Integer.parseInt(qty.getText().toString());
-
-                            //show error message for abt 10s
-                            if (quantity % qtyMultiples != 0) {
-                                final Toast tag = Toast.makeText(itemView.getContext(), "Incorrect quantity for " + product.getDescription() + ". Quantity must be in multiples of " + qtyMultiples + ". Eg: " + qtyMultiples + " , " + (qtyMultiples + qtyMultiples) + ", " + (qtyMultiples + qtyMultiples + qtyMultiples) + " and so on.", Toast.LENGTH_SHORT);
-                                tag.show();
+                            if (isEnglish.equals("Yes")){
+                                final Toast tag = Toast.makeText(itemView.getContext(), "Please fill in quantity for " + product.getDescription() + ".",  Toast.LENGTH_SHORT);
                                 new CountDownTimer(10000, 1000) {
                                     public void onTick(long millisUntilFinished) {
                                         tag.show();
@@ -171,10 +152,101 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                     }
 
                                 }.start();
+                            } else {
+                                final Toast tag = Toast.makeText(itemView.getContext(), "请填写" + product.getDescription2() + "的数量",  Toast.LENGTH_SHORT);
+                                new CountDownTimer(10000, 1000) {
+                                    public void onTick(long millisUntilFinished) {
+                                        tag.show();
+                                    }
+
+                                    public void onFinish() {
+                                        tag.show();
+                                    }
+
+                                }.start();
+                            }
+
+                            qty.setText(Integer.toString(product.getDefaultQty()));
+
+                        } else {
+                            //check if qty is in correct multiples
+                            int qtyMultiples = product.getQtyMultiples();
+                            int quantity = Integer.parseInt(qty.getText().toString());
+
+                            //show error message for 0
+                            if (product.getDefaultQty() != 0 && quantity == 0) {
+                                if (isEnglish.equals("Yes")) {
+                                    final Toast tag = Toast.makeText(itemView.getContext(), "Quantity cannot be 0 for " + product.getDescription() + ".", Toast.LENGTH_SHORT);
+                                    tag.show();
+                                    new CountDownTimer(10000, 1000) {
+                                        public void onTick(long millisUntilFinished) {
+                                            tag.show();
+                                        }
+
+                                        public void onFinish() {
+                                            tag.show();
+                                        }
+
+                                    }.start();
+                                } else {
+                                    final Toast tag = Toast.makeText(itemView.getContext(), product.getDescription2() + "的数量有误， 数量不能是零", Toast.LENGTH_SHORT);
+                                    tag.show();
+                                    new CountDownTimer(10000, 1000) {
+                                        public void onTick(long millisUntilFinished) {
+                                            tag.show();
+                                        }
+
+                                        public void onFinish() {
+                                            tag.show();
+                                        }
+
+                                    }.start();
+                                }
 
                                 //reset quantity to default prefix
                                 product.setDefaultQty(product.getDefaultQty());
                                 qty.setText(Integer.toString(product.getDefaultQty()));
+                                DecimalFormat df = new DecimalFormat("#0.00");
+                                double unitSub = product.getDefaultQty() * product.getUnitPrice();
+                                unitSubtotal.setText("$" + df.format(unitSub));
+                            }
+
+                            //show error message for abt 10s
+                            if (quantity % qtyMultiples != 0) {
+                                if (isEnglish.equals("Yes")){
+                                    final Toast tag = Toast.makeText(itemView.getContext(), "Incorrect quantity for " + product.getDescription() + ". Quantity must be in multiples of " + qtyMultiples + ". Eg: " + qtyMultiples + " , " + (qtyMultiples + qtyMultiples) + ", " + (qtyMultiples + qtyMultiples + qtyMultiples) + " and so on.", Toast.LENGTH_SHORT);
+                                    tag.show();
+                                    new CountDownTimer(10000, 1000) {
+                                        public void onTick(long millisUntilFinished) {
+                                            tag.show();
+                                        }
+
+                                        public void onFinish() {
+                                            tag.show();
+                                        }
+
+                                    }.start();
+                                } else {
+                                    final Toast tag = Toast.makeText(itemView.getContext(), product.getDescription2() + "的数量有误. 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，"+ (qtyMultiples+qtyMultiples) + "等等", Toast.LENGTH_SHORT);
+                                    tag.show();
+                                    new CountDownTimer(10000, 1000) {
+                                        public void onTick(long millisUntilFinished) {
+                                            tag.show();
+                                        }
+
+                                        public void onFinish() {
+                                            tag.show();
+                                        }
+
+                                    }.start();
+                                }
+
+                                //reset quantity to default prefix
+                                product.setDefaultQty(product.getDefaultQty());
+                                qty.setText(Integer.toString(product.getDefaultQty()));
+                                DecimalFormat df = new DecimalFormat("#0.00");
+                                double unitSub = product.getDefaultQty() * product.getUnitPrice();
+                                unitSubtotal.setText("$" + df.format(unitSub));
 
                             } else {
                                 //recalculate unit subtotal and total subtotal
@@ -185,11 +257,10 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                 DecimalFormat df = new DecimalFormat("#0.00");
                                 double unitSub = product.getDefaultQty() * product.getUnitPrice();
                                 unitSubtotal.setText("$" + df.format(unitSub));
-                                valueChanged = false;
-
                             }
                         }
                     }
+                    valueChanged = false;
                 }
             });
         }

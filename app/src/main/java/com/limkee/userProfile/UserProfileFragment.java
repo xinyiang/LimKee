@@ -36,7 +36,7 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((NavigationActivity)getActivity()).setActionBarTitle("User Profile");
+        ((NavigationActivity)getActivity()).setActionBarTitle("用户资料");
         compositeDisposable = new CompositeDisposable();
 
         Bundle bundle = getArguments();
@@ -60,7 +60,7 @@ public class UserProfileFragment extends Fragment {
         phone.setText(customer.getDeliverFax1());
         company.setText(customer.getCompanyName());
         companyCode.setText(customer.getCompanyCode());
-        address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + customer.getDeliverAddr3() + " " + customer.getDeliverAddr1());
+        address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + customer.getDeliverAddr3() + " " + customer.getDeliverAddr4());
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override

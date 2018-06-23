@@ -44,9 +44,9 @@ public class NavigationActivity extends BaseActivity implements
         OrderHistoryFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener{
 
     CompositeDisposable compositeDisposable;
-    boolean logined = true;
     Customer customer;
     Bundle bundle;
+    String isEnglish;
 
     @Override
     public void onResume() {
@@ -104,17 +104,16 @@ public class NavigationActivity extends BaseActivity implements
         //check if user is login
         Intent intent = getIntent();
         boolean isLogin = intent.getExtras().getBoolean("isLogin");
+        isEnglish = intent.getExtras().getString("language");
 
         if(isLogin) {
             ArrayList<Customer> cust = intent.getExtras().getParcelableArrayList("customer");
             customer = cust.get(0);
-
             bundle = new Bundle();
             bundle.putParcelable("customer", customer);
+            bundle.putString("language", isEnglish);
 
             loadFragment(CatalogueFragment.class);
-
-
         } else {
             Intent it = new Intent(this, LoginActivity.class);
             startActivity(it);
@@ -130,18 +129,32 @@ public class NavigationActivity extends BaseActivity implements
         if(getFragmentManager().getBackStackEntryCount() > 0){
             getFragmentManager().popBackStack();
 
-        }else{
-            new AlertDialog.Builder(this)
-                .setMessage("Are you sure you want to exit?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getBaseContext(),LogoutActivity.class);
-                        startActivity(intent);
-                    }
-                })
-                .setNegativeButton("No", null)
-                .show();
+        } else{
+            if (isEnglish.equals("Yes")){
+                new AlertDialog.Builder(this)
+                        .setMessage("Are you sure you want to exit?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(getBaseContext(),LogoutActivity.class);
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+            } else {
+                new AlertDialog.Builder(this)
+                        .setMessage("您确定要退出？")
+                        .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(getBaseContext(),LogoutActivity.class);
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton("否", null)
+                        .show();
+            }
         }
     }
 
@@ -162,15 +175,9 @@ public class NavigationActivity extends BaseActivity implements
         Class fragmentClass = null;
         if (id == R.id.nav_catalogue) {
             fragmentClass = CatalogueFragment.class;
-            Bundle bundle = new Bundle();
-            bundle.putParcelable("customer", customer);
-            //  ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
-            //  constraintLayout.setVisibility(View.VISIBLE);
             loadFragment(fragmentClass);
         } else if (id == R.id.nav_quickreorder) {
             fragmentClass = QuickReorderFragment.class;
-            // ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
-            // constraintLayout.setVisibility(View.GONE);
             loadFragment(fragmentClass);
         } else if (id == R.id.nav_logout) {
             Intent intent = new Intent(this,LogoutActivity.class);

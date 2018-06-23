@@ -56,6 +56,7 @@ public class CatalogueFragment extends Fragment {
     public static TextView subtotalAmt;
     public static double subtotal;
     public static ArrayList<Product> tempOrderList = new ArrayList<>();
+    private String isEnglish;
 
     public CatalogueFragment(){
     }
@@ -70,7 +71,14 @@ public class CatalogueFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((NavigationActivity)getActivity()).setActionBarTitle("Catalogue");
+        Bundle bundle = getArguments();
+        isEnglish = bundle.getString("language");
+        if (isEnglish.equals("Yes")){
+            ((NavigationActivity)getActivity()).setActionBarTitle("Order Slip");
+        } else {
+            ((NavigationActivity)getActivity()).setActionBarTitle("订单表");
+        }
+
         compositeDisposable = new CompositeDisposable();
 
     }
@@ -139,9 +147,11 @@ public class CatalogueFragment extends Fragment {
                     //store all products with qty > 1 into a temporary arraylist of products
                     Bundle bundle = new Bundle();
                     bundle.putParcelableArrayList("orderList", orderList);
+                    bundle.putString("language", isEnglish);
 
                     Intent intent = new Intent(view.getContext(), ConfirmOrderActivity.class);
                     intent.putParcelableArrayListExtra("orderList", orderList);
+                    intent.putExtra("language",isEnglish);
                     getActivity().startActivity(intent);
                     }
                 }
@@ -161,7 +171,7 @@ public class CatalogueFragment extends Fragment {
             qtyDataSet[i] = Integer.toString(p.getDefaultQty());
         }
 
-        mAdapter = new CatalogueAdapter(this, CatalogueDAO.catalogue_list, qtyDataSet, tempOrderList);
+        mAdapter = new CatalogueAdapter(this, CatalogueDAO.catalogue_list, qtyDataSet, tempOrderList, isEnglish);
         recyclerView.setItemViewCacheSize(qtyDataSet.length);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);

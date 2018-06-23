@@ -152,7 +152,6 @@ public class ConfirmOrderFragment extends Fragment{
             TextView lbl_subtotal_amt, lbl_total_amt, lbl_tax_amt;
             TextView lbl_delivery_details.lbl_name, lbl_contact, lbl_address, lbl_date, lbl_time;
             Button btnNext;
-
             lbl_subtotal_amt = (TextView) view.findViewById(R.id.lbl_subtotal_amt);
             lbl_total_amt = (TextView) view.findViewById(R.id.lbl_total_amt);
             lbl_tax_amt = (TextView) view.findViewById(R.id.lbl_tax_amt);
@@ -163,7 +162,6 @@ public class ConfirmOrderFragment extends Fragment{
             lbl_date = (TextView) view.findViewById(R.id.lbl_date);
             lbl_time = (TextView) view.findViewById(R.id.lbl_time);
             btnNext = (Button) view.findViewById(R.id.btnNext);
-
             lbl_subtotal_amt.setText("Subtotal");
             lbl_tax_amt.setText("GST (7%)");
             lbl_total_amt.setText("Total Payable");
@@ -218,7 +216,7 @@ public class ConfirmOrderFragment extends Fragment{
                     }
                 }, year, month, day);
                 mDatePicker.show();
-        }
+            }
         });
 
         next = view.findViewById(R.id.btnNext);
