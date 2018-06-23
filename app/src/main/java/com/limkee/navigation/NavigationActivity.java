@@ -136,8 +136,7 @@ public class NavigationActivity extends BaseActivity implements
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(getBaseContext(),LogoutActivity.class);
-                                startActivity(intent);
+                                NavigationActivity.super.onBackPressed();
                             }
                         })
                         .setNegativeButton("No", null)
@@ -148,8 +147,7 @@ public class NavigationActivity extends BaseActivity implements
                         .setPositiveButton("是", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(getBaseContext(),LogoutActivity.class);
-                                startActivity(intent);
+                                NavigationActivity.super.onBackPressed();
                             }
                         })
                         .setNegativeButton("否", null)

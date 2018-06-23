@@ -57,7 +57,7 @@ public class UserProfileFragment extends Fragment {
         address = view.findViewById(R.id.address);
 
         name.setText(customer.getDebtorName());
-        phone.setText(customer.getDeliverFax1());
+        phone.setText(customer.getDeliveryContact());
         company.setText(customer.getCompanyName());
         companyCode.setText(customer.getCompanyCode());
         address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + customer.getDeliverAddr3() + " " + customer.getDeliverAddr4());
