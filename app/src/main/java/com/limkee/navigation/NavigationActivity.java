@@ -31,6 +31,7 @@ import com.limkee.login.LogoutActivity;
 import com.limkee.order.CurrentOrderFragment;
 import com.limkee.order.OrderHistoryFragment;
 import com.limkee.order.QuickReorderFragment;
+import com.limkee.payment.PaymentFragment;
 import com.limkee.userProfile.UserProfileFragment;
 
 import java.util.ArrayList;
@@ -41,7 +42,8 @@ import io.reactivex.disposables.CompositeDisposable;
 public class NavigationActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener, CatalogueFragment.OnFragmentInteractionListener,
         UserProfileFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener,
-        OrderHistoryFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener{
+        OrderHistoryFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener,
+        PaymentFragment.OnFragmentInteractionListener{
 
     CompositeDisposable compositeDisposable;
     Customer customer;
