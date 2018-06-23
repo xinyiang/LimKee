@@ -15,7 +15,7 @@ public class OrderHistoryDAO {
 
     public static ArrayList<Order> historyOrdersList = new ArrayList<Order>();
     public static OrderDetails od;
-    public static OrderQuantity oq;
+    public static ArrayList<OrderQuantity> oq;
 
     public static Order create(String OrderID, String deliveryDate, int noOfItems) {
 
@@ -30,7 +30,7 @@ public class OrderHistoryDAO {
         ArrayList<OrderQuantity> oQList = orderQtyDAO.getOrderQuantity();
         for (OrderQuantity o : oQList){
             if (o.getOrderID().equals(OrderID)){
-                oq = o;
+                oq.add(o);
             }
         }
 
