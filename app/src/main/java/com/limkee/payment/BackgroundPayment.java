@@ -31,6 +31,8 @@ import java.net.URLEncoder;
         String type = params[0];
         token = params[1];
         totalPayable = params[2];
+        double tp = Double.parseDouble(totalPayable);
+        totalPayable = tp*100+"";
         String payment_url = "http://13.229.114.72:80/JavaBridge/payment.php";
         if(type.equals("pay")){
             try {
@@ -73,7 +75,6 @@ import java.net.URLEncoder;
 
     @Override
     protected void onPostExecute(String result) {
-        System.out.println(result+"lollllllllll");
         System.out.println("finally");
         Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
         it.putExtra("result",result);

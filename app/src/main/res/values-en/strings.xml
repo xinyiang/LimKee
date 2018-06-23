@@ -16,5 +16,8 @@
         <item>20</item>
         <item>25</item>
     </string-array>
+    <string name="payment">Payment</string>
+    <string name="paymentdetails">Payment Details</string>
+    <string name="pay">Pay</string>
 
 </resources>
