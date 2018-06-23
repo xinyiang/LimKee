@@ -1,5 +1,6 @@
 package com.limkee.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -12,13 +13,13 @@ public class Order {
     private String deliveryDate;
     private int noOfItems;
     private OrderDetails od;
-    private OrderQuantity oq;
+    private ArrayList<OrderQuantity> oq;
 
-    public Order(){
+    public Order() {
 
     }
 
-    public Order(String orderID, String deliveryDate,int noOfItems, OrderDetails od, OrderQuantity oq){
+    public Order(String orderID, String deliveryDate, int noOfItems, OrderDetails od, ArrayList<OrderQuantity> oq) {
         this.OrderID = orderID;
         this.deliveryDate = deliveryDate;
         this.noOfItems = noOfItems;
@@ -48,5 +49,21 @@ public class Order {
 
     public void setNoOfItems(int noOfItems) {
         this.noOfItems = noOfItems;
+    }
+
+    public OrderDetails getOd() {
+        return od;
+    }
+
+    public void setOd(OrderDetails od) {
+        this.od = od;
+    }
+
+    public ArrayList<OrderQuantity> getOqList() {
+        return oq;
+    }
+
+    public void setOqList(ArrayList<OrderQuantity> oqList) {
+        this.oq = oqList;
     }
 }
