@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -13,21 +14,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.limkee.R;
+import com.limkee.constant.HttpConstant;
+import com.limkee.constant.PostData;
 import com.limkee.dao.OrderDAO;
 import com.limkee.entity.Customer;
+import com.limkee.entity.Order;
 import com.limkee.navigation.NavigationActivity;
-import io.reactivex.disposables.CompositeDisposable;
+import java.util.ArrayList;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CurrentOrderFragment extends Fragment {
 
     private CurrentOrderFragment.OnFragmentInteractionListener mListener;
-    CompositeDisposable compositeDisposable;
-    public static Bundle myBundle = new Bundle();
     private CurrentOrderAdapter mAdapter;
     private View view;
+    private CoordinatorLayout coordinatorLayout;
     private RecyclerView recyclerView;
-    private ConstraintLayout coordinatorLayout;
     private Customer customer;
+    private String companyCode;
+    public static Retrofit retrofit;
+    private  String isEnglish;
+
 
     public CurrentOrderFragment(){}
 
@@ -41,13 +52,16 @@ public class CurrentOrderFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((NavigationActivity)getActivity()).setActionBarTitle("My Orders");
 
-
-        compositeDisposable = new CompositeDisposable();
         Bundle bundle = getArguments();
-        //customer = (Customer) savedInstanceState.getSerializable("customer");
-
+        customer = bundle.getParcelable("customer");
+        companyCode = customer.getCompanyCode();
+        isEnglish = bundle.getString("language");
+        if (isEnglish.equals("Yes")){
+            ((NavigationActivity)getActivity()).setActionBarTitle("My Orders");
+        } else {
+            ((NavigationActivity)getActivity()).setActionBarTitle("我的订单");
+        }
     }
 
     @Override
@@ -57,14 +71,46 @@ public class CurrentOrderFragment extends Fragment {
 
 
         recyclerView = view.findViewById(R.id.currentOrderRecyclerView);
-        Bundle bundle = getArguments();
-        //(Serializable) customer
-        //customer = bundle.getParcelableArrayList("customer");
-        doGetCurrentOrders();
+        recyclerView = (RecyclerView) view.findViewById(R.id.currentOrderRecyclerView);
+        mAdapter = new CurrentOrderAdapter(this, OrderDAO.currentOrdersList, customer, isEnglish);
+//        coordinatorLayout = view.findViewById(R.id.constraint_layout);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        recyclerView.setAdapter(mAdapter);
+        doGetCurrentOrders(companyCode);
 
         return view;
     }
 
+    private void doGetCurrentOrders(String companyCode) {
+
+        if (retrofit == null) {
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(HttpConstant.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        PostData service = retrofit.create(PostData.class);
+        Call<ArrayList<Order>> call = service.getCurrentOrders(companyCode);
+        call.enqueue(new Callback<ArrayList<Order>>() {
+
+            @Override
+            public void onResponse(Call<ArrayList<Order>> call, Response<ArrayList<Order>> response) {
+                ArrayList<Order> data = response.body();
+                OrderDAO.currentOrdersList = data;
+
+                mAdapter.update(OrderDAO.currentOrdersList);
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Order>> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
+    }
+/*
     private void doGetCurrentOrders() {
         recyclerView = (RecyclerView) view.findViewById(R.id.currentOrderRecyclerView);
         mAdapter = new CurrentOrderAdapter(this, OrderDAO.currentOrdersList, customer);
@@ -77,6 +123,8 @@ public class CurrentOrderFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
 
     }
+    */
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

@@ -17,7 +17,6 @@ import java.util.ArrayList;
 public class CurrentOrderDetailActivity extends AppCompatActivity implements CurrentOrderFragment.OnFragmentInteractionListener, CurrentOrderDetailFragment.OnFragmentInteractionListener {
 
     public static Bundle myBundle = new Bundle();
-    private ArrayList<Order> orderList;
     private Customer customer;
 
     @Override
@@ -25,13 +24,14 @@ public class CurrentOrderDetailActivity extends AppCompatActivity implements Cur
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_current_order);
 
+        myBundle = getIntent().getExtras();
+
         Toolbar toolbar = findViewById(com.limkee.R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Order details");
+        //getSupportActionBar().setTitle("Order details");
+       // getSupportActionBar().setTitle("订单详情");
 
-        myBundle = getIntent().getExtras();
-        //customer = (Customer) savedInstanceState.getSerializable("customer");
 
         CurrentOrderDetailFragment currentOrderDetailFragment = new CurrentOrderDetailFragment();
         currentOrderDetailFragment.setArguments(myBundle);

@@ -22,12 +22,13 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
     private ArrayList<Order> currentOrderList;
     private String orderID;
     private Customer customer;
+    private String isEnglish;
 
-
-    public CurrentOrderAdapter(CurrentOrderFragment fragment, ArrayList<Order> col,Customer customer) {
+    public CurrentOrderAdapter(CurrentOrderFragment fragment, ArrayList<Order> col,Customer customer, String isEnglish) {
         this.fragment = fragment;
         this.currentOrderList = col;
         this.customer = customer;
+        this.isEnglish = isEnglish;
     }
 
     @Override
@@ -50,7 +51,11 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
 
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
-                intent.putExtra("customer", (Serializable) customer);
+                intent.putExtra("language", isEnglish);
+                intent.putExtra("deliveryDate", order.getDeliveryDate());
+                intent.putExtra("numItems", order.getNoOfItems());
+                intent.putExtra("deliveryShift", order.getDeliveryShift());
+                intent.putExtra("customer", customer);
                 fragment.startActivity(intent);
 
             }
@@ -64,7 +69,11 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
 
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
-                intent.putExtra("customer", (Serializable) customer);
+                intent.putExtra("language", isEnglish);
+                intent.putExtra("deliveryDate", order.getDeliveryDate());
+                intent.putExtra("numItems", order.getNoOfItems());
+                intent.putExtra("deliveryShift", order.getDeliveryShift());
+                intent.putExtra("customer", customer);
                 fragment.startActivity(intent);
 
             }
@@ -78,7 +87,11 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
 
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
-                intent.putExtra("customer", (Serializable) customer);
+                intent.putExtra("language", isEnglish);
+                intent.putExtra("deliveryDate", order.getDeliveryDate());
+                intent.putExtra("numItems", order.getNoOfItems());
+                intent.putExtra("deliveryShift", order.getDeliveryShift());
+                intent.putExtra("customer", customer);
                 fragment.startActivity(intent);
 
             }
@@ -92,7 +105,11 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
 
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
-                intent.putExtra("customer", (Serializable) customer);
+                intent.putExtra("language", isEnglish);
+                intent.putExtra("deliveryDate", order.getDeliveryDate());
+                intent.putExtra("numItems", order.getNoOfItems());
+                intent.putExtra("deliveryShift", order.getDeliveryShift());
+                intent.putExtra("customer", customer);
                 fragment.startActivity(intent);
 
             }
@@ -116,9 +133,7 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
             orderID.setText(order.getOrderID());
             deliveryDate.setText(order.getDeliveryDate());
 
-            //if english
-            /*
-            if (){
+            if (isEnglish.equals("Yes")){
                 lbl_deliveryDate.setText("Delivering on");
 
                 if (order.getNoOfItems() == 1){
@@ -126,15 +141,17 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
                 } else {
                     noOfItems.setText(order.getNoOfItems() + " items");
                 }
+            } else {
+                noOfItems.setText(order.getNoOfItems() + " 样");
             }
-            */
-
-            noOfItems.setText(order.getNoOfItems() + " 样");
-
 
         }
     }
 
+    public void update(ArrayList<Order> orderList){
+        currentOrderList = orderList;
+        notifyDataSetChanged();
+    }
 
     @Override
     public int getItemCount() {

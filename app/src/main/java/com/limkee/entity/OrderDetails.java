@@ -1,13 +1,11 @@
 package com.limkee.entity;
 
 /**
- * Created by Xin Yi on 12/6/2018.
+ * Created by Xin Yi on 24/6/2018.
  */
 
 public class OrderDetails {
-
-
-    String OrderID;
+    String orderID;
     String orderDate;
     double subtotal;
     String status;
@@ -16,20 +14,20 @@ public class OrderDetails {
     public OrderDetails(){
     }
 
-    public OrderDetails(String OrderID, String orderDate, double subtotal, String status, String cancelledReason){
-        this.OrderID = OrderID;
+    public OrderDetails(String orderID, String orderDate, String status, String cancelledReason, double subtotal){
+        this.orderID = orderID;
         this.orderDate = orderDate;
-        this.subtotal = subtotal;
         this.status = status;
         this.cancelledReason = cancelledReason;
+        this.subtotal = subtotal;
     }
 
     public String getOrderID() {
-        return OrderID;
+        return orderID;
     }
 
     public void setOrderID(String orderID) {
-        OrderID = orderID;
+        orderID = orderID;
     }
 
     public String getOrderDate() {

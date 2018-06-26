@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.limkee.R;
-import com.limkee.entity.Product;
-
+import com.limkee.entity.OrderDetails;
+import com.limkee.entity.OrderQuantity;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -18,12 +18,14 @@ import java.util.ArrayList;
 
 public class CurrentOrderDetailAdapter extends RecyclerView.Adapter<CurrentOrderDetailAdapter.MyViewHolder> {
 
-    private ArrayList<Product> orderList;
+    private ArrayList<OrderQuantity> oqList;
+    private OrderDetails od;
     private CurrentOrderDetailFragment fragment;
+    private String isEnglish;
 
-    public CurrentOrderDetailAdapter(CurrentOrderDetailFragment fragment, ArrayList<Product> orderList) {
+    public CurrentOrderDetailAdapter(CurrentOrderDetailFragment fragment, String isEnglish) {
         this.fragment = fragment;
-        this.orderList = orderList;
+        this.isEnglish = isEnglish;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class CurrentOrderDetailAdapter extends RecyclerView.Adapter<CurrentOrder
     }
     public void onBindViewHolder(final CurrentOrderDetailAdapter.MyViewHolder holder, int position) {
 
-        Product product = orderList.get(position);
+        OrderQuantity product = oqList.get(position);
         holder.bindContent(product);
 
     }
@@ -49,18 +51,35 @@ public class CurrentOrderDetailAdapter extends RecyclerView.Adapter<CurrentOrder
             unitSubtotal = (TextView) view.findViewById(R.id.unitSubtotal);
         }
 
-        public void bindContent(Product product) {
+        public void bindContent(OrderQuantity product) {
             DecimalFormat df = new DecimalFormat("#0.00");
-            description.setText(product.getDescription());
-            qty.setText(Integer.toString(product.getDefaultQty()));
-            double unitSub = product.getDefaultQty() * product.getUnitPrice();
+            if (isEnglish.equals("Yes")) {
+                description.setText(product.getDescription());
+            } else {
+                description.setText(product.getDescription2());
+            }
+
+            qty.setText(Integer.toString(product.getQty()));
+            double unitSub = product.getQty() * product.getUnitPrice();
             unitSubtotal.setText("$" + df.format(unitSub));
 
         }
     }
+    public void update(OrderDetails od){
+        this.od = od;
+        notifyDataSetChanged();
+    }
+
+    public void update2(ArrayList<OrderQuantity> orderList){
+        oqList = orderList;
+        notifyDataSetChanged();
+    }
 
     @Override
     public int getItemCount() {
-        return orderList.size();
+        if (oqList == null ) {
+            return 0;
+        }
+        return oqList.size();
     }
 }
