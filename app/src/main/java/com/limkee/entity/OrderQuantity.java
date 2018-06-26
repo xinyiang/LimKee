@@ -1,42 +1,41 @@
 package com.limkee.entity;
 
 /**
- * Created by Xin Yi on 12/6/2018.
+ * Created by Xin Yi on 24/6/2018.
  */
 
 public class OrderQuantity {
-
-    String OrderID;
-    String itemCode;
+    String description;
+    String description2;
     int qty;
     int returnedQty;
     double unitPrice;
 
-    public OrderQuantity(){
+    public OrderQuantity() {
     }
 
-    public OrderQuantity(String OrderID, String itemCode,int qty, int returnedQty, double unitPrice){
-        this.OrderID = OrderID;
-        this.itemCode = itemCode;
+    public OrderQuantity(String description, String description2, int qty, int returnedQty, double unitPrice) {
+        this.description = description;
+        this.description2 = description2;
         this.qty = qty;
         this.returnedQty = returnedQty;
         this.unitPrice = unitPrice;
     }
 
-    public String getOrderID() {
-        return OrderID;
+    public String getDescription() {
+        return description;
     }
 
-    public void setOrderQtyID(int orderQtyID) {
-        this.OrderID = OrderID;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getItemCode() {
-        return itemCode;
+    public String getDescription2() {
+        return description2;
     }
 
-    public void setItemCode(String itemCode) {
-        this.itemCode = itemCode;
+    public void setDescription2(String description2) {
+        this.description2 = description2;
     }
 
     public int getQty() {
