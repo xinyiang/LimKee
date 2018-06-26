@@ -30,6 +30,7 @@ import com.limkee.R;
 import com.limkee.catalogue.CatalogueAdapter;
 import com.limkee.catalogue.CatalogueFragment;
 import com.limkee.dao.CatalogueDAO;
+import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
 import com.limkee.navigation.NavigationActivity;
 import com.limkee.payment.PaymentActivity;
@@ -46,7 +47,6 @@ import io.reactivex.disposables.CompositeDisposable;
 public class ConfirmOrderFragment extends Fragment{
 
     private ConfirmOrderFragment.OnFragmentInteractionListener mListener;
-    CompositeDisposable compositeDisposable;
     private View view;
     private EditText deliveryDate;
     Calendar mCurrentDate;
@@ -59,8 +59,8 @@ public class ConfirmOrderFragment extends Fragment{
     private double totalPayable;
     private ConfirmOrderAdapter mAdapter;
     private ArrayList<Product> orderList;
-
-
+    private String isEnglish;
+    private Customer customer;
 
     public ConfirmOrderFragment() {
         // Required empty public constructor
@@ -76,20 +76,20 @@ public class ConfirmOrderFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if(getActivity() instanceof ConfirmOrderActivity){
-            //check for language
-
-            ((ConfirmOrderActivity)getActivity()).setActionBarTitle("确认订单");
-            //((ConfirmOrderActivity)getActivity()).setActionBarTitle("Confirm Order");
-        }
-
-        //  Instantiate CompositeDisposable for retrofit
-        compositeDisposable = new CompositeDisposable();
-
         Bundle bundle = getArguments();
         orderList = bundle.getParcelableArrayList("orderList");
+        customer = bundle.getParcelable("customer");
 
+        if(getActivity() instanceof ConfirmOrderActivity){
+
+            //check for language
+            isEnglish = bundle.getString("language");
+            if (isEnglish.equals("Yes")) {
+                ((ConfirmOrderActivity) getActivity()).setActionBarTitle("Confirm Order");
+            } else {
+                ((ConfirmOrderActivity)getActivity()).setActionBarTitle("确认订单");
+            }
+        }
     }
 
     @Override
@@ -223,6 +223,8 @@ public class ConfirmOrderFragment extends Fragment{
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View rootView) {
+
+                //check if today's delivery is before cut off time
 
                 //go to payment activity
                 Bundle bundle = new Bundle();

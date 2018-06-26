@@ -1,36 +1,33 @@
 package com.limkee.entity;
 
-import com.limkee.entity.OrderDetails;
-import com.limkee.entity.OrderQuantity;
 
-import java.util.ArrayList;
+/**
+ * Created by Xin Yi on 24/6/2018.
+ */
 
 public class Order {
-
-    private String OrderID;
+    private String orderID;
     private String deliveryDate;
     private int noOfItems;
-    private OrderDetails od;
-    private ArrayList<OrderQuantity> oq;
+    private String deliveryShift;
 
     public Order() {
 
     }
 
-    public Order(String orderID, String deliveryDate, int noOfItems, OrderDetails od, ArrayList<OrderQuantity> oq) {
-        this.OrderID = orderID;
+    public Order(String orderID, String deliveryDate, int noOfItems, String deliveryShift) {
+        this.orderID = orderID;
         this.deliveryDate = deliveryDate;
         this.noOfItems = noOfItems;
-        this.od = od;
-        this.oq = oq;
+        this.deliveryShift = deliveryShift;
     }
 
     public String getOrderID() {
-        return OrderID;
+        return orderID;
     }
 
     public void setOrderID(String orderID) {
-        OrderID = orderID;
+        this.orderID = orderID;
     }
 
     public String getDeliveryDate() {
@@ -49,19 +46,12 @@ public class Order {
         this.noOfItems = noOfItems;
     }
 
-    public OrderDetails getOd() {
-        return od;
+    public String getDeliveryShift() {
+        return deliveryShift;
     }
 
-    public void setOd(OrderDetails od) {
-        this.od = od;
+    public void setDeliveryShift(String deliveryShift) {
+        this.deliveryShift = deliveryShift;
     }
 
-    public ArrayList<OrderQuantity> getOqList() {
-        return oq;
-    }
-
-    public void setOqList(ArrayList<OrderQuantity> oqList) {
-        this.oq = oqList;
-    }
 }

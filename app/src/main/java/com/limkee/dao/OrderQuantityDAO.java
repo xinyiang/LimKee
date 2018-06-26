@@ -12,6 +12,7 @@ public class OrderQuantityDAO {
 
     public static ArrayList<OrderQuantity> ordersQtyList = new ArrayList<OrderQuantity>();
 
+    /*
     public static OrderQuantity create(String orderID, String itemCode, int qty, int returnedQty, double unitPrice) {
 
         OrderQuantity od = new OrderQuantity(orderID, itemCode, qty, returnedQty, unitPrice);
@@ -26,4 +27,5 @@ public class OrderQuantityDAO {
 
     {
     }
+    */
 }

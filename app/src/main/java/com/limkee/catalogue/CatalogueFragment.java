@@ -34,11 +34,17 @@ import android.support.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import io.reactivex.disposables.CompositeDisposable;
-
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CatalogueFragment extends Fragment {
     private CatalogueFragment.OnFragmentInteractionListener mListener;
-    CompositeDisposable compositeDisposable;
     public static View view;
     private CatalogueAdapter mAdapter;
     private ProgressBar progressBar;
@@ -51,6 +57,7 @@ public class CatalogueFragment extends Fragment {
     private AlertDialog.Builder builder;
     private SharedPreferences loginPreferences;
     private SharedPreferences.Editor loginPrefsEditor;
+    public static Retrofit retrofit;
 
     public CatalogueFragment(){
     }
@@ -72,9 +79,6 @@ public class CatalogueFragment extends Fragment {
         } else {
             ((NavigationActivity)getActivity()).setActionBarTitle("订单表");
         }
-
-        compositeDisposable = new CompositeDisposable();
-
     }
 
     @Override
@@ -84,9 +88,24 @@ public class CatalogueFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
-        //by default, temporary order list is catalogue list
-        DecimalFormat df = new DecimalFormat("#0.00");
-        subtotalAmt.setText("$" + df.format(calculateSubtotal(CatalogueDAO.catalogue_list)));
+        mAdapter = new CatalogueAdapter(this, isEnglish);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        recyclerView.setAdapter(mAdapter);
+
+        new CountDownTimer(400, 100) {
+
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+            }
+        }.start();
 
         doGetCatalogue();
 
@@ -238,6 +257,54 @@ public class CatalogueFragment extends Fragment {
     }
 
     private void doGetCatalogue() {
+        if (retrofit == null) {
+
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(HttpConstant.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        PostData service = retrofit.create(PostData.class);
+        Call<ArrayList<Product>> call = service.getCatalogue();
+        call.enqueue(new Callback<ArrayList<Product>>() {
+
+            @Override
+            public void onResponse(Call<ArrayList<Product>> call, Response<ArrayList<Product>> response) {
+                ArrayList<Product> data = response.body();
+                CatalogueDAO.catalogue_list = data;
+
+                recyclerView.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+                recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
+
+                //by default, let order list be the same as catalogue. if there is any change in qty, it will be updated.
+                tempOrderList = CatalogueDAO.catalogue_list;
+                String[] qtyDataSet= new String[tempOrderList.size()];
+                for (int i = 0; i <tempOrderList.size(); i++) {
+                    Product p = tempOrderList.get(i);
+                    qtyDataSet[i] = Integer.toString(p.getDefaultQty());
+                }
+
+                mAdapter.update(qtyDataSet, CatalogueDAO.catalogue_list, tempOrderList);
+                recyclerView.setItemViewCacheSize(qtyDataSet.length);
+
+
+                DecimalFormat df = new DecimalFormat("#0.00");
+                subtotalAmt.setText("$" + df.format(calculateSubtotal(CatalogueDAO.catalogue_list)));
+
+
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Product>> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
+
+    }
+
+    /*
+    private void doGetCatalogue() {
         recyclerView.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
@@ -270,7 +337,7 @@ public class CatalogueFragment extends Fragment {
             }
         }.start();
     }
-
+*/
     private double calculateSubtotal(ArrayList<Product> orderList) {
         double subtotal = 0;
         for(Product p : orderList) {

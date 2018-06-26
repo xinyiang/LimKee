@@ -15,9 +15,10 @@ public class OrderDAO {
 
     public static ArrayList<Order> currentOrdersList = new ArrayList<Order>();
     public static ArrayList<Order> historyOrdersList = new ArrayList<Order>();
+    public static ArrayList<Order> cancelledOrdersList = new ArrayList<Order>();
     public static OrderDetails od;
     public static ArrayList<OrderQuantity> oq;
-
+/*
     public static Order create(String OrderID, String deliveryDate, int noOfItems) {
 
         OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
@@ -40,4 +41,5 @@ public class OrderDAO {
         currentOrdersList.add(salesOrder);
         return salesOrder;
     }
+    */
 }

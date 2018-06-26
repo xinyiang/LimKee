@@ -76,7 +76,7 @@ public class NavigationActivity extends BaseActivity implements
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+/*
         //Create temporary Food Products
         CatalogueDAO.create("001","Curry Chicken Pau","咖喱鸡肉包",2.50, "http://www.limkee.com/images/charsiewpau.jpg", 5, 5 );
         CatalogueDAO.create("002","Big Pau", "大肉包", 1, "http://www.limkee.com/images/bigpau.jpg", 5, 5);
@@ -91,6 +91,7 @@ public class NavigationActivity extends BaseActivity implements
         CatalogueDAO.create("012","Loh Mai Kai", "糯米鸡饭", 1, "http://www.limkee.com/images/lmk.jpg", 0, 1);
         CatalogueDAO.create("013","Fan Choy", "叉烧饭菜", 1, "http://www.limkee.com/images/fc.jpg", 0, 1);
 
+
         //create temporary sales order details
         OrderDetailDAO.create("1", "2018-06-22 10:15:30", 125, "Pending Delivery", "");
         OrderDetailDAO.create("2", "2018-06-25 11:00:00", 34.80, "Pending Delivery", "");
@@ -104,10 +105,10 @@ public class NavigationActivity extends BaseActivity implements
         OrderQuantityDAO.create("3", "5", 1000,0,  0.33);
 
         //create temporary sales order
-        //OrderDAO.create("1","2018-06-22", 2);
-        //OrderDAO.create("2","2018-06-26", 2);
-        //OrderHistoryDAO.create("3","2018-06-27", 3);
-
+        OrderDAO.create("1","2018-06-22", 2);
+        OrderDAO.create("2","2018-06-26", 2);
+        OrderHistoryDAO.create("3","2018-06-27", 3);
+*/
         //check if user is login
         loginPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         loginPrefsEditor = loginPreferences.edit();

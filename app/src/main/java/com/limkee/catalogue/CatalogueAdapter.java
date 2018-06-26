@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.limkee.entity.Order;
 import com.limkee.entity.Product;
 import com.limkee.order.ConfirmOrderActivity;
 import com.squareup.picasso.Picasso;
@@ -49,6 +50,13 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         super.onAttachedToRecyclerView(recyclerView);
         mRecyclerView = recyclerView;
     }
+
+    public CatalogueAdapter(CatalogueFragment fragment, String isEnglish) {
+        this.fragment = fragment;
+
+        this.isEnglish = isEnglish;
+    }
+
 
     public CatalogueAdapter(CatalogueFragment fragment, ArrayList<Product> catalogueList, String[] qtyDataSet, ArrayList<Product> tempOrderList, String isEnglish) {
         this.fragment = fragment;
@@ -266,6 +274,12 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         }
     }
 
+    public void update(String[] qtyDataSet, ArrayList<Product> catalogueList, ArrayList<Product> tempOrderList){
+        this.qtyDataSet = qtyDataSet;
+        this.catalogueList = catalogueList;
+        this.orderList = tempOrderList;
+        notifyDataSetChanged();
+    }
 
     private class QuantityEditTextListener implements TextWatcher {
         private int position;
@@ -293,7 +307,13 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
     @Override
     public int getItemCount() {
        // return catalogueList.size();
-       return  qtyDataSet.length;
+        if ( qtyDataSet != null){
+            return  qtyDataSet.length;
+        }
+        else {
+            return 0;
+        }
+
     }
 
     public static ArrayList<Product> getOrderList(){
