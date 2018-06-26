@@ -1,7 +1,10 @@
 package com.limkee.catalogue;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -18,8 +21,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
@@ -29,14 +30,9 @@ import com.limkee.entity.Product;
 import com.limkee.navigation.NavigationActivity;
 import com.limkee.order.ConfirmOrderActivity;
 import com.limkee.userProfile.UserProfileFragment;
-
 import android.support.annotation.Nullable;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
@@ -46,7 +42,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 
 public class CatalogueFragment extends Fragment {
     private CatalogueFragment.OnFragmentInteractionListener mListener;
@@ -59,6 +54,9 @@ public class CatalogueFragment extends Fragment {
     public static double subtotal;
     public static ArrayList<Product> tempOrderList = new ArrayList<>();
     private String isEnglish;
+    private AlertDialog.Builder builder;
+    private SharedPreferences loginPreferences;
+    private SharedPreferences.Editor loginPrefsEditor;
     public static Retrofit retrofit;
 
     public CatalogueFragment(){
@@ -128,7 +126,7 @@ public class CatalogueFragment extends Fragment {
                 recyclerView.setItemViewCacheSize(tempOrderList.size());
 
                 tempOrderList = CatalogueAdapter.getOrderList();
-                ArrayList <Product> orderList = new ArrayList<>();
+                final ArrayList <Product> orderList = new ArrayList<>();
 
                 //remove products that has 0 quantity
                 for (Product p : tempOrderList){
@@ -164,13 +162,98 @@ public class CatalogueFragment extends Fragment {
                     bundle.putParcelableArrayList("orderList", orderList);
                     bundle.putString("language", isEnglish);
 
-                    Intent intent = new Intent(view.getContext(), ConfirmOrderActivity.class);
-                    intent.putParcelableArrayListExtra("orderList", orderList);
-                    intent.putExtra("language",isEnglish);
-                    getActivity().startActivity(intent);
+                    builder= new AlertDialog.Builder(getContext());
+                    loginPreferences = getContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+                    loginPrefsEditor = loginPreferences.edit();
+                    String cutoffTime = loginPreferences.getString("cutofftime", "");
+                    loginPrefsEditor.commit();
+                    //format cut off time to remove seconds
+                    if(isEnglish.equals("Yes")){
+                        builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
+                    } else {
+                        builder.setMessage("今日订单请在" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
                     }
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent intent = new Intent(view.getContext(), ConfirmOrderActivity.class);
+                            intent.putParcelableArrayListExtra("orderList", orderList);
+                            intent.putExtra("language",isEnglish);
+                            getActivity().startActivity(intent);
+
+                            dialog.dismiss();
+                        }
+                    });
+                    final AlertDialog ad = builder.create();
+                    ad.show();
+                }
                 }
         });
+    }
+
+    public static String getChineseTime(String time){
+        String minutes = time.substring(3,time.length());
+        System.out.println("XX mins IS " + minutes);
+        String chineseHour = "";
+        String chineseTime;
+
+        time = time.substring(0,2);
+        //check hour
+        if (time.equals("04")){
+            chineseHour = "四";
+        }  else if (time.equals("05")){
+            chineseHour = "五";
+        } else if (time.equals("06")){
+            chineseHour = "六";
+        } else if (time.equals("07")){
+            chineseHour = "七";
+        } else if (time.equals("08")){
+            chineseHour = "八";
+        } else if (time.equals("09")){
+            chineseHour = "九";
+        } else if (time.equals("10")) {
+            chineseHour = "十";
+        } else {
+            chineseHour = "";
+        }
+
+        //check if got mins
+        if (minutes.equals("00")){
+            chineseTime = chineseHour + "点";
+        } else if (minutes.equals("30")){
+            chineseTime = chineseHour + "点半";
+        } else{
+            chineseTime = chineseHour + "点" + getNumber(minutes) + "分";
+        }
+        return chineseTime;
+    }
+
+    public static String getNumber(String number){
+        String chineseNumber = "";
+
+        if (number.equals("05")){
+            chineseNumber = "零五";
+        } else if (number.equals("10")){
+            chineseNumber = "十";
+        } else if (number.equals("15")){
+            chineseNumber = "十五";
+        } else if (number.equals("20")){
+            chineseNumber = "二十";
+        } else if (number.equals("25")){
+            chineseNumber = "二十五";
+        } else if (number.equals("35")){
+            chineseNumber = "三十五";
+        } else if (number.equals("40")){
+            chineseNumber = "四十";
+        } else if (number.equals("45")){
+            chineseNumber = "四十五";
+        } else if (number.equals("50")){
+            chineseNumber = "五十";
+        } else if (number.equals("55")){
+            chineseNumber = "五十五";
+        }  else {
+            chineseNumber = "零";
+        }
+        return chineseNumber;
     }
 
     private void doGetCatalogue() {

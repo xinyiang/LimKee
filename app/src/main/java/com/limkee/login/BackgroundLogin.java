@@ -5,9 +5,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.CountDownTimer;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
 import com.limkee.R;
 import com.limkee.entity.Customer;
 import com.limkee.navigation.NavigationActivity;
@@ -30,6 +33,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Miaozi on 21/6/18.
@@ -41,6 +48,8 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
     private String companyCode;
     private AlertDialog.Builder builder;
     private String isEnglish;
+    private SharedPreferences loginPreferences;
+    private SharedPreferences.Editor loginPrefsEditor;
 
     BackgroundLogin(Context ctx) {
         context = ctx;
@@ -95,7 +104,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
         TextView pwdValidate = ((Activity)context).findViewById(R.id.pwdvalidation);
         if (!result.equals("login unsuccess")){
             String[] array = result.split(",");
-            String cutoffTime = array[0];
+            final String cutoffTime = array[0];
             String companyCode = array[2];
             String password = array[3];
             String debtorCode = array[1];
@@ -124,12 +133,19 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
             }
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    Intent it = new Intent(context.getApplicationContext(), NavigationActivity.class);
-                    it.putExtra("isLogin", true);
-                    ArrayList<Customer> cust = new ArrayList<>();
-                    cust.add(customer);
-                    it.putParcelableArrayListExtra("customer", cust);
-                    it.putExtra("language", isEnglish);
+                    loginPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+                    loginPrefsEditor = loginPreferences.edit();
+                    Intent it = new Intent(context, NavigationActivity.class);
+
+                    Gson gson = new Gson();
+                    String json = gson.toJson(customer);
+                    loginPrefsEditor.putString("cutofftime", cutoffTime);
+                    loginPrefsEditor.putString("customer", json);
+                    loginPrefsEditor.putBoolean("isLogin", true);
+                    loginPrefsEditor.putBoolean("isAlertDialogue", true);
+                    loginPrefsEditor.putString("language", isEnglish);
+                    loginPrefsEditor.commit();
+
                     context.startActivity(it);
                     dialog.dismiss();
                 }

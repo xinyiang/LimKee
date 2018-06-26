@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
@@ -16,6 +17,9 @@ import com.limkee.BaseActivity;
 import com.limkee.R;
 import com.limkee.catalogue.CatalogueFragment;
 import com.limkee.locale.MyContextWrapper;
+import com.limkee.navigation.NavigationActivity;
+import com.limkee.payment.PaymentActivity;
+
 import java.security.MessageDigest;
 
 public class LoginActivity extends BaseActivity implements
@@ -43,9 +47,11 @@ public class LoginActivity extends BaseActivity implements
         saveLogin = loginPreferences.getBoolean("saveLogin", false);
 
         if (saveLogin == true) {
-            companycode.setText(loginPreferences.getString("username", ""));
-            password.setText(loginPreferences.getString("password", ""));
-            saveLoginCheckBox.setChecked(true);
+            //companycode.setText(loginPreferences.getString("username", ""));
+            //password.setText(loginPreferences.getString("password", ""));
+            //saveLoginCheckBox.setChecked(true);
+            Intent it = new Intent(this, NavigationActivity.class);
+            context.startActivity(it);
         }
 
         switchCtrl = (Switch) findViewById(R.id.language);

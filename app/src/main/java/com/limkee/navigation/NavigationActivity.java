@@ -1,8 +1,10 @@
 package com.limkee.navigation;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -17,6 +19,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.support.design.widget.NavigationView;
 
+import com.google.gson.Gson;
 import com.limkee.BaseActivity;
 import com.limkee.catalogue.CatalogueFragment;
 import com.limkee.R;
@@ -49,6 +52,8 @@ public class NavigationActivity extends BaseActivity implements
     Customer customer;
     Bundle bundle;
     String isEnglish;
+    SharedPreferences loginPreferences;
+    SharedPreferences.Editor loginPrefsEditor;
 
     @Override
     public void onResume() {
@@ -105,17 +110,19 @@ public class NavigationActivity extends BaseActivity implements
         OrderHistoryDAO.create("3","2018-06-27", 3);
 */
         //check if user is login
-        Intent intent = getIntent();
-        boolean isLogin = intent.getExtras().getBoolean("isLogin");
-        isEnglish = intent.getExtras().getString("language");
+        loginPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+        loginPrefsEditor = loginPreferences.edit();
+        boolean isLogin = loginPreferences.getBoolean("isLogin",false);
+        isEnglish = loginPreferences.getString("language","");
 
         if(isLogin) {
-            ArrayList<Customer> cust = intent.getExtras().getParcelableArrayList("customer");
-            customer = cust.get(0);
+            Gson gson = new Gson();
+            String json = loginPreferences.getString("customer", "");
+            customer = gson.fromJson(json, Customer.class);
             bundle = new Bundle();
             bundle.putParcelable("customer", customer);
             bundle.putString("language", isEnglish);
-
+            System.out.println("nihao"+"  "+ customer.getCompanyCode());
             loadFragment(CatalogueFragment.class);
         } else {
             Intent it = new Intent(this, LoginActivity.class);
