@@ -41,7 +41,6 @@ public class LoginActivity extends BaseActivity implements
         password = findViewById(R.id.etPassword);
         final SharedPreferences settings = getSharedPreferences("switchkey", 0);
 
-        saveLoginCheckBox = findViewById(R.id.saveLoginCheckBox);
         loginPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
         loginPrefsEditor = loginPreferences.edit();
         saveLogin = loginPreferences.getBoolean("saveLogin", false);
@@ -81,7 +80,7 @@ public class LoginActivity extends BaseActivity implements
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(companycode.getWindowToken(), 0);
 
-        if (saveLoginCheckBox.isChecked()) {
+        if (true) {
             loginPrefsEditor.putBoolean("saveLogin", true);
             System.out.println(loginPreferences.getBoolean("saveLogin", false)+"wow");
             loginPrefsEditor.putString("username", code);
