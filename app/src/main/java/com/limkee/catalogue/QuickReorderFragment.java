@@ -20,8 +20,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
@@ -39,10 +37,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class CatalogueFragment extends Fragment {
-    private CatalogueFragment.OnFragmentInteractionListener mListener;
+public class QuickReorderFragment extends Fragment {
+    private QuickReorderFragment.OnFragmentInteractionListener mListener;
     public static View view;
-    private CatalogueAdapter mAdapter;
+    private QuickReorderAdapter mAdapter;
     private ProgressBar progressBar;
     public static RecyclerView recyclerView;
     public static Button confirmOrder;
@@ -55,14 +53,14 @@ public class CatalogueFragment extends Fragment {
     private SharedPreferences.Editor loginPrefsEditor;
     public static Retrofit retrofit;
     private Customer customer;
+    private String companyCode;
     private String deliveryShift;
-    private static CatalogueFragment fragment;
 
-    public CatalogueFragment(){
+    public QuickReorderFragment(){
     }
 
-    public static CatalogueFragment newInstance() {
-        fragment = new CatalogueFragment();
+    public static QuickReorderFragment newInstance() {
+        QuickReorderFragment fragment = new QuickReorderFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -74,20 +72,22 @@ public class CatalogueFragment extends Fragment {
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
-        deliveryShift = bundle.getString("deliveryShift");
+        companyCode = customer.getCompanyCode();
+        deliveryShift =  bundle.getString("deliveryShift");
+
 
         if (isEnglish.equals("Yes")){
-            ((NavigationActivity)getActivity()).setActionBarTitle("Order Slip");
+            ((NavigationActivity)getActivity()).setActionBarTitle("Quick Reorder");
         } else {
-            ((NavigationActivity)getActivity()).setActionBarTitle("订单表");
+            ((NavigationActivity)getActivity()).setActionBarTitle("快速下单");
         }
 
         builder= new AlertDialog.Builder(getContext());
         loginPreferences = getContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         loginPrefsEditor = loginPreferences.edit();
         String cutoffTime = loginPreferences.getString("cutofftime", "");
-        loginPrefsEditor.commit();
 
+        loginPrefsEditor.commit();
         //format cut off time to remove seconds
         if(isEnglish.equals("Yes")){
             builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
@@ -107,22 +107,19 @@ public class CatalogueFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_catalogue, container, false);
+        view = inflater.inflate(R.layout.fragment_quick_reorder, container, false);
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
-        confirmOrder = (Button) view.findViewById(R.id.btnNext);
-        TextView lbl_subtotal = view.findViewById(R.id.lblSubtotalAmt);
+        confirmOrder = view.findViewById(R.id.btnPlaceOrder);
 
         if (isEnglish.equals("Yes")) {
-            lbl_subtotal.setText("Subtotal");
             confirmOrder.setText("Next");
         } else {
-            lbl_subtotal.setText("小计");
             confirmOrder.setText("下订单");
         }
 
-        mAdapter = new CatalogueAdapter(this, isEnglish);
+        mAdapter = new QuickReorderAdapter(this, isEnglish);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -141,7 +138,7 @@ public class CatalogueFragment extends Fragment {
             }
         }.start();
 
-        doGetCatalogue();
+        doGetLastOrder(companyCode);
 
         return view;
     }
@@ -151,14 +148,14 @@ public class CatalogueFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         //proceed to confirm order
-        confirmOrder = (Button) view.findViewById(R.id.btnNext);
+        confirmOrder = (Button) view.findViewById(R.id.btnPlaceOrder);
         confirmOrder.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v) {
                 recyclerView.setItemViewCacheSize(tempOrderList.size());
 
-                tempOrderList = CatalogueAdapter.getOrderList();
+                tempOrderList = QuickReorderAdapter.getOrderList();
                 final ArrayList <Product> orderList = new ArrayList<>();
 
                 //remove products that has 0 quantity
@@ -198,15 +195,13 @@ public class CatalogueFragment extends Fragment {
                     intent.putExtra("customer", customer);
                     intent.putExtra("deliveryShift", deliveryShift);
                     getActivity().startActivity(intent);
-
-                }
-                }
+            }
+            }
         });
     }
 
     public static String getChineseTime(String time){
         String minutes = time.substring(3,time.length());
-        System.out.println("XX mins IS " + minutes);
         String chineseHour = "";
         String chineseTime;
 
@@ -270,7 +265,7 @@ public class CatalogueFragment extends Fragment {
         return chineseNumber;
     }
 
-    private void doGetCatalogue() {
+    private void doGetLastOrder(String companyCode) {
         if (retrofit == null) {
 
             retrofit = new retrofit2.Retrofit.Builder()
@@ -279,34 +274,30 @@ public class CatalogueFragment extends Fragment {
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<ArrayList<Product>> call = service.getCatalogue();
+        Call<ArrayList<Product>> call = service.getQuickOrderCatalogue(companyCode);
         call.enqueue(new Callback<ArrayList<Product>>() {
 
             @Override
             public void onResponse(Call<ArrayList<Product>> call, Response<ArrayList<Product>> response) {
                 ArrayList<Product> data = response.body();
-                CatalogueDAO.catalogue_list = data;
-
+                CatalogueDAO.quickReorder_list = data;
                 recyclerView.setVisibility(View.GONE);
                 progressBar.setVisibility(View.VISIBLE);
                 recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
 
                 //by default, let order list be the same as catalogue. if there is any change in qty, it will be updated.
-                tempOrderList = CatalogueDAO.catalogue_list;
+                tempOrderList = CatalogueDAO.quickReorder_list;
                 String[] qtyDataSet= new String[tempOrderList.size()];
                 for (int i = 0; i <tempOrderList.size(); i++) {
                     Product p = tempOrderList.get(i);
                     qtyDataSet[i] = Integer.toString(p.getDefaultQty());
                 }
 
-                mAdapter.update(qtyDataSet, CatalogueDAO.catalogue_list, tempOrderList);
+                mAdapter.update(qtyDataSet, CatalogueDAO.quickReorder_list, tempOrderList);
                 recyclerView.setItemViewCacheSize(qtyDataSet.length);
 
-
                 DecimalFormat df = new DecimalFormat("#0.00");
-                subtotalAmt.setText("$" + df.format(calculateSubtotal(CatalogueDAO.catalogue_list)));
-
-
+                subtotalAmt.setText("$" + df.format(calculateSubtotal(CatalogueDAO.quickReorder_list)));
             }
 
             @Override
@@ -339,11 +330,11 @@ public class CatalogueFragment extends Fragment {
         recyclerView.setItemViewCacheSize(orderList.size());
     }
 
-        @Override
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof NavigationActivity) {
-            mListener = (CatalogueFragment.OnFragmentInteractionListener) context;
+            mListener = (QuickReorderFragment.OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");

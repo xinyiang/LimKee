@@ -18,28 +18,9 @@ public class OrderDAO {
     public static ArrayList<Order> cancelledOrdersList = new ArrayList<Order>();
     public static OrderDetails od;
     public static ArrayList<OrderQuantity> oq;
-/*
-    public static Order create(String OrderID, String deliveryDate, int noOfItems) {
+    public static OrderDetails historyOD;
+    public static ArrayList<OrderQuantity> historyOQ;
+    public static OrderDetails cancelledOD;
+    public static ArrayList<OrderQuantity> cancelledOQ;
 
-        OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
-        ArrayList<OrderDetails> odList = orderDetailDAO.getOrderDetails();
-        for (OrderDetails order : odList){
-            if (order.getOrderID().equals(OrderID)){
-                od = order;
-            }
-        }
-        OrderQuantityDAO orderQtyDAO = new OrderQuantityDAO();
-        ArrayList<OrderQuantity> oQList = orderQtyDAO.getOrderQuantity();
-        for (OrderQuantity o : oQList){
-            if (o.getOrderID().equals(OrderID)){
-                oq.add(o);
-            }
-        }
-
-        Order salesOrder = new Order(OrderID, deliveryDate, noOfItems, od, oq);
-        historyOrdersList.add(salesOrder);
-        currentOrdersList.add(salesOrder);
-        return salesOrder;
-    }
-    */
 }

@@ -1,7 +1,6 @@
 package com.limkee.order;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -10,15 +9,12 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.limkee.R;
 import com.limkee.dao.OrderDAO;
-import com.limkee.dao.OrderHistoryDAO;
 import com.limkee.entity.Customer;
 import com.limkee.navigation.NavigationActivity;
 
@@ -74,7 +70,7 @@ public class OrderHistoryFragment extends Fragment {
 
     private void doGetOrderHistory() {
         recyclerView = (RecyclerView) view.findViewById(R.id.orderHistoryRecyclerView);
-        mAdapter = new OrderHistoryAdapter(this, OrderHistoryDAO.historyOrdersList,customer);
+        mAdapter = new OrderHistoryAdapter(this, OrderDAO.historyOrdersList,customer);
 
         coordinatorLayout = view.findViewById(com.limkee.R.id.constraint_layout);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());

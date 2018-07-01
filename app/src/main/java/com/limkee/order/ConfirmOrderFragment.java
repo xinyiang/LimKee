@@ -3,12 +3,10 @@ package com.limkee.order;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -20,19 +18,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.limkee.R;
-import com.limkee.catalogue.CatalogueAdapter;
-import com.limkee.catalogue.CatalogueFragment;
+import com.limkee.constant.HttpConstant;
+import com.limkee.constant.PostData;
 import com.limkee.dao.CatalogueDAO;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
-import com.limkee.navigation.NavigationActivity;
 import com.limkee.payment.PaymentActivity;
 
 import org.w3c.dom.Text;
@@ -41,7 +35,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import io.reactivex.disposables.CompositeDisposable;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class ConfirmOrderFragment extends Fragment{
@@ -61,13 +59,15 @@ public class ConfirmOrderFragment extends Fragment{
     private ArrayList<Product> orderList;
     private String isEnglish;
     private Customer customer;
+    private String deliveryShift;
+    public static Retrofit retrofit;
 
     public ConfirmOrderFragment() {
         // Required empty public constructor
     }
 
     public static ConfirmOrderFragment newInstance() {
-        ConfirmOrderFragment cf=new ConfirmOrderFragment();
+        ConfirmOrderFragment cf = new ConfirmOrderFragment();
         Bundle args = new Bundle();
         cf.setArguments(args);
         return cf;
@@ -77,13 +77,13 @@ public class ConfirmOrderFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
+
         orderList = bundle.getParcelableArrayList("orderList");
         customer = bundle.getParcelable("customer");
+        isEnglish = bundle.getString("language");
+        deliveryShift =  bundle.getString("deliveryShift");
 
         if(getActivity() instanceof ConfirmOrderActivity){
-
-            //check for language
-            isEnglish = bundle.getString("language");
             if (isEnglish.equals("Yes")) {
                 ((ConfirmOrderActivity) getActivity()).setActionBarTitle("Confirm Order");
             } else {
@@ -100,18 +100,22 @@ public class ConfirmOrderFragment extends Fragment{
         recyclerView = view.findViewById(R.id.recyclerView);
 
         //if english, set label in english language
-        /*
-        TextView lblSubtotal =  view.findViewById(R.id.lblSubtotalAmt);
-        lblSubtotal.setText("Subtotal:");
-        TextView lblTax = view.findViewById(R.id.lblTaxAmt);
-        lblTax.setText("GST (7%):");
-        TextView lblFinalTotal = view.findViewById(R.id.lblTotalAmt);
-        lblFinalTotal.setText("Total Payable:");
-        */
+        TextView lblSubtotal =  view.findViewById(R.id.lbl_subtotal_amt);
+        TextView lblTax = view.findViewById(R.id.lbl_tax_amt);
+        TextView lblFinalTotal = view.findViewById(R.id.lbl_total_amt);
 
+        if (isEnglish.equals("Yes")){
+            lblSubtotal.setText("Subtotal");
+            lblTax.setText("GST (7%)");
+            lblFinalTotal.setText("Total Payable");
+        } else {
+            lblSubtotal.setText("小计");
+            lblTax.setText("税 (7%):");
+            lblFinalTotal.setText("总额");
+        }
 
         recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
-        mAdapter = new ConfirmOrderAdapter(this, orderList);
+        mAdapter = new ConfirmOrderAdapter(this, orderList, isEnglish);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -147,10 +151,9 @@ public class ConfirmOrderFragment extends Fragment{
         totalAmt.setText("$" + df.format(totalPayable));
 
         //if english, change label to english
-        /*
-        if (){
+        if (isEnglish.equals("Yes")){
             TextView lbl_subtotal_amt, lbl_total_amt, lbl_tax_amt;
-            TextView lbl_delivery_details.lbl_name, lbl_contact, lbl_address, lbl_date, lbl_time;
+            TextView lbl_delivery_details, lbl_name, lbl_contact, lbl_address, lbl_date, lbl_time, lbl_item_details, lbl_amt_details;
             Button btnNext;
             lbl_subtotal_amt = (TextView) view.findViewById(R.id.lbl_subtotal_amt);
             lbl_total_amt = (TextView) view.findViewById(R.id.lbl_total_amt);
@@ -161,31 +164,64 @@ public class ConfirmOrderFragment extends Fragment{
             lbl_address = (TextView) view.findViewById(R.id.lbl_address);
             lbl_date = (TextView) view.findViewById(R.id.lbl_date);
             lbl_time = (TextView) view.findViewById(R.id.lbl_time);
-            btnNext = (Button) view.findViewById(R.id.btnNext);
+            lbl_item_details = (TextView) view.findViewById(R.id.lbl_items);
+            lbl_amt_details = (TextView) view.findViewById(R.id.lbl_amountDetails);
+            btnNext = (Button) view.findViewById(R.id.btnPlaceOrder);
+
             lbl_subtotal_amt.setText("Subtotal");
             lbl_tax_amt.setText("GST (7%)");
             lbl_total_amt.setText("Total Payable");
             lbl_delivery_details.setText("Delivery Details");
             lbl_name.setText("Name");
             lbl_contact.setText("Contact No");
-            lbl_address.setText("Delivery Address");
-            lbl_date.setText("Delivery Date");
-            lbl_time.setText("Delivery Time");
+            lbl_address.setText("Address");
+            lbl_date.setText("Date");
+            lbl_time.setText("Time");
+            lbl_item_details.setText( " " + orderList.size() + "items");
+            lbl_amt_details.setText("Amount details");
             btnNext.setText("Place Order");
         }
-        */
 
         //display delivery details data
-        TextView name, contact, address, deliveryTime;
+        TextView deliveryDetails, name, contact, address, deliveryTime, numItems, amtDetails;
+        EditText deliveryDate;
+        Button placeOrder;
+        deliveryDetails = (TextView) view.findViewById(R.id.lbl_delivery_details);
         name = (TextView) view.findViewById(R.id.name);
         contact = (TextView) view.findViewById(R.id.phone);
         address = (TextView) view.findViewById(R.id.address);
-        deliveryTime = (TextView) view.findViewById(R.id.time);
+        deliveryDate = (EditText) view.findViewById(R.id.date);
+        numItems = (TextView) view.findViewById(R.id.lbl_items);
+        amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
+        deliveryTime = (TextView) view.findViewById(R.id.deliveryTime);
+        placeOrder = (Button) view.findViewById(R.id.btnPlaceOrder);
 
-        name.setText("Ang Xin Yi");
-        contact.setText("97597790");
-        address.setText("Blk 123 Ang Mo Kio Industrial Park #02-551 Singapore 740123");
-        deliveryTime.setText("4am to 9.30am");
+        name.setText(customer.getDebtorName());
+        contact.setText(customer.getDeliveryContact());
+        address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + customer.getDeliverAddr3() + " " + customer.getDeliverAddr4());
+        if (isEnglish.equals("Yes")){
+            deliveryDetails.setText(" Delivery details");
+            if (orderList.size() == 1){
+                numItems.setText(" " + orderList.size() + " item");
+            } else {
+                numItems.setText(" " + orderList.size() + " items");
+            }
+            amtDetails.setText(" Amount details");
+            deliveryDate.setText("DD/MM/YY");
+            placeOrder.setText("Place Order");
+        } else {
+            deliveryDetails.setText(" 送货详情");
+            numItems.setText(" " + orderList.size() + " 样");
+            amtDetails.setText("  价钱详情");
+            deliveryDate.setText("日/月/年");
+            placeOrder.setText("确认订单");
+        }
+
+        if (deliveryShift.equals("AM")){
+            deliveryTime.setText("4.30am to 6.30am");
+        } else {
+            deliveryTime.setText("7.50am to 12.30pm");
+        }
 
         return view;
     }
@@ -219,7 +255,7 @@ public class ConfirmOrderFragment extends Fragment{
             }
         });
 
-        next = view.findViewById(R.id.btnNext);
+        next = view.findViewById(R.id.btnPlaceOrder);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View rootView) {
@@ -228,18 +264,20 @@ public class ConfirmOrderFragment extends Fragment{
 
                 //go to payment activity
                 Bundle bundle = new Bundle();
+                bundle.putParcelable("customer", customer);
                 bundle.putParcelableArrayList("orderList", orderList);
                 bundle.putDouble("subtotal", subtotal);
                 bundle.putDouble("taxAmt", taxAmt);
                 bundle.putDouble("totalPayable", totalPayable);
-                //add in customer details and sale details order here
+                //add sale details order here
 
                 Intent intent = new Intent(view.getContext(), PaymentActivity.class);
                 intent.putParcelableArrayListExtra("orderList", orderList);
+                intent.putExtra("customer", customer);
                 intent.putExtra("subtotal", subtotal);
                 intent.putExtra("taxAmt", taxAmt);
                 intent.putExtra("totalPayable", totalPayable);
-                //add in customer details and sale details order here
+                //add sale details order here
                 getActivity().startActivity(intent);
             }
         });
@@ -274,9 +312,6 @@ public class ConfirmOrderFragment extends Fragment{
         super.onDetach();
         mListener = null;
     }
-
-
-
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);

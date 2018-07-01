@@ -105,25 +105,29 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
         if (!result.equals("login unsuccess")){
             String[] array = result.split(",");
             final String cutoffTime = array[0];
-            String companyCode = array[2];
-            String password = array[3];
-            String debtorCode = array[1];
-            String companyName = array[4];
-            String debtorName = array[5];
-            String deliveryContact = array[6];
-            String deliverFax1 = array[7];
-            String invAddr1 = array[8];
-            String invAddr2 = array[9];
-            String invAddr3 = array[10];
-            String invAddr4 = array[11];
-            String deliverAddr1 = array[12];
-            String deliverAddr2 = array[13];
-            String deliverAddr3 = array[14];
-            String deliverAddr4 = array[15];
-            String displayTerm = array[16];
-            String status = array[17];
-            int routeNo = Integer.parseInt(array[18]);
+            final String deliveryShift = array[1];
+            String debtorCode = array[2];
+            String companyCode = array[3];
+            String password = array[4];
+            String companyName = array[5];
+            String debtorName = array[6];
+            String deliveryContact = array[7];
+            String deliverFax1 = array[8];
+            String invAddr1 = array[9];
+            String invAddr2 = array[10];
+            String invAddr3 = array[11];
+            String invAddr4 = array[12];
+            String deliverAddr1 = array[13];
+            String deliverAddr2 = array[14];
+            String deliverAddr3 = array[15];
+            String deliverAddr4 = array[16];
+            String displayTerm = array[17];
+            String status = array[18];
+            int routeNo = Integer.parseInt(array[19]);
+
             final Customer customer = new Customer(companyCode, password, debtorCode, companyName, debtorName, deliveryContact, deliverFax1, invAddr1, invAddr2, invAddr3, invAddr4, deliverAddr1, deliverAddr2, deliverAddr3, deliverAddr4, displayTerm, status, routeNo);
+
+           /*
             builder= new AlertDialog.Builder(context);
             //format cut off time to remove seconds
             if(isEnglish.equals("Yes")){
@@ -132,7 +136,9 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
                 builder.setMessage("今日订单请在" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
             }
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
                 public void onClick(DialogInterface dialog, int id) {
+                */
                     loginPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
                     loginPrefsEditor = loginPreferences.edit();
                     Intent it = new Intent(context, NavigationActivity.class);
@@ -141,17 +147,20 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
                     String json = gson.toJson(customer);
                     loginPrefsEditor.putString("cutofftime", cutoffTime);
                     loginPrefsEditor.putString("customer", json);
+                    loginPrefsEditor.putString("deliveryShift", deliveryShift);
                     loginPrefsEditor.putBoolean("isLogin", true);
                     loginPrefsEditor.putBoolean("isAlertDialogue", true);
                     loginPrefsEditor.putString("language", isEnglish);
                     loginPrefsEditor.commit();
 
                     context.startActivity(it);
+                    /*
                     dialog.dismiss();
                 }
             });
             final AlertDialog ad = builder.create();
             ad.show();
+            */
         } else{
             if(isEnglish.equals("Yes")) {
                 pwdValidate.setText("Invalid Company Code and/or Password");
@@ -164,7 +173,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
 
     public static String getChineseTime(String time){
         String minutes = time.substring(3,time.length());
-        System.out.println("XX mins IS " + minutes);
+
         String chineseHour = "";
         String chineseTime;
 
