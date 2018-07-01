@@ -19,6 +19,9 @@ public interface PostData {
         @GET("get-catalogue")
         Call<ArrayList<Product>> getCatalogue();
 
+        @GET("get-order/latestorder")
+        Call<ArrayList<Product>> getQuickOrderCatalogue(@Query("companyCode") String companyCode);
+
         @GET("get-order/currentorder")
         Call<ArrayList<Order>> getCurrentOrders(@Query("companyCode") String companyCode);
 
@@ -27,5 +30,23 @@ public interface PostData {
 
         @GET("get-order/currentorderquantity")
         Call<ArrayList<OrderQuantity>> getCurrentOrderQuantity(@Query("orderNo") String orderNo);
+
+        @GET("get-order/orderhistory")
+        Call<ArrayList<Order>> getOrderHistory(@Query("companyCode") String companyCode);
+
+        @GET("get-order/orderhistorydetails")
+        Call<OrderDetails> getOrderHistoryDetails(@Query("orderNo") String orderNo);
+
+        @GET("get-order/orderhistoryquantity")
+        Call<ArrayList<OrderQuantity>> getOrderHistoryQuantity(@Query("orderNo") String orderNo);
+
+        @GET("get-order/cancelledorder")
+        Call<ArrayList<Order>> getCancelledOrder(@Query("companyCode") String companyCode);
+
+        @GET("get-order/cancelledorderdetails")
+        Call<OrderDetails> getCancelledOrderDetails(@Query("orderNo") String orderNo);
+
+        @GET("get-order/cancelledorderquantity")
+        Call<ArrayList<OrderQuantity>> getCancelledOrderQuantity(@Query("orderNo") String orderNo);
 
 }

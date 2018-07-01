@@ -12,24 +12,20 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.limkee.entity.Product;
 import com.squareup.picasso.Picasso;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import com.limkee.R;
 
-import org.w3c.dom.Text;
-
 
 /**
- * Created by Xin Yi on 24/4/2018.
+ * Created by Xin Yi on 29/6/2018.
  */
 
-public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.ViewHolder>  {
+public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapter.ViewHolder>  {
     private ArrayList<Product> catalogueList;
-    private CatalogueFragment fragment;
+    private QuickReorderFragment fragment;
     public static ArrayList<Product> orderList;
     private String[] qtyDataSet;
     boolean valueChanged;
@@ -44,14 +40,14 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         mRecyclerView = recyclerView;
     }
 
-    public CatalogueAdapter(CatalogueFragment fragment, String isEnglish) {
+    public QuickReorderAdapter(QuickReorderFragment fragment, String isEnglish) {
         this.fragment = fragment;
 
         this.isEnglish = isEnglish;
     }
 
 
-    public CatalogueAdapter(CatalogueFragment fragment, ArrayList<Product> catalogueList, String[] qtyDataSet, ArrayList<Product> tempOrderList, String isEnglish) {
+    public QuickReorderAdapter(QuickReorderFragment fragment, ArrayList<Product> catalogueList, String[] qtyDataSet, ArrayList<Product> tempOrderList, String isEnglish) {
         this.fragment = fragment;
         this.catalogueList = catalogueList;
         this.qtyDataSet = qtyDataSet;
@@ -61,10 +57,10 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-         itemView = LayoutInflater.from(parent.getContext())
+        itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.catalogue_products, parent, false);
         ViewHolder vh = new ViewHolder(itemView, new QuantityEditTextListener());
-        CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
+        QuickReorderFragment.confirmOrder.setVisibility(View.VISIBLE);
         return vh;
     }
     public void onBindViewHolder(final ViewHolder holder, int position) {
@@ -80,7 +76,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView description, description2, unitPrice, unitSubtotal;
+        TextView description, unitPrice, unitSubtotal;
         EditText qty;
         Button confirmOrder;
         public QuantityEditTextListener quantityEditTextListener;
@@ -108,7 +104,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                 description.setText(product.getDescription2());
             }
             qty.setText(Integer.toString(product.getDefaultQty()));
-            unitPrice.setText("$" + df.format(product.getUnitPrice()));
+            unitPrice.setText(df.format(product.getUnitPrice()));
             double unitSub = product.getDefaultQty() * product.getUnitPrice();
             unitSubtotal.setText("$" + df.format(unitSub));
 
@@ -136,7 +132,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
                     if(!hasFocus && valueChanged) {
 
-                        //CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
+                        //QuickReorderFragment.confirmOrder.setVisibility(View.VISIBLE);
 
                         //check that quantity is not left blank. If not, reset it back to default prefix quantity
                         if (qty.getText().toString().equals("")){
@@ -253,7 +249,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                 //recalculate unit subtotal and total subtotal
                                 product.setDefaultQty(quantity);
                                 //update subtotal
-                                CatalogueFragment.updateSubtotal(orderList);
+                                QuickReorderFragment.updateSubtotal(orderList);
                                 //update unit subtotal
                                 DecimalFormat df = new DecimalFormat("#0.00");
                                 double unitSub = product.getDefaultQty() * product.getUnitPrice();
@@ -299,7 +295,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
     @Override
     public int getItemCount() {
-       // return catalogueList.size();
+        // return catalogueList.size();
         if ( qtyDataSet != null){
             return  qtyDataSet.length;
         }

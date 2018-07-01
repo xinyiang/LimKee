@@ -13,7 +13,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.limkee.R;
@@ -80,7 +79,6 @@ public class CurrentOrderDetailFragment extends Fragment {
         } else {
             ((CurrentOrderDetailActivity) getActivity()).setActionBarTitle("订单详情");
         }
-
 
         Bundle bundle = getArguments();
         customer = bundle.getParcelable("customer");
@@ -173,17 +171,27 @@ public class CurrentOrderDetailFragment extends Fragment {
         */
 
         //display delivery details data
-        TextView orderNo, status, address, deliveryDate, deliveryTime, itemCount;
+        TextView orderNo, status, address, deliveryDate, deliveryTime, itemCount, lbl_orderDetails, lbl_amtDetails;
         orderNo = (TextView) view.findViewById(R.id.orderID);
         status = (TextView) view.findViewById(R.id.status);
-        address = (TextView) view.findViewById(R.id.address);
-        deliveryDate = (TextView) view.findViewById(R.id.date);
-        itemCount = (TextView) view.findViewById(R.id.itemCount);
-        deliveryTime = (TextView) view.findViewById(R.id.time);
-
+        address = (TextView) view.findViewById(R.id.deliveryAddress);
+        deliveryDate = (TextView) view.findViewById(R.id.deliveredDate);
+        itemCount = (TextView) view.findViewById(R.id.lbl_itemsCount);
+        deliveryTime = (TextView) view.findViewById(R.id.deliveredTime);
+        lbl_orderDetails = (TextView) view.findViewById(R.id.lbl_order_details);
+        lbl_amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
 
         orderNo.setText("#" + orderID);
-        status.setText("Pending Delivery");
+        if (isEnglish.equals("Yes")) {
+            status.setText("Pending Delivery");
+            lbl_orderDetails.setText(" Order details");
+            lbl_amtDetails.setText(" Amount details");
+        } else {
+            status.setText("待送货");
+            lbl_orderDetails.setText(" 订单详情");
+            lbl_amtDetails.setText(" 价钱详情");
+        }
+
         address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + customer.getDeliverAddr3() + " " + customer.getDeliverAddr4());
         deliveryDate.setText(date);
         if (deliveryShift.equals("AM")){
@@ -195,12 +203,12 @@ public class CurrentOrderDetailFragment extends Fragment {
         if (isEnglish.equals("Yes")){
 
             if (numItems == 1){
-                itemCount.setText(numItems + " item");
+                itemCount.setText(" " + numItems + " item");
             } else {
-                itemCount.setText(numItems + " items");
+                itemCount.setText(" " + numItems + " items");
             }
         } else {
-            itemCount.setText(numItems + "  样");
+            itemCount.setText(" " + numItems + "  样");
         }
 
         return view;

@@ -1,5 +1,7 @@
 package com.limkee.order;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,21 +14,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.limkee.R;
-import com.limkee.catalogue.CatalogueFragment;
+import com.limkee.catalogue.*;
+import com.limkee.catalogue.QuickReorderFragment;
+import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
-
 import java.util.ArrayList;
+import retrofit2.Retrofit;
 
 public class ConfirmOrderActivity extends AppCompatActivity implements ConfirmOrderFragment.OnFragmentInteractionListener,
         CatalogueFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener{
 
     private View rootView;
     private ConfirmOrderFragment confirmOrderFragment = new ConfirmOrderFragment();
-    private QuickReorderFragment quickOrderFragment = new QuickReorderFragment();
     public static Bundle myBundle = new Bundle();
     private ArrayList<Product> orderList;
+    private Customer customer;
+    private String isEnglish;
+    private String deliveryShift;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +44,19 @@ public class ConfirmOrderActivity extends AppCompatActivity implements ConfirmOr
         getSupportActionBar().setTitle("Confirm Order");
 
         myBundle = getIntent().getExtras();
+        customer = myBundle.getParcelable("customer");
         orderList  = myBundle.getParcelableArrayList("orderList");
+        isEnglish = myBundle.getString("language");
+        deliveryShift =  myBundle.getString("deliveryShift");
 
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("orderList", orderList);
-        confirmOrderFragment.setArguments(myBundle);
+        bundle.putParcelable("customer",customer);
+        bundle.putString("language", isEnglish);
+        bundle.putString("deliveryShift", deliveryShift);
+        confirmOrderFragment.setArguments(bundle);
         loadFragment(confirmOrderFragment);
+
     }
 
     public View onCreate(LayoutInflater inflater, ViewGroup container,
@@ -64,6 +76,7 @@ public class ConfirmOrderActivity extends AppCompatActivity implements ConfirmOr
         fragmentTransaction.commit();
 
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

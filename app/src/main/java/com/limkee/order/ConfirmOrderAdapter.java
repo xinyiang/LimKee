@@ -28,10 +28,12 @@ import org.w3c.dom.Text;
 public class ConfirmOrderAdapter extends RecyclerView.Adapter<ConfirmOrderAdapter.MyViewHolder>  {
         private ArrayList<Product> orderList;
         private ConfirmOrderFragment fragment;
+        private String isEnglish;
 
-        public ConfirmOrderAdapter(ConfirmOrderFragment fragment, ArrayList<Product> orderList) {
+        public ConfirmOrderAdapter(ConfirmOrderFragment fragment, ArrayList<Product> orderList, String isEnglish) {
             this.fragment = fragment;
             this.orderList = orderList;
+            this.isEnglish = isEnglish;
         }
 
         @Override
@@ -59,7 +61,12 @@ public class ConfirmOrderAdapter extends RecyclerView.Adapter<ConfirmOrderAdapte
 
             public void bindContent(Product product) {
                 DecimalFormat df = new DecimalFormat("#0.00");
-                description.setText(product.getDescription());
+                if (isEnglish.equals("Yes")){
+                    description.setText(product.getDescription());
+                } else {
+                    description.setText(product.getDescription2());
+                }
+
                 qty.setText(Integer.toString(product.getDefaultQty()));
                 double unitSub = product.getDefaultQty() * product.getUnitPrice();
                 unitSubtotal.setText("$" + df.format(unitSub));
