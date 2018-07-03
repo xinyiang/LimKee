@@ -107,6 +107,7 @@
                 android:layout_marginLeft="8dp"
                 android:ems="10"
                 android:imeOptions="actionDone"
+                android:selectAllOnFocus="false"
                 android:inputType="numberSigned"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"

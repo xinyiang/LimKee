@@ -10,6 +10,7 @@ public class OrderQuantity {
     int qty;
     int returnedQty;
     double unitPrice;
+    String uom;
 
     public OrderQuantity() {
     }
@@ -22,6 +23,14 @@ public class OrderQuantity {
         this.unitPrice = unitPrice;
     }
 
+    public OrderQuantity(String description, String description2, int qty, int returnedQty, double unitPrice, String uom) {
+        this.description = description;
+        this.description2 = description2;
+        this.qty = qty;
+        this.returnedQty = returnedQty;
+        this.unitPrice = unitPrice;
+        this.uom = uom;
+    }
     public String getDescription() {
         return description;
     }
@@ -60,5 +69,13 @@ public class OrderQuantity {
 
     public void setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    public String getUom() {
+        return uom;
+    }
+
+    public void setUom(String uom) {
+        this.uom = uom;
     }
 }

@@ -31,6 +31,9 @@ import com.limkee.entity.Product;
 import com.limkee.navigation.NavigationActivity;
 import com.limkee.order.ConfirmOrderActivity;
 import android.support.annotation.Nullable;
+
+import org.w3c.dom.Text;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import retrofit2.Call;
@@ -47,6 +50,7 @@ public class CatalogueFragment extends Fragment {
     public static RecyclerView recyclerView;
     public static Button confirmOrder;
     public static TextView subtotalAmt;
+    public static TextView lbl_subtotal;
     public static double subtotal;
     public static ArrayList<Product> tempOrderList = new ArrayList<>();
     private String isEnglish;
@@ -98,10 +102,13 @@ public class CatalogueFragment extends Fragment {
             public void onClick(DialogInterface dialog, int id) {
 
                 dialog.dismiss();
+               // doGetCatalogue();
             }
         });
         final AlertDialog ad = builder.create();
         ad.show();
+
+
     }
 
     @Override
@@ -112,10 +119,10 @@ public class CatalogueFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
         confirmOrder = (Button) view.findViewById(R.id.btnNext);
-        TextView lbl_subtotal = view.findViewById(R.id.lblSubtotalAmt);
+        lbl_subtotal = (TextView) view.findViewById(R.id.lblSubtotalAmt);
 
         if (isEnglish.equals("Yes")) {
-            lbl_subtotal.setText("Subtotal");
+            lbl_subtotal.setText("Sub Total");
             confirmOrder.setText("Next");
         } else {
             lbl_subtotal.setText("小计");
@@ -170,17 +177,31 @@ public class CatalogueFragment extends Fragment {
 
                 //check if subtotal hits minimum requirements
                 if(calculateSubtotal(orderList) < 30){
-                    final Toast tag = Toast.makeText(view.getContext(), "Minimum order is $30.00.",  Toast.LENGTH_SHORT);
-                    new CountDownTimer(20000, 1000) {
-                        public void onTick(long millisUntilFinished) {
-                            tag.show();
-                        }
+                    if (isEnglish.equals("Yes")){
+                        final Toast tag = Toast.makeText(view.getContext(), "Minimum order is $30.00.", Toast.LENGTH_SHORT);
+                        new CountDownTimer(20000, 1000) {
+                            public void onTick(long millisUntilFinished) {
+                                tag.show();
+                            }
 
-                        public void onFinish() {
-                            tag.show();
-                        }
+                            public void onFinish() {
+                                tag.show();
+                            }
 
-                    }.start();
+                        }.start();
+                    } else {
+                        final Toast tag = Toast.makeText(view.getContext(), "订单总额最少要 $30.00", Toast.LENGTH_SHORT);
+                        new CountDownTimer(20000, 1000) {
+                            public void onTick(long millisUntilFinished) {
+                                tag.show();
+                            }
+
+                            public void onFinish() {
+                                tag.show();
+                            }
+
+                        }.start();
+                    }
                 } else {
                     DecimalFormat df = new DecimalFormat("#0.00");
                     subtotalAmt = view.findViewById(R.id.subtotalAmt);
@@ -206,7 +227,6 @@ public class CatalogueFragment extends Fragment {
 
     public static String getChineseTime(String time){
         String minutes = time.substring(3,time.length());
-        System.out.println("XX mins IS " + minutes);
         String chineseHour = "";
         String chineseTime;
 

@@ -10,17 +10,22 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
@@ -34,7 +39,15 @@ import org.w3c.dom.Text;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,7 +55,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class ConfirmOrderFragment extends Fragment{
+public class ConfirmOrderFragment extends Fragment {
 
     private ConfirmOrderFragment.OnFragmentInteractionListener mListener;
     private View view;
@@ -61,6 +74,9 @@ public class ConfirmOrderFragment extends Fragment{
     private Customer customer;
     private String deliveryShift;
     public static Retrofit retrofit;
+    CompositeDisposable compositeDisposable;
+    private String newOrderID;
+    private String ETADeliveryDate;
 
     public ConfirmOrderFragment() {
         // Required empty public constructor
@@ -81,15 +97,17 @@ public class ConfirmOrderFragment extends Fragment{
         orderList = bundle.getParcelableArrayList("orderList");
         customer = bundle.getParcelable("customer");
         isEnglish = bundle.getString("language");
-        deliveryShift =  bundle.getString("deliveryShift");
+        deliveryShift = bundle.getString("deliveryShift");
 
-        if(getActivity() instanceof ConfirmOrderActivity){
+        if (getActivity() instanceof ConfirmOrderActivity) {
             if (isEnglish.equals("Yes")) {
                 ((ConfirmOrderActivity) getActivity()).setActionBarTitle("Confirm Order");
             } else {
-                ((ConfirmOrderActivity)getActivity()).setActionBarTitle("确认订单");
+                ((ConfirmOrderActivity) getActivity()).setActionBarTitle("确认订单");
             }
         }
+
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -100,17 +118,17 @@ public class ConfirmOrderFragment extends Fragment{
         recyclerView = view.findViewById(R.id.recyclerView);
 
         //if english, set label in english language
-        TextView lblSubtotal =  view.findViewById(R.id.lbl_subtotal_amt);
+        TextView lblSubtotal = view.findViewById(R.id.lbl_subtotal_amt);
         TextView lblTax = view.findViewById(R.id.lbl_tax_amt);
         TextView lblFinalTotal = view.findViewById(R.id.lbl_total_amt);
 
-        if (isEnglish.equals("Yes")){
-            lblSubtotal.setText("Subtotal");
-            lblTax.setText("GST (7%)");
-            lblFinalTotal.setText("Total Payable");
+        if (isEnglish.equals("Yes")) {
+            lblSubtotal.setText("Sub Total");
+            lblTax.setText("7% GST");
+            lblFinalTotal.setText("Total");
         } else {
             lblSubtotal.setText("小计");
-            lblTax.setText("税 (7%):");
+            lblTax.setText("7% 税");
             lblFinalTotal.setText("总额");
         }
 
@@ -121,7 +139,7 @@ public class ConfirmOrderFragment extends Fragment{
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
-       // recyclerView.setNestedScrollingEnabled(false);
+        // recyclerView.setNestedScrollingEnabled(false);
         // mAdapter.notifyDataSetChanged();
 
         new CountDownTimer(400, 100) {
@@ -151,7 +169,7 @@ public class ConfirmOrderFragment extends Fragment{
         totalAmt.setText("$" + df.format(totalPayable));
 
         //if english, change label to english
-        if (isEnglish.equals("Yes")){
+        if (isEnglish.equals("Yes")) {
             TextView lbl_subtotal_amt, lbl_total_amt, lbl_tax_amt;
             TextView lbl_delivery_details, lbl_name, lbl_contact, lbl_address, lbl_date, lbl_time, lbl_item_details, lbl_amt_details;
             Button btnNext;
@@ -168,16 +186,16 @@ public class ConfirmOrderFragment extends Fragment{
             lbl_amt_details = (TextView) view.findViewById(R.id.lbl_amountDetails);
             btnNext = (Button) view.findViewById(R.id.btnPlaceOrder);
 
-            lbl_subtotal_amt.setText("Subtotal");
-            lbl_tax_amt.setText("GST (7%)");
-            lbl_total_amt.setText("Total Payable");
+            lbl_subtotal_amt.setText("Sub Total");
+            lbl_tax_amt.setText("Add 7% GST");
+            lbl_total_amt.setText("Total");
             lbl_delivery_details.setText("Delivery Details");
             lbl_name.setText("Name");
             lbl_contact.setText("Contact No");
             lbl_address.setText("Address");
             lbl_date.setText("Date");
             lbl_time.setText("Time");
-            lbl_item_details.setText( " " + orderList.size() + "items");
+            lbl_item_details.setText(" " + orderList.size() + "items");
             lbl_amt_details.setText("Amount details");
             btnNext.setText("Place Order");
         }
@@ -199,9 +217,9 @@ public class ConfirmOrderFragment extends Fragment{
         name.setText(customer.getDebtorName());
         contact.setText(customer.getDeliveryContact());
         address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + customer.getDeliverAddr3() + " " + customer.getDeliverAddr4());
-        if (isEnglish.equals("Yes")){
+        if (isEnglish.equals("Yes")) {
             deliveryDetails.setText(" Delivery details");
-            if (orderList.size() == 1){
+            if (orderList.size() == 1) {
                 numItems.setText(" " + orderList.size() + " item");
             } else {
                 numItems.setText(" " + orderList.size() + " items");
@@ -217,7 +235,7 @@ public class ConfirmOrderFragment extends Fragment{
             placeOrder.setText("确认订单");
         }
 
-        if (deliveryShift.equals("AM")){
+        if (deliveryShift.equals("AM")) {
             deliveryTime.setText("4.30am to 6.30am");
         } else {
             deliveryTime.setText("7.50am to 12.30pm");
@@ -232,8 +250,7 @@ public class ConfirmOrderFragment extends Fragment{
         deliveryDate = (EditText) view.findViewById(R.id.date);
 
         //choose delivery date
-        deliveryDate.setOnClickListener(new View.OnClickListener()
-        {
+        deliveryDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -246,8 +263,9 @@ public class ConfirmOrderFragment extends Fragment{
                     @Override
                     public void onDateSet(DatePicker datePicker, int selectedYear, int selectedMonth, int selectedDay) {
                         //month index start from 0, so + 1 to get correct actual month number
-                        selectedMonth +=1;
+                        selectedMonth += 1;
                         deliveryDate.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
+                        ETADeliveryDate = selectedYear + "-" + selectedMonth + "-" + selectedDay;
                         mCurrentDate.set(selectedDay, selectedMonth, selectedYear);
                     }
                 }, year, month, day);
@@ -260,32 +278,67 @@ public class ConfirmOrderFragment extends Fragment{
             @Override
             public void onClick(View rootView) {
 
-                //check if today's delivery is before cut off time
+                //check if delivery date is selected
+                String deliveryDateText = deliveryDate.getText().toString();
+                if (deliveryDateText.equals("DD/MM/YYYY") || deliveryDateText.equals("日/月/年")) {
+                    if (isEnglish.equals("Yes")) {
+                        final Toast tag = Toast.makeText(view.getContext(), "Please select delivery date", Toast.LENGTH_SHORT);
+                        new CountDownTimer(20000, 1000) {
+                            public void onTick(long millisUntilFinished) {
+                                tag.show();
+                            }
 
-                //go to payment activity
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("customer", customer);
-                bundle.putParcelableArrayList("orderList", orderList);
-                bundle.putDouble("subtotal", subtotal);
-                bundle.putDouble("taxAmt", taxAmt);
-                bundle.putDouble("totalPayable", totalPayable);
-                //add sale details order here
+                            public void onFinish() {
+                                tag.show();
+                            }
 
-                Intent intent = new Intent(view.getContext(), PaymentActivity.class);
-                intent.putParcelableArrayListExtra("orderList", orderList);
-                intent.putExtra("customer", customer);
-                intent.putExtra("subtotal", subtotal);
-                intent.putExtra("taxAmt", taxAmt);
-                intent.putExtra("totalPayable", totalPayable);
-                //add sale details order here
-                getActivity().startActivity(intent);
+                        }.start();
+
+                    } else {
+                        final Toast tag = Toast.makeText(view.getContext(), "请选送货日期", Toast.LENGTH_SHORT);
+                        new CountDownTimer(20000, 1000) {
+                            public void onTick(long millisUntilFinished) {
+                                tag.show();
+                            }
+
+                            public void onFinish() {
+                                tag.show();
+                            }
+
+                        }.start();
+                    }
+                    //check if date is >= today's date
+                        //check if today's delivery is before cut off time
+                } else {
+                    //insert into database 3 tables
+                    createSalesOrder();
+
+                    //go to payment activity
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("customer", customer);
+                    bundle.putParcelableArrayList("orderList", orderList);
+                    bundle.putDouble("subtotal", subtotal);
+                    bundle.putDouble("taxAmt", taxAmt);
+                    bundle.putDouble("totalPayable", totalPayable);
+                    //add sale details order here
+
+                    Intent intent = new Intent(view.getContext(), PaymentActivity.class);
+                    intent.putParcelableArrayListExtra("orderList", orderList);
+                    intent.putExtra("customer", customer);
+                    intent.putExtra("subtotal", subtotal);
+                    intent.putExtra("taxAmt", taxAmt);
+                    intent.putExtra("totalPayable", totalPayable);
+                    //add sale details order here
+                    getActivity().startActivity(intent);
+                }
             }
         });
     }
 
+
     private double calculateSubtotal(ArrayList<Product> orderList) {
         double subtotal = 0;
-        for(Product p : orderList) {
+        for (Product p : orderList) {
             int qty = p.getDefaultQty();
             subtotal += p.getUnitPrice() * qty;
         }
@@ -307,6 +360,7 @@ public class ConfirmOrderFragment extends Fragment{
                     + " must implement OnFragmentInteractionListener");
         }
     }
+
     @Override
     public void onDetach() {
         super.onDetach();
@@ -316,4 +370,111 @@ public class ConfirmOrderFragment extends Fragment{
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
+
+    private void createSalesOrder() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+        PostData postData = new Retrofit.Builder()
+                .baseUrl(HttpConstant.BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build().create(PostData.class);
+
+        compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleSalesOrderResponse, this::handleError));
+    }
+
+    private void handleSalesOrderResponse(String orderID) {
+
+        if (orderID != null) {
+            //create Sales Order Details
+            newOrderID = orderID;
+            createSalesOrderDetails(orderID);
+        }
+    }
+
+    private void createSalesOrderDetails(String orderID) {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+        PostData postData = new Retrofit.Builder()
+                .baseUrl(HttpConstant.BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build().create(PostData.class);
+
+        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, subtotal, orderID)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleSalesOrderDetailsResponse, this::handleError));
+
+    }
+
+    private void handleSalesOrderDetailsResponse(boolean added) {
+
+        if (added) {
+            //create Sales Order Quantity
+            createSalesOrderQuantity();
+
+        }
+
+    }
+
+    private void createSalesOrderQuantity() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+        PostData postData = new Retrofit.Builder()
+                .baseUrl(HttpConstant.BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build().create(PostData.class);
+
+        ArrayList<String> itemQuantity = new ArrayList<String>();
+
+        for (Product p : orderList){
+            itemQuantity.add(p.getItemCode() + "&" + p.getDefaultQty());
+        }
+
+        compositeDisposable.add(postData.addSalesOrderQuantity(itemQuantity, newOrderID)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleSalesOrderQuantityResponse, this::handleError));
+
+    }
+
+    private void handleSalesOrderQuantityResponse(int numProducts) {
+        if (numProducts == orderList.size()){
+
+            final Toast tag = Toast.makeText(view.getContext(), "Order #" + newOrderID + " is placed successfully",  Toast.LENGTH_SHORT);
+            new CountDownTimer(20000, 1000) {
+                public void onTick(long millisUntilFinished) {
+                    tag.show();
+                }
+
+                public void onFinish() {
+                    tag.show();
+                }
+
+            }.start();
+        }
+
+    }
+
+
+    private void handleError(Throwable error) {
+
+    }
+
+
+
 }

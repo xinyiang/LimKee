@@ -45,6 +45,7 @@ public class QuickReorderFragment extends Fragment {
     public static RecyclerView recyclerView;
     public static Button confirmOrder;
     public static TextView subtotalAmt;
+    public static TextView lbl_subtotal;
     public static double subtotal;
     public static ArrayList<Product> tempOrderList = new ArrayList<>();
     private String isEnglish;
@@ -102,6 +103,8 @@ public class QuickReorderFragment extends Fragment {
         });
         final AlertDialog ad = builder.create();
         ad.show();
+
+       // doGetLastOrder(companyCode);
     }
 
     @Override
@@ -112,10 +115,13 @@ public class QuickReorderFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
         confirmOrder = view.findViewById(R.id.btnPlaceOrder);
+        lbl_subtotal = (TextView) view.findViewById(R.id.lblSubtotalAmt);
 
         if (isEnglish.equals("Yes")) {
+            lbl_subtotal.setText("Sub Total");
             confirmOrder.setText("Next");
         } else {
+            lbl_subtotal.setText("小计");
             confirmOrder.setText("下订单");
         }
 
@@ -149,6 +155,7 @@ public class QuickReorderFragment extends Fragment {
 
         //proceed to confirm order
         confirmOrder = (Button) view.findViewById(R.id.btnPlaceOrder);
+
         confirmOrder.setOnClickListener(new View.OnClickListener()
         {
             @Override

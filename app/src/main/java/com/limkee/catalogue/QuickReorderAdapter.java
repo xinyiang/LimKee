@@ -1,12 +1,17 @@
 package com.limkee.catalogue;
 
+import android.content.Context;
 import android.os.CountDownTimer;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -114,25 +119,42 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                     .into(image);
 
 
-        /*
-        //hide next button when edit text is clicked
+
+            //hide next button when edit text is clicked
             qty.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
 
-                    CatalogueFragment.confirmOrder.setVisibility(View.INVISIBLE);
+                    QuickReorderFragment.confirmOrder.setVisibility(View.INVISIBLE);
+                    QuickReorderFragment.lbl_subtotal.setVisibility(View.INVISIBLE);
 
                     return false;
                 }
             });
-        */
+
+            //update item subtotal in the particular row once user select tick in keyboard
+            qty.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                    if(actionId== EditorInfo.IME_ACTION_DONE){
+                        //Clear focus here from edittext.
+                        qty.clearFocus();
+                        InputMethodManager imm = (InputMethodManager)itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(qty.getWindowToken(), 0);
+                        QuickReorderFragment.confirmOrder.setVisibility(View.VISIBLE);
+                        QuickReorderFragment.lbl_subtotal.setVisibility(View.VISIBLE);
+
+                    }
+                    return false;
+                }
+            });
+
             qty.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
                 public void onFocusChange(View v, boolean hasFocus) {
 
                     if(!hasFocus && valueChanged) {
-
-                        //QuickReorderFragment.confirmOrder.setVisibility(View.VISIBLE);
 
                         //check that quantity is not left blank. If not, reset it back to default prefix quantity
                         if (qty.getText().toString().equals("")){

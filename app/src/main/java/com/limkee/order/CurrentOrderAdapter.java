@@ -11,7 +11,10 @@ import com.limkee.R;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Order;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Xin Yi on 12/6/2018.
@@ -132,6 +135,18 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
 
             orderID.setText(order.getOrderID());
             deliveryDate.setText(order.getDeliveryDate());
+
+            /*
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            try {
+                Date date = sdf.parse(order.getDeliveryDate());
+                System.out.println("DATEEE IS " + date + " ANDDD " + sdf.format(date));
+                deliveryDate.setText(sdf.format(date));
+            } catch(ParseException e){
+                e.printStackTrace();
+                System.out.println("ERROR in date");
+            }
+            */
 
             if (isEnglish.equals("Yes")){
                 lbl_deliveryDate.setText("Delivering on");
