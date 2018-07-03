@@ -1,5 +1,7 @@
 package com.limkee.payment;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -19,20 +21,19 @@ import java.net.URLEncoder;
 
     public class BackgroundPayment extends AsyncTask<String,Void,String> {
         private Context context;
-        private String token;
+        private Activity activity;
         private String totalPayable;
 
-    BackgroundPayment(Context ctx) {
+    BackgroundPayment(Context ctx, Activity act) {
         context = ctx;
+        activity = act;
     }
 
     @Override
     protected String doInBackground(String... params) {
         String type = params[0];
-        token = params[1];
+        String token = params[1];
         totalPayable = params[2];
-        double tp = Double.parseDouble(totalPayable);
-        totalPayable = tp*100+"";
         String payment_url = "http://13.229.114.72:80/JavaBridge/payment.php";
         if(type.equals("pay")){
             try {
@@ -78,7 +79,10 @@ import java.net.URLEncoder;
         System.out.println("finally");
         Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
         it.putExtra("result",result);
+        Double tp = Double.parseDouble(totalPayable);
+        it.putExtra("totalPayable", tp/100);
         context.startActivity(it);
+        activity.finish();
     }
 
     @Override

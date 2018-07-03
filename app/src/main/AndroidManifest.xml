@@ -22,17 +22,25 @@
         </activity>
         <activity
             android:name=".navigation.NavigationActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:parentActivityName=".login.LoginActivity"/>
         <activity
             android:name=".login.LogoutActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".order.ConfirmOrderActivity" />
-        <activity android:name=".order.CurrentOrderDetailActivity" />
-        <activity android:name=".payment.PaymentActivity" />
+            android:screenOrientation="portrait"
+            android:parentActivityName=".login.LoginActivity"/>
+        <activity
+            android:name=".order.ConfirmOrderActivity"
+            android:parentActivityName=".navigation.NavigationActivity"/>
+        <activity
+            android:name=".order.CurrentOrderDetailActivity"
+            android:parentActivityName=".order.ConfirmOrderActivity"/>
+        <activity
+            android:name=".payment.PaymentActivity"
+            android:parentActivityName=".order.CurrentOrderDetailActivity"/>
         <activity
             android:name=".payment.ConfirmationActivity"
             android:label="@string/title_activity_confirmation"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>

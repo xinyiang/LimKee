@@ -9,6 +9,7 @@
     <string name="company_code">Company Code</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
+
     <string-array name="qty">
         <item>5</item>
         <item>10</item>
@@ -19,5 +20,11 @@
     <string name="payment">Payment</string>
     <string name="paymentdetails">Payment Details</string>
     <string name="pay">Pay</string>
+    <string name="payment_unsuccessful">Payment Unsuccessful!</string>
+    <string name="payment_successful">Payment Successful!</string>
+    <string name="payment_unsuccessful_description">Your card will not be charged\n please try again</string>
+    <string name="payment_successful_description">\s will be charged to your card</string>
+    <string name="backTo">Back</string>
+    <string name="logout">logout</string>
 
 </resources>

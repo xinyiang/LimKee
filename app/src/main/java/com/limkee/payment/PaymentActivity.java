@@ -1,8 +1,11 @@
 package com.limkee.payment;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -12,26 +15,31 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.limkee.BaseActivity;
 import com.limkee.R;
-import com.limkee.catalogue.CatalogueFragment;
-import com.limkee.order.ConfirmOrderFragment;
-import com.limkee.order.QuickReorderFragment;
+
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
-import com.stripe.android.view.CardInputWidget;
+import com.stripe.android.view.CardMultilineWidget;
 import com.stripe.android.Stripe;
 import com.stripe.android.model.Token;
 
-public class PaymentActivity extends AppCompatActivity implements PaymentFragment.OnFragmentInteractionListener{
+public class PaymentActivity extends BaseActivity implements PaymentFragment.OnFragmentInteractionListener{
     private View rootView;
     private String totalPayable;
     private PaymentFragment paymentFragment = new PaymentFragment();
     public static Bundle myBundle = new Bundle();
     private Context context;
-    private CardInputWidget mCardInputWidget;
+    private ProgressBar progressBar;
+    private EditText nameOnCard;
+    private TextView errorNameOnCard;
+    private CardMultilineWidget mCardMultilineWidget;
+    public static Activity activity; //used to finish this activity in backgroundPayment activity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +50,16 @@ public class PaymentActivity extends AppCompatActivity implements PaymentFragmen
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("@string/payment");
         myBundle = getIntent().getExtras();
+        activity = this;
         context = getApplicationContext();
-        totalPayable = String.valueOf(myBundle.getDouble("totalPayable"));
+        double tp = myBundle.getDouble("totalPayable");
+
+        TextView tv = (TextView)findViewById(R.id.totalPayable);
+        tv.setText(String.format("$%.2f", tp));
+
+        totalPayable = String.valueOf((int) Math.round(tp * 100));
         Bundle bundle = new Bundle();
-        bundle.putString("totalPayable",totalPayable);
+        //bundle.putString("totalPayable",totalPayable);
         paymentFragment.setArguments(bundle);
         loadFragment(paymentFragment);
     }
@@ -53,22 +67,31 @@ public class PaymentActivity extends AppCompatActivity implements PaymentFragmen
     public void pay(View view){
         //validate credentials to login
         final String type = "pay";
-        mCardInputWidget = (CardInputWidget)findViewById(R.id.card_input_widget);
-        Card card = mCardInputWidget.getCard();
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        nameOnCard = (EditText) findViewById(R.id.nameOnCard);
+        errorNameOnCard = (TextView) findViewById(R.id.errNameOnCard);
+        mCardMultilineWidget = (CardMultilineWidget)findViewById(R.id.card_multiline_widget);
+        Card card = mCardMultilineWidget.getCard();
         //card.setName("Customer Name");
 
-        if (card == null) {
+        if (card == null || nameOnCard.getText().toString().isEmpty()) {
             Toast.makeText(context,
                     "Invalid Card Data",
                     Toast.LENGTH_LONG
             ).show();
+            if (nameOnCard.getText().toString().isEmpty()){
+                errorNameOnCard.setVisibility(View.VISIBLE);
+                nameOnCard.setBackgroundResource(R.drawable.text_underline);
+            }
         } else {
+            progressBar.setVisibility(View.VISIBLE);
             Stripe stripe = new Stripe(context, "pk_test_FPldW3NRDq68iu1drr2o7Anb");
             stripe.createToken(
                     card,
                     new TokenCallback() {
                         public void onSuccess(Token token) {
-                            BackgroundPayment bp = new BackgroundPayment(context);
+                            BackgroundPayment bp = new BackgroundPayment(context, activity);
                             bp.execute(type,token.getId(),totalPayable);
                             // Send token to your server
                         }
@@ -79,6 +102,16 @@ public class PaymentActivity extends AppCompatActivity implements PaymentFragmen
                     }
             );
         }
+//        new CountDownTimer(6000, 100) {
+//
+//            public void onTick(long millisUntilFinished) {
+//
+//            }
+//
+//            public void onFinish() {
+//                progressBar.setVisibility(View.GONE);
+//            }
+//        }.start();
     }
 
     public View onCreate(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
