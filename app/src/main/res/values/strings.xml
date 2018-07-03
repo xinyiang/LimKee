@@ -9,6 +9,19 @@
     <string name="password">密码</string>
     <string name="login">登陆</string>
     <string name="payment">付款</string>
+
+    <string name="userprofile">用户资料</string>
+    <string name="orderslip">订单表</string>
+    <string name="quickreorder">快速下单</string>
+    <string name="currentorders">当下订单</string>
+    <string name="orderhistory">订单历史</string>
+    <string name="logout">登出</string>
+    <string name="payment_unsuccessful">付款失败！</string>
+    <string name="payment_successful">付款成功！</string>
+    <string name="payment_unsuccessful_description">您的卡不会被收费\n请重试</string>
+    <string name="payment_successful_description"> 已从您的卡里扣除\n很高兴为您服务</string>
+    <string name="backTo">返回</string>
+
     <string-array name="qty">
         <item>5</item>
         <item>10</item>

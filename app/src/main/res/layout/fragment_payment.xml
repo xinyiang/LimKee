@@ -23,32 +23,63 @@
         app:layout_constraintStart_toStartOf="parent"
         />
 
-    <TextView
-        android:id="@+id/lbl_paymentDetails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <com.stripe.android.view.CardMultilineWidget
+        android:id="@+id/card_multiline_widget"
+        android:layout_width="349dp"
+        android:layout_height="206dp"
+        android:layout_marginBottom="72dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:textSize="20dp"
-        android:textColor="@color/colorPrimary"
-        android:text="@string/paymentdetails"
+        android:textDirection="firstStrong"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPlaceOrder"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.059"
+        app:layout_constraintHorizontal_bias="0.526"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_date" />
+        tools:ignore="MissingConstraints" />
 
-    <com.stripe.android.view.CardInputWidget
-        android:id="@+id/card_input_widget"
-        android:layout_width="336dp"
-        android:layout_height="202dp"
+    <EditText
+        android:id="@+id/nameOnCard"
+        style="@android:style/Widget.EditText"
+        android:layout_width="349dp"
+        android:layout_height="49dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnPlaceOrder"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_paymentDetails"
-        tools:ignore="MissingConstraints" />
+        android:layout_marginRight="8dp"
+        android:ems="10"
+        android:hint="Name on Card"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/card_multiline_widget"
+        app:layout_constraintEnd_toEndOf="@+id/card_multiline_widget"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/card_multiline_widget" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:indeterminateTint="@color/colorPrimary"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="InvalidId" />
+
+    <TextView
+        android:id="@+id/errNameOnCard"
+        android:layout_width="wrap_content"
+        android:layout_height="15dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:text="Your card holder's name is invalid"
+        android:textColor="@color/error"
+
+        android:textSize="12sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/card_multiline_widget"
+        app:layout_constraintStart_toStartOf="@+id/nameOnCard" />
+
+
 </android.support.constraint.ConstraintLayout>

@@ -15,4 +15,6 @@
     <color name="price">#dd0000</color>
     <color name="bg_row_background">#fa315b</color>
 
+    <color name="error">#ff1000</color>
+
 </resources>
