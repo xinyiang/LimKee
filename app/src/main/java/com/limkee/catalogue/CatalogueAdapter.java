@@ -1,12 +1,17 @@
 package com.limkee.catalogue;
 
+import android.content.Context;
 import android.os.CountDownTimer;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -46,8 +51,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
     public CatalogueAdapter(CatalogueFragment fragment, String isEnglish) {
         this.fragment = fragment;
-
         this.isEnglish = isEnglish;
+
     }
 
 
@@ -61,7 +66,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-         itemView = LayoutInflater.from(parent.getContext())
+        itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.catalogue_products, parent, false);
         ViewHolder vh = new ViewHolder(itemView, new QuantityEditTextListener());
         CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
@@ -118,18 +123,41 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                     .into(image);
 
 
-        /*
+
         //hide next button when edit text is clicked
             qty.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
 
                     CatalogueFragment.confirmOrder.setVisibility(View.INVISIBLE);
+                    CatalogueFragment.lbl_subtotal.setVisibility(View.INVISIBLE);
 
                     return false;
                 }
             });
-        */
+
+
+            InputMethodManager imm = (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(qty.getWindowToken(), 0);
+
+            //update item subtotal in the particular row once user select tick in keyboard
+            qty.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                    if(actionId== EditorInfo.IME_ACTION_DONE){
+                        //Clear focus here from edittext.
+                        qty.clearFocus();
+                        InputMethodManager imm = (InputMethodManager)itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(qty.getWindowToken(), 0);
+                        CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
+                        CatalogueFragment.lbl_subtotal.setVisibility(View.VISIBLE);
+
+                    }
+                    return false;
+                }
+            });
+
             qty.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
                 public void onFocusChange(View v, boolean hasFocus) {
@@ -137,6 +165,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                     if(!hasFocus && valueChanged) {
 
                         //CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
+                        CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
+                        CatalogueFragment.lbl_subtotal.setVisibility(View.VISIBLE);
 
                         //check that quantity is not left blank. If not, reset it back to default prefix quantity
                         if (qty.getText().toString().equals("")){
@@ -173,7 +203,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                             //check if qty is in correct multiples
                             int qtyMultiples = product.getQtyMultiples();
                             int quantity = Integer.parseInt(qty.getText().toString());
-
+/*
                             //show error message for 0
                             if (product.getDefaultQty() != 0 && quantity == 0) {
                                 if (isEnglish.equals("Yes")) {
@@ -211,7 +241,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                 double unitSub = product.getDefaultQty() * product.getUnitPrice();
                                 unitSubtotal.setText("$" + df.format(unitSub));
                             }
-
+*/
                             //show error message for abt 10s
                             if (quantity % qtyMultiples != 0) {
                                 if (isEnglish.equals("Yes")){
@@ -271,6 +301,9 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         this.qtyDataSet = qtyDataSet;
         this.catalogueList = catalogueList;
         this.orderList = tempOrderList;
+        CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
+        CatalogueFragment.lbl_subtotal.setVisibility(View.VISIBLE);
+
         notifyDataSetChanged();
     }
 
@@ -294,12 +327,13 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         @Override
         public void afterTextChanged(Editable editable) {
             valueChanged = true;
+
         }
     }
 
     @Override
     public int getItemCount() {
-       // return catalogueList.size();
+        // return catalogueList.size();
         if ( qtyDataSet != null){
             return  qtyDataSet.length;
         }
@@ -312,4 +346,6 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
     public static ArrayList<Product> getOrderList(){
         return orderList;
     }
+
+
 }

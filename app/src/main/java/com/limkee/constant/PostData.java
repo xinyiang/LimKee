@@ -5,8 +5,13 @@ import com.limkee.entity.Order;
 import com.limkee.entity.OrderDetails;
 import com.limkee.entity.OrderQuantity;
 import com.limkee.entity.Product;
+
+import io.reactivex.Observable;
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 /**
@@ -48,5 +53,19 @@ public interface PostData {
 
         @GET("get-order/cancelledorderquantity")
         Call<ArrayList<OrderQuantity>> getCancelledOrderQuantity(@Query("orderNo") String orderNo);
+
+        @FormUrlEncoded
+        @POST("add-order/salesorder")
+        Observable<String> addSalesOrder(@Field("debtorCode") String debtorCode);
+
+        @FormUrlEncoded
+        @POST("add-order/salesorderdetails")
+        Observable<Boolean> addSalesOrderDetails(@Field("deliveryDate") String deliveryDate, @Field("subtotal") double subtotal, @Field("orderID") String orderID);
+
+        @FormUrlEncoded
+        @POST("add-order/salesorderquantity")
+        //Observable<Integer> addSalesOrderQuantity(@Field("orderID") String orderID);
+        //Observable<Integer> addSalesOrderQuantity(@Field("orderList") ArrayList<Product> orderList, @Field("orderID") String orderID);
+        Observable<Integer> addSalesOrderQuantity(@Field("itemQuantity") ArrayList<String> itemQuantity, @Field("orderID") String orderID);
 
 }
