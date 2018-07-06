@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
@@ -73,10 +75,12 @@ public class ConfirmOrderFragment extends Fragment {
     private String isEnglish;
     private Customer customer;
     private String deliveryShift;
-    public static Retrofit retrofit;
     CompositeDisposable compositeDisposable;
     private String newOrderID;
     private String ETADeliveryDate;
+    private int day;
+    private int month;
+    private int year;
 
     public ConfirmOrderFragment() {
         // Required empty public constructor
@@ -216,7 +220,19 @@ public class ConfirmOrderFragment extends Fragment {
 
         name.setText(customer.getDebtorName());
         contact.setText(customer.getDeliveryContact());
-        address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + customer.getDeliverAddr3() + " " + customer.getDeliverAddr4());
+        String address3 = "";
+        String address4 = "";
+        if (customer.getDeliverAddr3() == null){
+            address3 = "";
+        }
+
+        if (customer.getDeliverAddr4() == null){
+            address4 = "";
+        }
+
+        address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + address3 + " " + address4);
+
+      //  address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + customer.getDeliverAddr3() + " " + customer.getDeliverAddr4());
         if (isEnglish.equals("Yes")) {
             deliveryDetails.setText(" Delivery details");
             if (orderList.size() == 1) {
@@ -255,15 +271,19 @@ public class ConfirmOrderFragment extends Fragment {
             public void onClick(View v) {
 
                 mCurrentDate = Calendar.getInstance();
-                int year = mCurrentDate.get(Calendar.YEAR);
-                int month = mCurrentDate.get(Calendar.MONTH);
-                int day = mCurrentDate.get(Calendar.DAY_OF_MONTH);
+                year = mCurrentDate.get(Calendar.YEAR);
+                month = mCurrentDate.get(Calendar.MONTH);
+                day = mCurrentDate.get(Calendar.DAY_OF_MONTH);
 
                 DatePickerDialog mDatePicker = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int selectedYear, int selectedMonth, int selectedDay) {
+                        year = selectedYear;
+                        month = selectedMonth;
+                        month = selectedMonth;
                         //month index start from 0, so + 1 to get correct actual month number
                         selectedMonth += 1;
+                        day = selectedDay;
                         deliveryDate.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
                         ETADeliveryDate = selectedYear + "-" + selectedMonth + "-" + selectedDay;
                         mCurrentDate.set(selectedDay, selectedMonth, selectedYear);
@@ -307,29 +327,92 @@ public class ConfirmOrderFragment extends Fragment {
 
                         }.start();
                     }
-                    //check if date is >= today's date
-                        //check if today's delivery is before cut off time
                 } else {
-                    //insert into database 3 tables
-                    createSalesOrder();
+                    //check if date is >= today's date
 
-                    //go to payment activity
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("customer", customer);
-                    bundle.putParcelableArrayList("orderList", orderList);
-                    bundle.putDouble("subtotal", subtotal);
-                    bundle.putDouble("taxAmt", taxAmt);
-                    bundle.putDouble("totalPayable", totalPayable);
-                    //add sale details order here
+                    Calendar c = Calendar.getInstance();
 
-                    Intent intent = new Intent(view.getContext(), PaymentActivity.class);
-                    intent.putParcelableArrayListExtra("orderList", orderList);
-                    intent.putExtra("customer", customer);
-                    intent.putExtra("subtotal", subtotal);
-                    intent.putExtra("taxAmt", taxAmt);
-                    intent.putExtra("totalPayable", totalPayable);
-                    //add sale details order here
-                    getActivity().startActivity(intent);
+                    // set the calendar to start of today
+                    c.set(Calendar.HOUR_OF_DAY, 0);
+                    c.set(Calendar.MINUTE, 0);
+                    c.set(Calendar.SECOND, 0);
+                    c.set(Calendar.MILLISECOND, 0);
+
+                    // and get that as a Date
+                    Date today = c.getTime();
+
+                    // reuse the calendar to set user specified date
+                    c.set(Calendar.YEAR, year);
+                    c.set(Calendar.MONTH, month);
+                    c.set(Calendar.DAY_OF_MONTH, day);
+                    Date dateSpecified = c.getTime();
+
+                    if (dateSpecified.before(today)) {
+
+                        System.err.println("Date specified [" + dateSpecified + "] is before today [" + today + "]");
+
+                        if (isEnglish.equals("Yes")) {
+
+                            final Toast tag = Toast.makeText(view.getContext(), "Invalid delivery date! Please select another delivery date.", Toast.LENGTH_SHORT);
+                            new CountDownTimer(20000, 1000) {
+                                public void onTick(long millisUntilFinished) {
+                                    tag.show();
+                                }
+
+                                public void onFinish() {
+                                    tag.show();
+                                }
+
+                            }.start();
+
+                            deliveryDate.setText("DD/MM/YYYY");
+
+                        } else {
+
+                            final Toast tag = Toast.makeText(view.getContext(), "送货日期错误, 请选送货日期", Toast.LENGTH_SHORT);
+                            new CountDownTimer(20000, 1000) {
+                                public void onTick(long millisUntilFinished) {
+                                    tag.show();
+                                }
+
+                                public void onFinish() {
+                                    tag.show();
+                                }
+
+                            }.start();
+
+                            deliveryDate.setText("日/月/年");
+                        }
+                    } else {
+                        System.err.println("Date specified [" + dateSpecified + "] is NOT before today [" + today + "]");
+
+                        //check if today's delivery is before cut off time
+
+
+                        //insert into database 3 tables
+                        createSalesOrder();
+
+                        //go to payment activity
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("customer", customer);
+                        bundle.putParcelableArrayList("orderList", orderList);
+                        bundle.putDouble("subtotal", subtotal);
+                        bundle.putDouble("taxAmt", taxAmt);
+                        bundle.putString("deliveryDate", ETADeliveryDate);
+                        bundle.putDouble("totalPayable", totalPayable);
+                        //add sale details order here
+
+                        Intent intent = new Intent(view.getContext(), PaymentActivity.class);
+                        intent.putParcelableArrayListExtra("orderList", orderList);
+                        intent.putExtra("customer", customer);
+                        intent.putExtra("subtotal", subtotal);
+                        intent.putExtra("taxAmt", taxAmt);
+                        intent.putExtra("deliveryDate", ETADeliveryDate);
+                        intent.putExtra("totalPayable", totalPayable);
+                        //add sale details order here
+                        getActivity().startActivity(intent);
+
+                    }
                 }
             }
         });
@@ -394,6 +477,7 @@ public class ConfirmOrderFragment extends Fragment {
         if (orderID != null) {
             //create Sales Order Details
             newOrderID = orderID;
+            System.out.println("SALES ORDER IS " + orderID);
             createSalesOrderDetails(orderID);
         }
     }
@@ -418,6 +502,7 @@ public class ConfirmOrderFragment extends Fragment {
     }
 
     private void handleSalesOrderDetailsResponse(boolean added) {
+        System.out.println("SALES ORDER ADDED " + added);
 
         if (added) {
             //create Sales Order Quantity
@@ -453,6 +538,8 @@ public class ConfirmOrderFragment extends Fragment {
     }
 
     private void handleSalesOrderQuantityResponse(int numProducts) {
+
+        System.out.println("SALES ORDER NUMBER OF PRODUCTS " + numProducts);
         if (numProducts == orderList.size()){
 
             final Toast tag = Toast.makeText(view.getContext(), "Order #" + newOrderID + " is placed successfully",  Toast.LENGTH_SHORT);

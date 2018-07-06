@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import retrofit2.Retrofit;
 
 public class ConfirmOrderActivity extends AppCompatActivity implements ConfirmOrderFragment.OnFragmentInteractionListener,
-        CatalogueFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener{
+        CatalogueFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener{
 
     private View rootView;
     private ConfirmOrderFragment confirmOrderFragment = new ConfirmOrderFragment();

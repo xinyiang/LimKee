@@ -26,6 +26,7 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
     private String orderID;
     private Customer customer;
     private String isEnglish;
+    private String ETADeliveryDate;
 
     public CurrentOrderAdapter(CurrentOrderFragment fragment, ArrayList<Order> col,Customer customer, String isEnglish) {
         this.fragment = fragment;
@@ -55,7 +56,7 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
                 intent.putExtra("language", isEnglish);
-                intent.putExtra("deliveryDate", order.getDeliveryDate());
+                intent.putExtra("deliveryDate", ETADeliveryDate);
                 intent.putExtra("numItems", order.getNoOfItems());
                 intent.putExtra("deliveryShift", order.getDeliveryShift());
                 intent.putExtra("customer", customer);
@@ -73,7 +74,7 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
                 intent.putExtra("language", isEnglish);
-                intent.putExtra("deliveryDate", order.getDeliveryDate());
+                intent.putExtra("deliveryDate", ETADeliveryDate);
                 intent.putExtra("numItems", order.getNoOfItems());
                 intent.putExtra("deliveryShift", order.getDeliveryShift());
                 intent.putExtra("customer", customer);
@@ -91,7 +92,7 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
                 intent.putExtra("language", isEnglish);
-                intent.putExtra("deliveryDate", order.getDeliveryDate());
+                intent.putExtra("deliveryDate", ETADeliveryDate);
                 intent.putExtra("numItems", order.getNoOfItems());
                 intent.putExtra("deliveryShift", order.getDeliveryShift());
                 intent.putExtra("customer", customer);
@@ -109,7 +110,7 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
                 intent.putExtra("language", isEnglish);
-                intent.putExtra("deliveryDate", order.getDeliveryDate());
+                intent.putExtra("deliveryDate", ETADeliveryDate);
                 intent.putExtra("numItems", order.getNoOfItems());
                 intent.putExtra("deliveryShift", order.getDeliveryShift());
                 intent.putExtra("customer", customer);
@@ -133,20 +134,18 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
 
         public void bindContent(Order order) {
 
-            orderID.setText(order.getOrderID());
-            deliveryDate.setText(order.getDeliveryDate());
-
-            /*
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            try {
-                Date date = sdf.parse(order.getDeliveryDate());
-                System.out.println("DATEEE IS " + date + " ANDDD " + sdf.format(date));
-                deliveryDate.setText(sdf.format(date));
-            } catch(ParseException e){
-                e.printStackTrace();
-                System.out.println("ERROR in date");
+            if (order.getOrderID().length() == 1){
+                orderID.setText(order.getOrderID() + " ");
+            } else {
+                orderID.setText(order.getOrderID());
             }
-            */
+
+            String ETA = order.getDeliveryDate();
+            String date = ETA.substring(8);
+            String month = ETA.substring(5,7);
+            String year = ETA.substring(0,4);
+            ETADeliveryDate = date + "/" + month + "/" + year;
+            deliveryDate.setText(ETADeliveryDate);
 
             if (isEnglish.equals("Yes")){
                 lbl_deliveryDate.setText("Delivering on");

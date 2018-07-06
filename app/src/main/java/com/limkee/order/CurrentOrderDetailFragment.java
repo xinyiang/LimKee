@@ -181,6 +181,8 @@ public class CurrentOrderDetailFragment extends Fragment {
         lbl_orderDetails = (TextView) view.findViewById(R.id.lbl_order_details);
         lbl_amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
 
+
+
         orderNo.setText("#" + orderID);
         if (isEnglish.equals("Yes")) {
             status.setText("Pending Delivery");
@@ -192,7 +194,17 @@ public class CurrentOrderDetailFragment extends Fragment {
             lbl_amtDetails.setText(" 价钱详情");
         }
 
-        address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + customer.getDeliverAddr3() + " " + customer.getDeliverAddr4());
+        String address3 = "";
+        String address4 = "";
+        if (customer.getDeliverAddr3() == null){
+            address3 = "";
+        }
+
+        if (customer.getDeliverAddr4() == null){
+            address4 = "";
+        }
+
+        address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + address3 + " " + address4);
         deliveryDate.setText(date);
         if (deliveryShift.equals("AM")){
             deliveryTime.setText("4.30am to 6.30am");

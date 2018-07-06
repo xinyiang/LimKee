@@ -13,8 +13,8 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/currentOrderRecyclerView"
-            android:layout_width="380dp"
-            android:layout_height="600dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

@@ -58,9 +58,9 @@ public class CurrentOrderFragment extends Fragment {
         companyCode = customer.getCompanyCode();
         isEnglish = bundle.getString("language");
         if (isEnglish.equals("Yes")){
-            ((NavigationActivity)getActivity()).setActionBarTitle("My Orders");
+            ((NavigationActivity)getActivity()).setActionBarTitle("Current Orders");
         } else {
-            ((NavigationActivity)getActivity()).setActionBarTitle("我的订单");
+            ((NavigationActivity)getActivity()).setActionBarTitle("当下订单");
         }
     }
 
@@ -110,20 +110,6 @@ public class CurrentOrderFragment extends Fragment {
             }
         });
     }
-/*
-    private void doGetCurrentOrders() {
-        recyclerView = (RecyclerView) view.findViewById(R.id.currentOrderRecyclerView);
-        mAdapter = new CurrentOrderAdapter(this, OrderDAO.currentOrdersList, customer);
-
-        coordinatorLayout = view.findViewById(com.limkee.R.id.constraint_layout);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        recyclerView.setAdapter(mAdapter);
-
-    }
-    */
 
     @Override
     public void onAttach(Context context) {

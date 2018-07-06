@@ -14,7 +14,7 @@ import com.limkee.entity.Customer;
 import com.limkee.entity.Order;
 import java.util.ArrayList;
 
-public class CurrentOrderDetailActivity extends AppCompatActivity implements CurrentOrderFragment.OnFragmentInteractionListener, CurrentOrderDetailFragment.OnFragmentInteractionListener {
+public class CurrentOrderDetailActivity extends AppCompatActivity implements ConfirmOrderFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener, CurrentOrderDetailFragment.OnFragmentInteractionListener {
 
     public static Bundle myBundle = new Bundle();
     private Customer customer;
