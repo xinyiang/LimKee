@@ -129,8 +129,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
 
-                    CatalogueFragment.confirmOrder.setVisibility(View.INVISIBLE);
-                    CatalogueFragment.lbl_subtotal.setVisibility(View.INVISIBLE);
+                    //CatalogueFragment.confirmOrder.setVisibility(View.INVISIBLE);
+                    //CatalogueFragment.lbl_subtotal.setVisibility(View.INVISIBLE);
 
                     return false;
                 }
