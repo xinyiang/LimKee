@@ -92,17 +92,17 @@ public class NavigationActivity extends BaseActivity implements
     @Override
     public void onBackPressed() {
         //fragment back button
+
         if(getFragmentManager().getBackStackEntryCount() > 0){
             getFragmentManager().popBackStack();
-
         } else{
+            /*
             if (isEnglish.equals("Yes")){
                 new AlertDialog.Builder(this)
                         .setMessage("Are you sure you want to exit?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                               // NavigationActivity.super.onBackPressed();
                                 finish();
                             }
                         })
@@ -120,7 +120,8 @@ public class NavigationActivity extends BaseActivity implements
                         })
                         .setNegativeButton("否", null)
                         .show();
-            }
+            }*/
+            moveTaskToBack(true);
         }
     }
 
