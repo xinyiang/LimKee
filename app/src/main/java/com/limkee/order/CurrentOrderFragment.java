@@ -13,6 +13,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
@@ -60,7 +62,7 @@ public class CurrentOrderFragment extends Fragment {
         if (isEnglish.equals("Yes")){
             ((NavigationActivity)getActivity()).setActionBarTitle("Current Orders");
         } else {
-            ((NavigationActivity)getActivity()).setActionBarTitle("当下订单");
+            ((NavigationActivity)getActivity()).setActionBarTitle("当前订单");
         }
     }
 
@@ -68,7 +70,17 @@ public class CurrentOrderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_current_order, container, false);
+        TextView lbl_orderIDHeader, lbl_numItemsHeader, lbl_deliveryDateHeader;
 
+        lbl_orderIDHeader = (TextView) view.findViewById(R.id.lbl_orderIDHeader);
+        lbl_deliveryDateHeader = (TextView) view.findViewById(R.id.lbl_deliveryDateHeader);
+        lbl_numItemsHeader = (TextView) view.findViewById(R.id.lbl_numItemsHeader);
+
+        if (isEnglish.equals("Yes")) {
+            lbl_orderIDHeader.setText("Order ID");
+            lbl_deliveryDateHeader.setText("Delivery Date");
+            lbl_numItemsHeader.setText("Total No.");
+        }
 
         recyclerView = view.findViewById(R.id.currentOrderRecyclerView);
         recyclerView = (RecyclerView) view.findViewById(R.id.currentOrderRecyclerView);

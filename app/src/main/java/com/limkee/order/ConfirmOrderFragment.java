@@ -2,27 +2,24 @@ package com.limkee.order;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,28 +28,22 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
-import com.limkee.dao.CatalogueDAO;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
 import com.limkee.payment.PaymentActivity;
 
-import org.w3c.dom.Text;
-
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.GregorianCalendar;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -81,6 +72,7 @@ public class ConfirmOrderFragment extends Fragment {
     private int day;
     private int month;
     private int year;
+    private String dayOfWeek;
 
     public ConfirmOrderFragment() {
         // Required empty public constructor
@@ -180,7 +172,7 @@ public class ConfirmOrderFragment extends Fragment {
             lbl_subtotal_amt = (TextView) view.findViewById(R.id.lbl_subtotal_amt);
             lbl_total_amt = (TextView) view.findViewById(R.id.lbl_total_amt);
             lbl_tax_amt = (TextView) view.findViewById(R.id.lbl_tax_amt);
-            lbl_delivery_details = (TextView) view.findViewById(R.id.lbl_delivery_details);
+            lbl_delivery_details = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
             lbl_name = (TextView) view.findViewById(R.id.lbl_name);
             lbl_contact = (TextView) view.findViewById(R.id.lbl_phone);
             lbl_address = (TextView) view.findViewById(R.id.lbl_address);
@@ -208,7 +200,7 @@ public class ConfirmOrderFragment extends Fragment {
         TextView deliveryDetails, name, contact, address, deliveryTime, numItems, amtDetails;
         EditText deliveryDate;
         Button placeOrder;
-        deliveryDetails = (TextView) view.findViewById(R.id.lbl_delivery_details);
+        deliveryDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
         name = (TextView) view.findViewById(R.id.name);
         contact = (TextView) view.findViewById(R.id.phone);
         address = (TextView) view.findViewById(R.id.address);
@@ -218,44 +210,68 @@ public class ConfirmOrderFragment extends Fragment {
         deliveryTime = (TextView) view.findViewById(R.id.deliveryTime);
         placeOrder = (Button) view.findViewById(R.id.btnPlaceOrder);
 
+
+        //display customer details
         name.setText(customer.getDebtorName());
-        contact.setText(customer.getDeliveryContact());
+
+        if (customer.getDeliveryContact2() == null || customer.getDeliveryContact2().length() == 0) {
+            contact.setText(customer.getDeliveryContact());
+
+        } else {
+            contact.setText(customer.getDeliveryContact() + " ," + customer.getDeliveryContact2());
+        }
+
+        String address2 = "";
         String address3 = "";
         String address4 = "";
-        if (customer.getDeliverAddr3() == null){
+        if (customer.getDeliverAddr2() == null || customer.getDeliverAddr2().length() == 0) {
+            address2 = "";
+        } else {
+            address2 = customer.getDeliverAddr2();
+        }
+
+        if (customer.getDeliverAddr3() == null || customer.getDeliverAddr3().length() == 0) {
             address3 = "";
+        } else {
+            address3 = customer.getDeliverAddr3();
         }
 
-        if (customer.getDeliverAddr4() == null){
+
+        if (customer.getDeliverAddr4() == null || customer.getDeliverAddr4().length() == 0) {
             address4 = "";
+        } else {
+            address4 = customer.getDeliverAddr4();
         }
 
-        address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + address3 + " " + address4);
+        address.setText(customer.getDeliverAddr1() + " " + address2 + " " + address3 + " " + address4);
 
-      //  address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + customer.getDeliverAddr3() + " " + customer.getDeliverAddr4());
         if (isEnglish.equals("Yes")) {
             deliveryDetails.setText(" Delivery details");
+
             if (orderList.size() == 1) {
-                numItems.setText(" " + orderList.size() + " item");
+                numItems.setText(" Product details (" + orderList.size() + " item)");
             } else {
-                numItems.setText(" " + orderList.size() + " items");
+                numItems.setText(" Product details (" + orderList.size() + " items)");
             }
+
             amtDetails.setText(" Amount details");
             deliveryDate.setText("DD/MM/YY");
             placeOrder.setText("Place Order");
+
         } else {
             deliveryDetails.setText(" 送货详情");
-            numItems.setText(" " + orderList.size() + " 样");
-            amtDetails.setText("  价钱详情");
+            numItems.setText(" 订单样品 (" + orderList.size() + " 样)");
+            amtDetails.setText(" 价钱详情");
             deliveryDate.setText("日/月/年");
             placeOrder.setText("确认订单");
         }
 
         if (deliveryShift.equals("AM")) {
-            deliveryTime.setText("4.30am to 6.30am");
+            deliveryTime.setText("4.30am - 6.30am");
         } else {
-            deliveryTime.setText("7.50am to 12.30pm");
+            deliveryTime.setText("7.50am - 12.30pm");
         }
+
 
         return view;
     }
@@ -278,15 +294,94 @@ public class ConfirmOrderFragment extends Fragment {
                 DatePickerDialog mDatePicker = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int selectedYear, int selectedMonth, int selectedDay) {
+
                         year = selectedYear;
                         month = selectedMonth;
-                        month = selectedMonth;
-                        //month index start from 0, so + 1 to get correct actual month number
-                        selectedMonth += 1;
                         day = selectedDay;
-                        deliveryDate.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
-                        ETADeliveryDate = selectedYear + "-" + selectedMonth + "-" + selectedDay;
-                        mCurrentDate.set(selectedDay, selectedMonth, selectedYear);
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
+                        Date date = new Date(selectedYear, selectedMonth, selectedDay - 1);
+                        String dayOfWeek = sdf.format(date);
+
+                        if (dayOfWeek.equals("Sunday")) {
+                            //show error msg for no delivery
+                            if (isEnglish.equals("Yes")) {
+                                new AlertDialog.Builder(view.getContext())
+                                        .setMessage("There is no delivery on Sunday. Please choose another date.")
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                //finish();
+                                                deliveryDate.setText("DD/MM/YYYY");
+                                            }
+                                        })
+                                        .show();
+                            } else {
+                                new AlertDialog.Builder(view.getContext())
+                                        .setMessage("星期日没有送货，请选其他送货日期")
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                //finish();
+                                                deliveryDate.setText("日/月/年");
+                                            }
+                                        })
+                                        .show();
+                            }
+
+                        } else {
+                            Calendar c = Calendar.getInstance();
+
+                            // set the calendar to start of today
+                            c.set(Calendar.HOUR_OF_DAY, 0);
+                            c.set(Calendar.MINUTE, 0);
+                            c.set(Calendar.SECOND, 0);
+                            c.set(Calendar.MILLISECOND, 0);
+
+                            //and get that as a Date
+                            Date today = c.getTime();
+
+                            //reuse the calendar to set user specified's delivery date
+                            c.set(Calendar.YEAR, year);
+                            c.set(Calendar.MONTH, month);
+                            c.set(Calendar.DAY_OF_MONTH, day);
+                            Date dateSpecified = c.getTime();
+
+                            if (dateSpecified.before(today)) {
+
+                                if (isEnglish.equals("Yes")) {
+
+                                    new AlertDialog.Builder(view.getContext())
+                                            .setMessage("Invalid delivery date! Please select another delivery date.")
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    //finish();
+                                                    deliveryDate.setText("DD/MM/YYYY");
+                                                }
+                                            })
+                                            .show();
+                                } else {
+                                    new AlertDialog.Builder(view.getContext())
+                                            .setMessage("送货日期错误, 请选送货日期")
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    //finish();
+                                                    deliveryDate.setText("日/月/年");
+                                                }
+                                            })
+                                            .show();
+                                }
+                            }
+
+                            //month index start from 0, so + 1 to get correct actual month number
+                            selectedMonth += 1;
+                            deliveryDate.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
+                            ETADeliveryDate = selectedYear + "-" + selectedMonth + "-" + selectedDay;
+                            mCurrentDate.set(selectedDay, selectedMonth, selectedYear);
+                        }
+
                     }
                 }, year, month, day);
                 mDatePicker.show();
@@ -302,92 +397,31 @@ public class ConfirmOrderFragment extends Fragment {
                 String deliveryDateText = deliveryDate.getText().toString();
                 if (deliveryDateText.equals("DD/MM/YYYY") || deliveryDateText.equals("日/月/年")) {
                     if (isEnglish.equals("Yes")) {
-                        final Toast tag = Toast.makeText(view.getContext(), "Please select delivery date", Toast.LENGTH_SHORT);
-                        new CountDownTimer(20000, 1000) {
-                            public void onTick(long millisUntilFinished) {
-                                tag.show();
-                            }
 
-                            public void onFinish() {
-                                tag.show();
-                            }
-
-                        }.start();
-
+                        new AlertDialog.Builder(view.getContext())
+                                .setMessage("Please select delivery date")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //finish();
+                                    }
+                                })
+                                .show();
                     } else {
-                        final Toast tag = Toast.makeText(view.getContext(), "请选送货日期", Toast.LENGTH_SHORT);
-                        new CountDownTimer(20000, 1000) {
-                            public void onTick(long millisUntilFinished) {
-                                tag.show();
-                            }
-
-                            public void onFinish() {
-                                tag.show();
-                            }
-
-                        }.start();
+                        new AlertDialog.Builder(view.getContext())
+                                .setMessage("请选送货日期")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //finish();
+                                    }
+                                })
+                                .show();
                     }
+
                 } else {
-                    //check if date is >= today's date
-
-                    Calendar c = Calendar.getInstance();
-
-                    // set the calendar to start of today
-                    c.set(Calendar.HOUR_OF_DAY, 0);
-                    c.set(Calendar.MINUTE, 0);
-                    c.set(Calendar.SECOND, 0);
-                    c.set(Calendar.MILLISECOND, 0);
-
-                    // and get that as a Date
-                    Date today = c.getTime();
-
-                    // reuse the calendar to set user specified date
-                    c.set(Calendar.YEAR, year);
-                    c.set(Calendar.MONTH, month);
-                    c.set(Calendar.DAY_OF_MONTH, day);
-                    Date dateSpecified = c.getTime();
-
-                    if (dateSpecified.before(today)) {
-
-                        System.err.println("Date specified [" + dateSpecified + "] is before today [" + today + "]");
-
-                        if (isEnglish.equals("Yes")) {
-
-                            final Toast tag = Toast.makeText(view.getContext(), "Invalid delivery date! Please select another delivery date.", Toast.LENGTH_SHORT);
-                            new CountDownTimer(20000, 1000) {
-                                public void onTick(long millisUntilFinished) {
-                                    tag.show();
-                                }
-
-                                public void onFinish() {
-                                    tag.show();
-                                }
-
-                            }.start();
-
-                            deliveryDate.setText("DD/MM/YYYY");
-
-                        } else {
-
-                            final Toast tag = Toast.makeText(view.getContext(), "送货日期错误, 请选送货日期", Toast.LENGTH_SHORT);
-                            new CountDownTimer(20000, 1000) {
-                                public void onTick(long millisUntilFinished) {
-                                    tag.show();
-                                }
-
-                                public void onFinish() {
-                                    tag.show();
-                                }
-
-                            }.start();
-
-                            deliveryDate.setText("日/月/年");
-                        }
-                    } else {
-                        System.err.println("Date specified [" + dateSpecified + "] is NOT before today [" + today + "]");
 
                         //check if today's delivery is before cut off time
-
 
                         //insert into database 3 tables
                         createSalesOrder();
@@ -400,7 +434,6 @@ public class ConfirmOrderFragment extends Fragment {
                         bundle.putDouble("taxAmt", taxAmt);
                         bundle.putString("deliveryDate", ETADeliveryDate);
                         bundle.putDouble("totalPayable", totalPayable);
-                        //add sale details order here
 
                         Intent intent = new Intent(view.getContext(), PaymentActivity.class);
                         intent.putParcelableArrayListExtra("orderList", orderList);
@@ -409,10 +442,8 @@ public class ConfirmOrderFragment extends Fragment {
                         intent.putExtra("taxAmt", taxAmt);
                         intent.putExtra("deliveryDate", ETADeliveryDate);
                         intent.putExtra("totalPayable", totalPayable);
-                        //add sale details order here
                         getActivity().startActivity(intent);
 
-                    }
                 }
             }
         });
@@ -466,7 +497,8 @@ public class ConfirmOrderFragment extends Fragment {
                 .client(client)
                 .build().create(PostData.class);
 
-        compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode())
+        String deliveryYearMonth = year + month + "";
+        compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode(), deliveryYearMonth)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderResponse, this::handleError));
@@ -479,6 +511,31 @@ public class ConfirmOrderFragment extends Fragment {
             newOrderID = orderID;
             System.out.println("SALES ORDER IS " + orderID);
             createSalesOrderDetails(orderID);
+        } else {
+            if (isEnglish.equals("Yes")) {
+
+                new AlertDialog.Builder(view.getContext())
+                        .setMessage("Order not placed successfully. Please retry or contact Lim Kee.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                                deliveryDate.setText("DD/MM/YYYY");
+                            }
+                        })
+                        .show();
+            } else {
+                new AlertDialog.Builder(view.getContext())
+                        .setMessage("订单没有成功下单")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                                deliveryDate.setText("日/月/年");
+                            }
+                        })
+                        .show();
+            }
         }
     }
 
@@ -508,6 +565,31 @@ public class ConfirmOrderFragment extends Fragment {
             //create Sales Order Quantity
             createSalesOrderQuantity();
 
+        } else {
+            if (isEnglish.equals("Yes")) {
+
+                new AlertDialog.Builder(view.getContext())
+                        .setMessage("Order not placed successfully. Please retry or contact Lim Kee.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                                deliveryDate.setText("DD/MM/YYYY");
+                            }
+                        })
+                        .show();
+            } else {
+                new AlertDialog.Builder(view.getContext())
+                        .setMessage("订单没有成功下单")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                                deliveryDate.setText("日/月/年");
+                            }
+                        })
+                        .show();
+            }
         }
 
     }
@@ -526,7 +608,7 @@ public class ConfirmOrderFragment extends Fragment {
 
         ArrayList<String> itemQuantity = new ArrayList<String>();
 
-        for (Product p : orderList){
+        for (Product p : orderList) {
             itemQuantity.add(p.getItemCode() + "&" + p.getDefaultQty());
         }
 
@@ -540,9 +622,58 @@ public class ConfirmOrderFragment extends Fragment {
     private void handleSalesOrderQuantityResponse(int numProducts) {
 
         System.out.println("SALES ORDER NUMBER OF PRODUCTS " + numProducts);
-        if (numProducts == orderList.size()){
+        if (numProducts == orderList.size()) {
+            if (isEnglish.equals("Yes")) {
 
-            final Toast tag = Toast.makeText(view.getContext(), "Order #" + newOrderID + " is placed successfully",  Toast.LENGTH_SHORT);
+                new AlertDialog.Builder(view.getContext())
+                        .setMessage("Order #" + newOrderID + " is placed successfully")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                                deliveryDate.setText("DD/MM/YYYY");
+                            }
+                        })
+                        .show();
+            } else {
+                new AlertDialog.Builder(view.getContext())
+                        .setMessage("订单 #" + newOrderID + " 成功下单")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                                deliveryDate.setText("日/月/年");
+                            }
+                        })
+                        .show();
+            }
+        } else {
+            if (isEnglish.equals("Yes")) {
+
+                new AlertDialog.Builder(view.getContext())
+                        .setMessage("Order not placed successfully. Please retry or contact Lim Kee.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                                deliveryDate.setText("DD/MM/YYYY");
+                            }
+                        })
+                        .show();
+            } else {
+                new AlertDialog.Builder(view.getContext())
+                        .setMessage("订单没有成功下单")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                                deliveryDate.setText("日/月/年");
+                            }
+                        })
+                        .show();
+        }
+            /*
+            final Toast tag = Toast.makeText(view.getContext(), "Order #" + newOrderID + " is placed successfully", Toast.LENGTH_SHORT);
             new CountDownTimer(20000, 1000) {
                 public void onTick(long millisUntilFinished) {
                     tag.show();
@@ -553,6 +684,7 @@ public class ConfirmOrderFragment extends Fragment {
                 }
 
             }.start();
+            */
         }
 
     }
@@ -561,7 +693,6 @@ public class ConfirmOrderFragment extends Fragment {
     private void handleError(Throwable error) {
 
     }
-
 
 
 }

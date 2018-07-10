@@ -48,19 +48,52 @@ public class UserProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_user_profile, container, false);
         Button logout = view.findViewById(R.id.logout_btn);
-        TextView name, phone,company, companyCode,  address;
+        TextView name, phone, phone2, company, companyCode,  address;
 
         name = view.findViewById(R.id.name);
         phone = view.findViewById(R.id.phone);
         company = view.findViewById(R.id.companyName);
         companyCode = view.findViewById(R.id.companyCode);
         address = view.findViewById(R.id.address);
+        phone2 = view.findViewById(R.id.phone2);
 
         name.setText(customer.getDebtorName());
         phone.setText(customer.getDeliveryContact());
         company.setText(customer.getCompanyName());
         companyCode.setText(customer.getCompanyCode());
-        address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + customer.getDeliverAddr3() + " " + customer.getDeliverAddr4());
+
+        String contact2 = "";
+        if (customer.getDeliveryContact2() == null || customer.getDeliveryContact2().length() == 0){
+            contact2 = "";
+        } else {
+            contact2 = customer.getDeliveryContact2();
+        }
+        phone2.setText(contact2);
+
+        String address2 = "";
+        String address3 = "";
+        String address4 = "";
+
+        if (customer.getDeliverAddr2() == null  || customer.getDeliverAddr2().length() == 0){
+            address2 = "";
+        } else {
+            address2 = customer.getDeliverAddr2();
+        }
+
+        if (customer.getDeliverAddr3() == null || customer.getDeliverAddr3().length() == 0){
+            address3 = "";
+        } else {
+            address3 = customer.getDeliverAddr3();
+        }
+
+
+        if (customer.getDeliverAddr4() == null || customer.getDeliverAddr4().length() == 0){
+            address4 = "";
+        } else {
+            address4 = customer.getDeliverAddr4();
+        }
+
+        address.setText(customer.getDeliverAddr1() + " " + address2 + " " + address3 + " " + address4);
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override

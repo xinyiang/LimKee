@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.limkee.R;
 import com.limkee.entity.OrderDetails;
 import com.limkee.entity.OrderQuantity;
@@ -13,7 +12,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
- * Created by Xin Yi on 12/6/2018.
+ * Created by Xin Yi on 8/7/2018.
  */
 
 public class CurrentOrderDetailAdapter extends RecyclerView.Adapter<CurrentOrderDetailAdapter.MyViewHolder> {
@@ -22,6 +21,7 @@ public class CurrentOrderDetailAdapter extends RecyclerView.Adapter<CurrentOrder
     private OrderDetails od;
     private CurrentOrderDetailFragment fragment;
     private String isEnglish;
+    private String uom = "";
 
     public CurrentOrderDetailAdapter(CurrentOrderDetailFragment fragment, String isEnglish) {
         this.fragment = fragment;
@@ -42,24 +42,28 @@ public class CurrentOrderDetailAdapter extends RecyclerView.Adapter<CurrentOrder
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView description, qty, unitSubtotal;
+        TextView description, qty, unitSubtotal, unitOfMetric;
 
         public MyViewHolder(View view) {
             super(view);
             description = (TextView) view.findViewById(R.id.description);
             qty = (TextView) view.findViewById(R.id.qty);
             unitSubtotal = (TextView) view.findViewById(R.id.unitSubtotal);
+            unitOfMetric = (TextView) view.findViewById(R.id.uom);
         }
 
         public void bindContent(OrderQuantity product) {
             DecimalFormat df = new DecimalFormat("#0.00");
             if (isEnglish.equals("Yes")) {
                 description.setText(product.getDescription());
+                uom = "pcs";
             } else {
                 description.setText(product.getDescription2());
+                uom = product.getUom();
             }
 
             qty.setText(Integer.toString(product.getQty()));
+            unitOfMetric.setText(uom);
             double unitSub = product.getQty() * product.getUnitPrice();
             unitSubtotal.setText("$" + df.format(unitSub));
 

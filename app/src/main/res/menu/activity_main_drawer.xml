@@ -40,7 +40,7 @@
 
         <item
             android:id="@+id/nav_currentorder"
-            android:title="@string/currentorders"/>
+            android:title="当前订单"/>
 
         <item
             android:id="@+id/footer_spacer_4"

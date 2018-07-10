@@ -10,24 +10,24 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/lbl_name"
+            android:id="@+id/lbl_companyName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            android:text="名字"
+            android:text="公司名字"
             android:textColor="@color/colorPrimary"
             android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@+id/name"
+            app:layout_constraintBottom_toTopOf="@+id/companyName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
 
         <TextView
-            android:id="@+id/name"
+            android:id="@+id/companyName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
@@ -39,7 +39,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lbl_name"
+            app:layout_constraintTop_toBottomOf="@+id/lbl_companyName"
             app:layout_constraintVertical_bias="0.0" />
 
         <View
@@ -51,24 +51,24 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:background="#bd8642"
-            app:layout_constraintBottom_toTopOf="@+id/lbl_phone"
+            app:layout_constraintBottom_toTopOf="@+id/lbl_companyCode"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name"
+            app:layout_constraintTop_toBottomOf="@+id/companyName"
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/lbl_phone"
+            android:id="@+id/lbl_companyCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="电话"
+            android:text="公司代码"
             android:textColor="@color/colorPrimary"
             android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@+id/phone"
+            app:layout_constraintBottom_toTopOf="@+id/companyCode"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -76,7 +76,7 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/phone"
+            android:id="@+id/companyCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -86,7 +86,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lbl_phone" />
+            app:layout_constraintTop_toBottomOf="@+id/lbl_companyCode" />
 
         <View
             android:id="@+id/secondLine"
@@ -98,18 +98,18 @@
             android:background="#bd8642"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/phone" />
+            app:layout_constraintTop_toBottomOf="@+id/companyCode" />
 
 
         <TextView
-            android:id="@+id/lbl_companyName"
+            android:id="@+id/lbl_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:text="公司名字"
+            android:text="名字"
             android:textColor="@color/colorPrimary"
             android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/logout_btn"
@@ -121,7 +121,7 @@
 
 
         <TextView
-            android:id="@+id/companyName"
+            android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -131,7 +131,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lbl_companyName" />
+            app:layout_constraintTop_toBottomOf="@+id/lbl_name" />
 
         <View
             android:id="@+id/thirdLine"
@@ -142,19 +142,18 @@
             android:layout_marginTop="8dp"
             android:background="#bd8642"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/companyName" />
+            app:layout_constraintTop_toBottomOf="@+id/name" />
 
 
         <TextView
-            android:id="@+id/lbl_companyCode"
+            android:id="@+id/lbl_phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:text="公司代码"
+            android:text="联络号码"
             android:textColor="@color/colorPrimary"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -163,7 +162,7 @@
             app:layout_constraintTop_toBottomOf="@+id/thirdLine" />
 
         <TextView
-            android:id="@+id/companyCode"
+            android:id="@+id/phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -175,8 +174,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lbl_companyCode"
+            app:layout_constraintTop_toBottomOf="@+id/lbl_phone"
             app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/phone2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/phone"
+            app:layout_constraintTop_toTopOf="@+id/phone" />
 
         <View
             android:id="@+id/forthLine"
@@ -188,7 +198,7 @@
             android:background="#bd8642"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/companyCode" />
+            app:layout_constraintTop_toBottomOf="@+id/phone" />
 
         <TextView
             android:id="@+id/lbl_address"

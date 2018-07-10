@@ -14,7 +14,6 @@ public class OrderQuantity {
 
     public OrderQuantity() {
     }
-
     public OrderQuantity(String description, String description2, int qty, int returnedQty, double unitPrice) {
         this.description = description;
         this.description2 = description2;
@@ -31,6 +30,7 @@ public class OrderQuantity {
         this.unitPrice = unitPrice;
         this.uom = uom;
     }
+
     public String getDescription() {
         return description;
     }

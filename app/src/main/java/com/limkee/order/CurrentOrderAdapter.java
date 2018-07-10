@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by Xin Yi on 12/6/2018.
+ * Created by Xin Yi on 9/7/2018.
  */
 
 public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapter.MyViewHolder> {
@@ -27,6 +27,7 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
     private Customer customer;
     private String isEnglish;
     private String ETADeliveryDate;
+    public RelativeLayout rel;
 
     public CurrentOrderAdapter(CurrentOrderFragment fragment, ArrayList<Order> col,Customer customer, String isEnglish) {
         this.fragment = fragment;
@@ -39,6 +40,9 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.orders_recycler_view, parent, false);
+
+        rel= (RelativeLayout) itemView.findViewById(R.id.view_foreground);
+
         return new MyViewHolder(itemView);
     }
 
@@ -46,6 +50,22 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         final Order order = currentOrderList.get(position);
         holder.bindContent(order);
+
+        rel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                orderID = order.getOrderID();
+
+                Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
+                intent.putExtra("orderID", orderID);
+                intent.putExtra("language", isEnglish);
+                intent.putExtra("deliveryDate", ETADeliveryDate);
+                intent.putExtra("numItems", order.getNoOfItems());
+                intent.putExtra("deliveryShift", order.getDeliveryShift());
+                intent.putExtra("customer", customer);
+                fragment.startActivity(intent);
+            }
+        });
 
         holder.orderID.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -101,23 +121,7 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
             }
         });
 
-        holder.lbl_deliveryDate.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
 
-                orderID = order.getOrderID();
-
-                Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
-                intent.putExtra("orderID", orderID);
-                intent.putExtra("language", isEnglish);
-                intent.putExtra("deliveryDate", ETADeliveryDate);
-                intent.putExtra("numItems", order.getNoOfItems());
-                intent.putExtra("deliveryShift", order.getDeliveryShift());
-                intent.putExtra("customer", customer);
-                fragment.startActivity(intent);
-
-            }
-        });
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -129,16 +133,14 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
             orderID = (TextView) view.findViewById(R.id.orderID);
             deliveryDate = (TextView) view.findViewById(R.id.deliveryDate);
             noOfItems = (TextView) view.findViewById(R.id.noOfitems);
-            lbl_deliveryDate = (TextView) view.findViewById(R.id.lbl_deliveryDate);
+
         }
 
         public void bindContent(Order order) {
 
-            if (order.getOrderID().length() == 1){
-                orderID.setText(order.getOrderID() + " ");
-            } else {
-                orderID.setText(order.getOrderID());
-            }
+
+            orderID.setText(order.getOrderID());
+
 
             String ETA = order.getDeliveryDate();
             String date = ETA.substring(8);
@@ -148,7 +150,6 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
             deliveryDate.setText(ETADeliveryDate);
 
             if (isEnglish.equals("Yes")){
-                lbl_deliveryDate.setText("Delivering on");
 
                 if (order.getNoOfItems() == 1){
                     noOfItems.setText(order.getNoOfItems() + " item");
