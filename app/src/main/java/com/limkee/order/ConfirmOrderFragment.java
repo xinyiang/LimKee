@@ -497,8 +497,7 @@ public class ConfirmOrderFragment extends Fragment {
                 .client(client)
                 .build().create(PostData.class);
 
-        String deliveryYearMonth = year + month + "";
-        compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode(), deliveryYearMonth)
+        compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode(), ETADeliveryDate)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderResponse, this::handleError));
