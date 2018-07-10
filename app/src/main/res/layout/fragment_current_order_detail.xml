@@ -12,6 +12,7 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="81dp"
@@ -22,9 +23,10 @@
                 android:indeterminateTint="@color/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.501"
+                app:layout_constraintHorizontal_bias="0.456"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0"
                 tools:ignore="InvalidId" />
 
             <TextView
@@ -66,11 +68,39 @@
                 android:gravity="right"
                 android:maxLines="1"
                 android:textSize="15dp"
-                app:layout_constraintBottom_toTopOf="@+id/phone"
+                app:layout_constraintBottom_toTopOf="@+id/lbl_orderDate"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/lbl_order_details"
                 app:layout_constraintVertical_bias="0.0" />
 
+            <TextView
+                android:id="@+id/lbl_orderDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="4dp"
+                android:text="订单日期"
+                android:textSize="15dp"
+                app:layout_constraintBottom_toTopOf="@+id/lbl_status"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_orderID"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/orderDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:textSize="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/lbl_orderDate"
+                app:layout_constraintTop_toBottomOf="@+id/orderID"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/lbl_status"
@@ -81,10 +111,8 @@
                 android:layout_marginTop="4dp"
                 android:text="状态"
                 android:textSize="15dp"
-                app:layout_constraintBottom_toTopOf="@+id/lbl_deliveryAddress"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lbl_orderID"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toBottomOf="@+id/lbl_orderDate" />
 
             <TextView
                 android:id="@+id/status"
@@ -94,23 +122,42 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
                 android:textSize="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/lbl_status"
-                app:layout_constraintTop_toBottomOf="@+id/orderID" />
+                app:layout_constraintTop_toBottomOf="@+id/orderDate"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/lbl_deliveryDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="#DCDCDC"
+                android:text=" 送货详情"
+                android:textColor="@color/colorPrimary"
+                android:textSize="17dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_status" />
+
 
             <TextView
                 android:id="@+id/lbl_deliveryAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="4dp"
                 android:text="地址"
                 android:textSize="15dp"
+                app:layout_constraintEnd_toStartOf="@+id/deliveryAddress"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lbl_status" />
+                app:layout_constraintTop_toBottomOf="@+id/lbl_deliveryDetails" />
 
 
             <TextView
@@ -118,18 +165,12 @@
                 android:layout_width="220dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginRight="8dp"
                 android:gravity="right"
                 android:maxLines="3"
                 android:textSize="15dp"
-                app:layout_constraintBottom_toTopOf="@+id/deliveredDate"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/lbl_deliveryAddress"
-                app:layout_constraintTop_toBottomOf="@+id/status"
-                app:layout_constraintVertical_bias="0.0" />
-
+                app:layout_constraintTop_toBottomOf="@+id/lbl_deliveryDetails" />
 
             <TextView
                 android:id="@+id/lbl_deliveryDate"
@@ -138,7 +179,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="4dp"
-                android:text="日期"
+                android:text="送货日期"
                 android:textSize="15dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/deliveryAddress" />
@@ -147,17 +188,17 @@
                 android:id="@+id/deliveredDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="346dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
                 android:textSize="15dp"
-                app:layout_constraintBottom_toTopOf="@+id/deliveryTime"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/lbl_deliveryDate"
                 app:layout_constraintTop_toBottomOf="@+id/deliveryAddress"
                 app:layout_constraintVertical_bias="0.0" />
-
 
             <TextView
                 android:id="@+id/lbl_deliveryTime"
@@ -167,7 +208,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="4dp"
-                android:text="时间"
+                android:text="送货时间"
                 android:textSize="15dp"
                 app:layout_constraintBottom_toTopOf="@+id/lbl_itemsCount"
                 app:layout_constraintStart_toStartOf="parent"
@@ -183,7 +224,6 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
-                android:text="4.30am to 6.30am"
                 android:textSize="16dp"
                 app:layout_constraintBottom_toTopOf="@+id/lbl_items"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -198,6 +238,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:background="#DCDCDC"
+                android:text="订单样品"
                 android:textColor="@color/colorPrimary"
                 android:textSize="17dp"
                 android:textStyle="bold"

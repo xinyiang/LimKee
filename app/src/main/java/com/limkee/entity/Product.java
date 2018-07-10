@@ -18,9 +18,9 @@ public class Product implements Parcelable{
     private String description;
     private String description2;
     private double unitPrice;
+    private String uom;
     private  int defaultQty;
     private  int qtyMultiples;
-    private String uom;
     private String imageUrl;
 
     public Product(String itemCode, String description, String description2, double unitPrice, String imageUrl, int defaultQty, int qtyMultiples){

@@ -29,6 +29,7 @@ public class ConfirmOrderAdapter extends RecyclerView.Adapter<ConfirmOrderAdapte
         private ArrayList<Product> orderList;
         private ConfirmOrderFragment fragment;
         private String isEnglish;
+        private String uom = "";
 
         public ConfirmOrderAdapter(ConfirmOrderFragment fragment, ArrayList<Product> orderList, String isEnglish) {
             this.fragment = fragment;
@@ -50,24 +51,28 @@ public class ConfirmOrderAdapter extends RecyclerView.Adapter<ConfirmOrderAdapte
         }
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
-            TextView description, qty, unitSubtotal;
+            TextView description, qty, unitSubtotal, unitOfMetric;
 
             public MyViewHolder(View view) {
                 super(view);
                 description = (TextView) view.findViewById(R.id.description);
                 qty = (TextView) view.findViewById(R.id.qty);
                 unitSubtotal = (TextView) view.findViewById(R.id.unitSubtotal);
+                unitOfMetric = (TextView) view.findViewById(R.id.uom);
             }
 
             public void bindContent(Product product) {
                 DecimalFormat df = new DecimalFormat("#0.00");
-                if (isEnglish.equals("Yes")){
+                if (isEnglish.equals("Yes")) {
                     description.setText(product.getDescription());
+                    uom = "pcs";
                 } else {
                     description.setText(product.getDescription2());
+                    uom = product.getUom();
                 }
 
                 qty.setText(Integer.toString(product.getDefaultQty()));
+                unitOfMetric.setText(uom);
                 double unitSub = product.getDefaultQty() * product.getUnitPrice();
                 unitSubtotal.setText("$" + df.format(unitSub));
             }

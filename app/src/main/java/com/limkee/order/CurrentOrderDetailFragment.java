@@ -24,7 +24,11 @@ import com.limkee.entity.OrderDetails;
 import com.limkee.entity.OrderQuantity;
 import com.limkee.entity.Product;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,7 +42,6 @@ public class CurrentOrderDetailFragment extends Fragment {
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
     String orderID;
-    private ArrayList<Product> orderList;
     private Customer customer;
     private String isEnglish;
     public static Retrofit retrofit;
@@ -125,75 +128,16 @@ public class CurrentOrderDetailFragment extends Fragment {
         doGetOrderQuantity(orderID);
 
         //if english, change label to english
-/*
-        if (isEnglish.equals("Yes")){
-            TextView lbl_subtotal_amt, lbl_total_amt, lbl_tax_amt;
-            TextView lbl_delivery_details,lbl_name, lbl_contact, lbl_address, lbl_datetime;
-            Button btnNext;
-
-            lbl_subtotal_amt = (TextView) view.findViewById(R.id.lbl_subtotal_amt);
-            lbl_total_amt = (TextView) view.findViewById(R.id.lbl_total_amt);
-            lbl_tax_amt = (TextView) view.findViewById(R.id.lbl_tax_amt);
-            lbl_delivery_details = (TextView) view.findViewById(R.id.lbl_delivery_details);
-            lbl_name = (TextView) view.findViewById(R.id.lbl_name);
-            lbl_contact = (TextView) view.findViewById(R.id.lbl_phone);
-            lbl_address = (TextView) view.findViewById(R.id.lbl_address);
-            lbl_datetime = (TextView) view.findViewById(R.id.lbl_datetime);
-            btnNext = (Button) view.findViewById(R.id.btnNext);
-
-            lbl_subtotal_amt.setText("Subtotal");
-            lbl_tax_amt.setText("GST (7%)");
-            lbl_total_amt.setText("Total Payable");
-            lbl_delivery_details.setText("Delivery Details");
-            lbl_name.setText("Name");
-            lbl_contact.setText("Contact No");
-            lbl_address.setText("Delivery Address");
-            lbl_datetime.setText("Delivery Date/Time");
-            btnNext.setText("Place Order");
-        }
-*/
-
-        //display order details
-        /*
-        TextView subtotalAmt, tax, totalAmt;
-        DecimalFormat df = new DecimalFormat("#0.00");
-        subtotalAmt = view.findViewById(R.id.subtotalAmt);
-        double subtotal = 56.50;
-        subtotalAmt.setText("$" + df.format(subtotal));
-
-        tax = view.findViewById(R.id.taxAmt);
-        double taxAmt = subtotal * 0.07;
-        tax.setText("$" + df.format(taxAmt));
-
-        totalAmt = view.findViewById(R.id.totalAmt);
-        double totalPayable = taxAmt + subtotal;
-        totalAmt.setText("$" + df.format(totalPayable));
-        */
-
-        //display delivery details data
-        TextView orderNo, status, address, deliveryDate, deliveryTime, itemCount, lbl_orderDetails, lbl_amtDetails;
+        TextView orderNo, status, address, deliveryDate, deliveryTime, itemCount;
         orderNo = (TextView) view.findViewById(R.id.orderID);
         status = (TextView) view.findViewById(R.id.status);
         address = (TextView) view.findViewById(R.id.deliveryAddress);
         deliveryDate = (TextView) view.findViewById(R.id.deliveredDate);
         itemCount = (TextView) view.findViewById(R.id.lbl_itemsCount);
         deliveryTime = (TextView) view.findViewById(R.id.deliveredTime);
-        lbl_orderDetails = (TextView) view.findViewById(R.id.lbl_order_details);
-        lbl_amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
-
-
 
         orderNo.setText("#" + orderID);
-        if (isEnglish.equals("Yes")) {
-            status.setText("Pending Delivery");
-            lbl_orderDetails.setText(" Order details");
-            lbl_amtDetails.setText(" Amount details");
-        } else {
-            status.setText("待送货");
-            lbl_orderDetails.setText(" 订单详情");
-            lbl_amtDetails.setText(" 价钱详情");
-        }
-
+        deliveryDate.setText(date);
         String address3 = "";
         String address4 = "";
         if (customer.getDeliverAddr3() == null){
@@ -205,23 +149,57 @@ public class CurrentOrderDetailFragment extends Fragment {
         }
 
         address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + address3 + " " + address4);
-        deliveryDate.setText(date);
-        if (deliveryShift.equals("AM")){
-            deliveryTime.setText("4.30am to 6.30am");
-        } else {
-            deliveryTime.setText("7.50am to 12.30pm");
-        }
 
         if (isEnglish.equals("Yes")){
+            TextView lbl_subtotal_amt, lbl_total_amt, lbl_tax_amt, lbl_orderDetails, lbl_amtDetails, lbl_deliveryDetails;
+            TextView lbl_orderID, lbl_orderDate, lbl_status, lbl_address, lbl_date, lbl_time;
+            lbl_orderID  = (TextView) view.findViewById(R.id.lbl_orderID);
+            lbl_orderDate  = (TextView) view.findViewById(R.id.lbl_orderDate);
+            lbl_status  = (TextView) view.findViewById(R.id.lbl_status);
+            lbl_subtotal_amt = (TextView) view.findViewById(R.id.lbl_subtotal_amt);
+            lbl_total_amt = (TextView) view.findViewById(R.id.lbl_total_amt);
+            lbl_tax_amt = (TextView) view.findViewById(R.id.lbl_tax_amt);
+            lbl_address = (TextView) view.findViewById(R.id.lbl_deliveryAddress);
+            lbl_date = (TextView) view.findViewById(R.id.lbl_deliveryDate);
+            lbl_time = (TextView) view.findViewById(R.id.lbl_deliveryTime);
+            lbl_orderDetails = (TextView) view.findViewById(R.id.lbl_order_details);
+            lbl_deliveryDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
+            lbl_amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
+
+            lbl_orderDetails.setText(" Order details");
+            lbl_orderID.setText("Order ID");
+            lbl_orderDate.setText("Order Date");
+            lbl_status.setText("Status");
+
+            lbl_deliveryDetails.setText(" Delivery details");
+            status.setText("Pending Delivery");
+            lbl_address.setText("Delivery Address");
+
+            lbl_date.setText("Delivery Date");
+            lbl_time.setText("Delivery Time");
+
+            lbl_amtDetails.setText(" Amount details");
+            lbl_subtotal_amt.setText("Sub Total");
+            lbl_tax_amt.setText("GST (7%)");
+            lbl_total_amt.setText("Total");
 
             if (numItems == 1){
-                itemCount.setText(" " + numItems + " item");
+                itemCount.setText(" Product details (" + numItems + " item)");
             } else {
-                itemCount.setText(" " + numItems + " items");
+                itemCount.setText(" Product details (" + numItems + " items)");
             }
+
         } else {
-            itemCount.setText(" " + numItems + "  样");
+            status.setText("待送货");
+            itemCount.setText(" 订单样品 (" + numItems + " 样)");
         }
+
+        if (deliveryShift.equals("AM")){
+            deliveryTime.setText("4.30am - 6.30am");
+        } else {
+            deliveryTime.setText("7.50am - 12.30pm");
+        }
+
 
         return view;
     }
@@ -258,6 +236,20 @@ public class CurrentOrderDetailFragment extends Fragment {
                 totalAmt = view.findViewById(R.id.totalAmt);
                 double totalPayable = taxAmt + subtotal;
                 totalAmt.setText("$" + df.format(totalPayable));
+
+                TextView orderDateTxt = view.findViewById(R.id.orderDate);
+                String orderDate = od.getOrderDate();
+
+                String date = orderDate.substring(8,10);
+                String month = orderDate.substring(5,7);
+                String year = orderDate.substring(0,4);
+                String formatOrderDate = date + "/" + month + "/" + year;
+
+                String hr = orderDate.substring(11,13);
+                String min = orderDate.substring(14,16);
+                System.out.println("date is " + formatOrderDate + " and time is " + hr + ":" + min);
+                orderDateTxt.setText(formatOrderDate + " " + hr + ":" + min);
+
             }
 
             @Override

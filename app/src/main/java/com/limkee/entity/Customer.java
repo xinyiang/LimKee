@@ -15,7 +15,7 @@ public class Customer implements Parcelable{
     private String debtorName;
     private  String companyName;
     private String deliveryContact;
-    private String deliverFax1;
+    private String deliveryContact2;
     private String invAddr1;
     private String invAddr2;
     private String invAddr3;
@@ -28,21 +28,22 @@ public class Customer implements Parcelable{
     private String status;
     private int routeNo;
 
-    public Customer(String companyCode, String password,String debtorCode,String debtorName,String deliveryContact) {
+    public Customer(String companyCode, String password,String debtorCode, String debtorName, String deliveryContact) {
         this.companyCode = companyCode;
         this.password = password;
         this.debtorCode = debtorCode;
         this.debtorName = debtorName;
         this.deliveryContact = deliveryContact;
     }
-    public Customer(String companyCode, String password,String debtorCode,String companyName, String debtorName,String deliveryContact,String deliverFax1,String invAddr1, String invAddr2,String invAddr3,String invAddr4,String deliverAddr1,String deliverAddr2, String deliverAddr3,String deliverAddr4, String displayTerm,String status,int routeNo) {
+
+    public Customer(String companyCode, String password,String debtorCode,String companyName, String debtorName, String deliveryContact, String deliveryContact2, String invAddr1, String invAddr2,String invAddr3,String invAddr4,String deliverAddr1,String deliverAddr2, String deliverAddr3,String deliverAddr4, String displayTerm,String status,int routeNo) {
         this.companyCode = companyCode;
         this.password = password;
         this.debtorCode = debtorCode;
         this.companyName = companyName;
         this.debtorName = debtorName;
         this.deliveryContact = deliveryContact;
-        this.deliverFax1 = deliverFax1;
+        this.deliveryContact2 = deliveryContact2;
         this.invAddr1 = invAddr1;
         this.invAddr2 = invAddr2;
         this.invAddr3 = invAddr3;
@@ -111,12 +112,12 @@ public class Customer implements Parcelable{
         this.companyName = companyName;
     }
 
-    public String getDeliverFax1() {
-        return deliverFax1;
+    public String getDeliveryContact2() {
+        return deliveryContact2;
     }
 
-    public void setDeliverFax1(String deliverFax1) {
-        this.deliverFax1 = deliverFax1;
+    public void setDeliveryContact2(String deliveryContact2) {
+        this.deliveryContact2 = deliveryContact2;
     }
 
     public String getInvAddr1() {
@@ -231,7 +232,7 @@ public class Customer implements Parcelable{
         debtorName = in.readString();
         companyName = in.readString();
         deliveryContact = in.readString();
-        deliverFax1 = in.readString();
+        deliveryContact2 = in.readString();
         invAddr1 = in.readString();
         invAddr2 = in.readString();
         invAddr3 = in.readString();
@@ -257,7 +258,7 @@ public class Customer implements Parcelable{
         dest.writeString(debtorName);
         dest.writeString(companyName);
         dest.writeString(deliveryContact);
-        dest.writeString(deliverFax1);
+        dest.writeString(deliveryContact2);
         dest.writeString(invAddr1);
         dest.writeString(invAddr2);
         dest.writeString(invAddr3);

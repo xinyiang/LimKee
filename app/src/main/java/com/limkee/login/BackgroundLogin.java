@@ -112,7 +112,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
             String companyName = array[5];
             String debtorName = array[6];
             String deliveryContact = array[7];
-            String deliverFax1 = array[8];
+            String deliveryContact2 = array[8];
             String invAddr1 = array[9];
             String invAddr2 = array[10];
             String invAddr3 = array[11];
@@ -125,27 +125,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
             String status = array[18];
             int routeNo = Integer.parseInt(array[19]);
 
-            final Customer customer = new Customer(companyCode, password, debtorCode, companyName, debtorName, deliveryContact, deliverFax1, invAddr1, invAddr2, invAddr3, invAddr4, deliverAddr1, deliverAddr2, deliverAddr3, deliverAddr4, displayTerm, status, routeNo);
-
-            /*
-            String deliveryContact = array[7];
-            String deliveryContact2 = array[8];
-            String deliverFax1 = array[9];
-            String invAddr1 = array[10];
-            String invAddr2 = array[11];
-            String invAddr3 = array[12];
-            String invAddr4 = array[13];
-            String deliverAddr1 = array[14];
-            String deliverAddr2 = array[15];
-            String deliverAddr3 = array[16];
-            String deliverAddr4 = array[17];
-            String displayTerm = array[18];
-            String status = array[19];
-            int routeNo = Integer.parseInt(array[20]);
-
-            final Customer customer = new Customer(companyCode, password, debtorCode, companyName, debtorName, deliveryContact, deliveryContact2, deliverFax1, invAddr1, invAddr2, invAddr3, invAddr4, deliverAddr1, deliverAddr2, deliverAddr3, deliverAddr4, displayTerm, status, routeNo);
-
-*/
+            final Customer customer = new Customer(companyCode, password, debtorCode, companyName, debtorName, deliveryContact, deliveryContact2, invAddr1, invAddr2, invAddr3, invAddr4, deliverAddr1, deliverAddr2, deliverAddr3, deliverAddr4, displayTerm, status, routeNo);
 
 
            /*

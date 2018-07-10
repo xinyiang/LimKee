@@ -36,14 +36,20 @@
             <TextView
                 android:id="@+id/description"
                 android:layout_width="wrap_content"
-                android:layout_height="35dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="45dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:lines="1"
+                android:maxLength="20"
                 android:maxLines="1"
+                android:singleLine="true"
                 android:textColor="@color/colorPrimary"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/image"
@@ -52,37 +58,47 @@
 
             <TextView
                 android:id="@+id/lbl"
-                android:layout_width="16dp"
-                android:layout_height="25dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginLeft="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
                 android:text="x"
                 android:textColor="@color/colorPrimary"
                 android:textSize="17sp"
-                app:layout_constraintBottom_toTopOf="@+id/unitSubtotal"
-                app:layout_constraintStart_toEndOf="@+id/qty"
-                app:layout_constraintTop_toBottomOf="@+id/description"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/uom"
+                app:layout_constraintTop_toTopOf="@+id/price"
+                app:layout_constraintVertical_bias="1.0" />
 
 
             <TextView
                 android:id="@+id/price"
-                android:layout_width="54dp"
-                android:layout_height="25dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
                 android:textColor="@color/colorPrimary"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/lbl"
-                app:layout_constraintTop_toBottomOf="@+id/description"
+                app:layout_constraintTop_toTopOf="@+id/qty"
                 app:layout_constraintVertical_bias="0.0" />
 
 
             <TextView
                 android:id="@+id/unitSubtotal"
                 android:layout_width="wrap_content"
-                android:layout_height="27dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
@@ -101,7 +117,7 @@
             <EditText
                 android:id="@+id/qty"
                 android:layout_width="48dp"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
@@ -109,10 +125,24 @@
                 android:imeOptions="actionDone"
                 android:selectAllOnFocus="false"
                 android:inputType="numberSigned"
-                android:textSize="15sp"
+                android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/image"
                 app:layout_constraintTop_toBottomOf="@+id/description"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <TextView
+                android:id="@+id/uom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/qty"
+                app:layout_constraintTop_toTopOf="@+id/price"
                 app:layout_constraintVertical_bias="1.0" />
 
         </android.support.constraint.ConstraintLayout>
