@@ -167,8 +167,14 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                         QuickReorderFragment.lbl_subtotal.setVisibility(View.VISIBLE);
                         //check that if quantity is left blank, set qty to 0
                         if (qty.getText().toString().equals("")){
-
+                            product.setDefaultQty(0);
                             qty.setText("0");
+                            //update subtotal
+                            QuickReorderFragment.updateSubtotal(orderList);
+                            //update unit subtotal
+                            DecimalFormat df = new DecimalFormat("#0.00");
+                            double unitSub = 0 * product.getUnitPrice();
+                            unitSubtotal.setText("$" + df.format(unitSub));
 
                         } else {
                             //check if qty is in correct multiples
@@ -183,12 +189,18 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //finish();
+                                                    //reset quantity to default prefix
+                                                    product.setDefaultQty(product.getDefaultQty());
+                                                    qty.setText(Integer.toString(product.getDefaultQty()));
+                                                    DecimalFormat df = new DecimalFormat("#0.00");
+                                                    double unitSub = product.getDefaultQty() * product.getUnitPrice();
+                                                    unitSubtotal.setText("$" + df.format(unitSub));
                                                 }
                                             })
                                             .show();
                                 } else {
                                     new AlertDialog.Builder(itemView.getContext())
-                                            .setMessage(product.getDescription2() + "的数量有误. 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，"+ (qtyMultiples+qtyMultiples) + "等等")
+                                            .setMessage(product.getDescription2() + "的数量有误, 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，"+ (qtyMultiples+qtyMultiples) + "等等")
                                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
@@ -211,12 +223,75 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                                 QuickReorderFragment.updateSubtotal(orderList);
                                 //update unit subtotal
                                 DecimalFormat df = new DecimalFormat("#0.00");
-                                double unitSub = product.getDefaultQty() * product.getUnitPrice();
+                                double unitSub = quantity * product.getUnitPrice();
                                 unitSubtotal.setText("$" + df.format(unitSub));
                             }
                         }
                     }
                     valueChanged = false;
+                }
+            });
+
+            //update when on text change instead of clicking tick in keyboard
+            qty.clearFocus();
+            qty.addTextChangedListener(new TextWatcher() {
+                int quantity = 0;
+                public void afterTextChanged(Editable s) {
+                    //int quantity = 0;
+
+                    try {
+
+
+                        if (qty.getText().toString().equals("")){
+                            quantity = 0;
+                            //qty.setText("0);
+
+                        } else {
+                            quantity = Integer.parseInt(qty.getText().toString());
+                            //qty.setText(qty.getText().toString());
+                        }
+
+
+                        //need to validate final qty entered is in product multiples  qty
+                        int qtyMultiples = product.getQtyMultiples();
+
+                        /*
+                        if (quantity % qtyMultiples != 0){ //not working as wanted. only when text is finished "eg: 10" not "1... typing to 10"
+
+                            final Toast tag = Toast.makeText(itemView.getContext(), "Wrong qty", Toast.LENGTH_SHORT);
+                            new CountDownTimer(2000, 1000) {
+                                public void onTick(long millisUntilFinished) {
+                                    tag.show();
+                                }
+
+                                public void onFinish() {
+                                    tag.show();
+                                }
+
+                            }.start();
+                            } else {
+                            */
+                                product.setDefaultQty(quantity);           //did not validate qty multiples
+                                //update unit subtotal
+                                DecimalFormat df = new DecimalFormat("#0.00");
+                                double unitSub = quantity * product.getUnitPrice();
+                                unitSubtotal.setText("$" + df.format(unitSub));
+                                //update subtotal
+                                QuickReorderFragment.updateSubtotal(orderList);
+                       // }
+
+                    } catch(Exception e) {
+                        quantity = 0;
+
+                    }
+
+                }
+
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+
                 }
             });
         }
@@ -269,4 +344,8 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
     public static ArrayList<Product> getOrderList(){
         return orderList;
     }
+
+
+
+
 }

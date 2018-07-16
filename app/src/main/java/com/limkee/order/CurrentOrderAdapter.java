@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by Xin Yi on 9/7/2018.
+ * Created by Xin Yi on 7/7/2018.
  */
 
 public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapter.MyViewHolder> {

@@ -1,28 +1,17 @@
 package com.limkee.order;
 
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.limkee.entity.Product;
-import com.limkee.order.ConfirmOrderActivity;
-import com.squareup.picasso.Picasso;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import com.limkee.R;
 
-import org.w3c.dom.Text;
-
 /**
- * Created by Xin Yi on 24/5/2018.
+ * Created by Xin Yi on 4/7/2018.
  */
 
 public class ConfirmOrderAdapter extends RecyclerView.Adapter<ConfirmOrderAdapter.MyViewHolder>  {

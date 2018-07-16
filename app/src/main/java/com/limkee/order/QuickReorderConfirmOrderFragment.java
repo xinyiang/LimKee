@@ -42,9 +42,10 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ConfirmOrderFragment extends Fragment {
 
-    private ConfirmOrderFragment.OnFragmentInteractionListener mListener;
+public class QuickReorderConfirmOrderFragment extends Fragment {
+
+    private QuickReorderConfirmOrderFragment.OnFragmentInteractionListener mListener;
     private View view;
     private EditText deliveryDate;
     Calendar mCurrentDate;
@@ -55,7 +56,7 @@ public class ConfirmOrderFragment extends Fragment {
     private double subtotal;
     private double taxAmt;
     private double totalPayable;
-    private ConfirmOrderAdapter mAdapter;
+    private QuickReorderConfirmOrderAdapter mAdapter;
     private ArrayList<Product> orderList;
     private String isEnglish;
     private Customer customer;
@@ -68,12 +69,12 @@ public class ConfirmOrderFragment extends Fragment {
     private int year;
     private String dayOfWeek;
 
-    public ConfirmOrderFragment() {
+    public QuickReorderConfirmOrderFragment() {
         // Required empty public constructor
     }
 
-    public static ConfirmOrderFragment newInstance() {
-        ConfirmOrderFragment cf = new ConfirmOrderFragment();
+    public static QuickReorderConfirmOrderFragment newInstance() {
+        QuickReorderConfirmOrderFragment cf = new QuickReorderConfirmOrderFragment();
         Bundle args = new Bundle();
         cf.setArguments(args);
         return cf;
@@ -89,11 +90,11 @@ public class ConfirmOrderFragment extends Fragment {
         isEnglish = bundle.getString("language");
         deliveryShift = bundle.getString("deliveryShift");
 
-        if (getActivity() instanceof ConfirmOrderActivity) {
+        if (getActivity() instanceof QuickReorderConfirmOrderActivity) {
             if (isEnglish.equals("Yes")) {
-                ((ConfirmOrderActivity) getActivity()).setActionBarTitle("Confirm Order");
+                ((QuickReorderConfirmOrderActivity) getActivity()).setActionBarTitle("Confirm Order");
             } else {
-                ((ConfirmOrderActivity) getActivity()).setActionBarTitle("确认订单");
+                ((QuickReorderConfirmOrderActivity) getActivity()).setActionBarTitle("确认订单");
             }
         }
 
@@ -103,7 +104,7 @@ public class ConfirmOrderFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_confirm_order, container, false);
+        view = inflater.inflate(R.layout.fragment_quick_reorder_confirm_order, container, false);
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
 
@@ -123,7 +124,7 @@ public class ConfirmOrderFragment extends Fragment {
         }
 
         recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
-        mAdapter = new ConfirmOrderAdapter(this, orderList, isEnglish);
+        mAdapter = new QuickReorderConfirmOrderAdapter(this, orderList, isEnglish);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -293,7 +294,6 @@ public class ConfirmOrderFragment extends Fragment {
                         month = selectedMonth;
                         day = selectedDay;
 
-
                         SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
                         Date date = new Date(selectedYear, selectedMonth, selectedDay - 1);
                         String dayOfWeek = sdf.format(date);
@@ -369,6 +369,7 @@ public class ConfirmOrderFragment extends Fragment {
                                             .show();
                                 }
                             }
+
                             SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
                             SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -427,28 +428,28 @@ public class ConfirmOrderFragment extends Fragment {
 
                 } else {
 
-                        //check if today's delivery is before cut off time
+                    //check if today's delivery is before cut off time
 
-                        //insert into database 3 tables
-                        createSalesOrder();
+                    //insert into database 3 tables
+                    createSalesOrder();
 
-                        //go to payment activity
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable("customer", customer);
-                        bundle.putParcelableArrayList("orderList", orderList);
-                        bundle.putDouble("subtotal", subtotal);
-                        bundle.putDouble("taxAmt", taxAmt);
-                        bundle.putString("deliveryDate", ETADeliveryDate);
-                        bundle.putDouble("totalPayable", totalPayable);
+                    //go to payment activity
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("customer", customer);
+                    bundle.putParcelableArrayList("orderList", orderList);
+                    bundle.putDouble("subtotal", subtotal);
+                    bundle.putDouble("taxAmt", taxAmt);
+                    bundle.putString("deliveryDate", ETADeliveryDate);
+                    bundle.putDouble("totalPayable", totalPayable);
 
-                        Intent intent = new Intent(view.getContext(), PaymentActivity.class);
-                        intent.putParcelableArrayListExtra("orderList", orderList);
-                        intent.putExtra("customer", customer);
-                        intent.putExtra("subtotal", subtotal);
-                        intent.putExtra("taxAmt", taxAmt);
-                        intent.putExtra("deliveryDate", ETADeliveryDate);
-                        intent.putExtra("totalPayable", totalPayable);
-                        getActivity().startActivity(intent);
+                    Intent intent = new Intent(view.getContext(), PaymentActivity.class);
+                    intent.putParcelableArrayListExtra("orderList", orderList);
+                    intent.putExtra("customer", customer);
+                    intent.putExtra("subtotal", subtotal);
+                    intent.putExtra("taxAmt", taxAmt);
+                    intent.putExtra("deliveryDate", ETADeliveryDate);
+                    intent.putExtra("totalPayable", totalPayable);
+                    getActivity().startActivity(intent);
 
                 }
             }
@@ -662,7 +663,7 @@ public class ConfirmOrderFragment extends Fragment {
                             }
                         })
                         .show();
-        }
+            }
 
         /*
             final Toast tag = Toast.makeText(view.getContext(), "Order #" + newOrderID + " is placed successfully", Toast.LENGTH_SHORT);

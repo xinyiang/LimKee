@@ -7,13 +7,13 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
-        android:windowSoftInputMode="stateVisible|adjustResize"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:windowSoftInputMode="stateVisible|adjustResize">
         <activity android:name=".login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,26 +23,27 @@
         </activity>
         <activity
             android:name=".navigation.NavigationActivity"
-            android:screenOrientation="portrait"
             android:parentActivityName=".login.LoginActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".login.LogoutActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".login.LoginActivity"/>
+            android:parentActivityName=".login.LoginActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".order.ConfirmOrderActivity"
-            android:parentActivityName=".navigation.NavigationActivity"/>
+            android:parentActivityName=".navigation.NavigationActivity" />
         <activity
             android:name=".order.CurrentOrderDetailActivity"
-            android:parentActivityName=".order.ConfirmOrderActivity"/>
+            android:parentActivityName=".order.ConfirmOrderActivity" />
         <activity
             android:name=".payment.PaymentActivity"
-            android:parentActivityName=".order.CurrentOrderDetailActivity"/>
+            android:parentActivityName=".order.CurrentOrderDetailActivity" />
         <activity
             android:name=".payment.ConfirmationActivity"
             android:label="@string/title_activity_confirmation"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".order.QuickReorderConfirmOrderActivity"></activity>
     </application>
 
 </manifest>

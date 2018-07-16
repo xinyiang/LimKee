@@ -1,7 +1,5 @@
 package com.limkee.order;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,11 +14,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.limkee.R;
 import com.limkee.catalogue.*;
-import com.limkee.catalogue.QuickReorderFragment;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
 import java.util.ArrayList;
-import retrofit2.Retrofit;
+
 
 public class ConfirmOrderActivity extends AppCompatActivity implements ConfirmOrderFragment.OnFragmentInteractionListener,
         CatalogueFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener{
