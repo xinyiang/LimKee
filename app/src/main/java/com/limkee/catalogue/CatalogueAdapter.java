@@ -41,10 +41,10 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
     private String[] qtyDataSet;
     boolean valueChanged;
     View itemView;
-    boolean focus = true;
     String isEnglish;
     private RecyclerView mRecyclerView;
     private String uom ="";
+    private EditText quantity;
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -73,6 +73,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                 .inflate(R.layout.catalogue_products, parent, false);
         ViewHolder vh = new ViewHolder(itemView, new QuantityEditTextListener());
         CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
+
+
         return vh;
     }
     public void onBindViewHolder(final ViewHolder holder, int position) {
@@ -106,6 +108,9 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
             unitSubtotal = (TextView) view.findViewById(R.id.unitSubtotal);
             this.quantityEditTextListener = quantityEditTextListener;
             this.qty.addTextChangedListener(quantityEditTextListener);
+
+
+
         }
 
         public void bindContent(final Product product) {
@@ -118,6 +123,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                 description.setText(product.getDescription2());
                 uom = product.getUom();
             }
+
             qty.setText(Integer.toString(product.getDefaultQty()));
             unitOfMetric.setText(uom);
             unitPrice.setText("$" + df.format(product.getUnitPrice()));
@@ -178,7 +184,14 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                         //check that if quantity is left blank, set qty to 0
                         if (qty.getText().toString().equals("")){
 
+                            product.setDefaultQty(0);
                             qty.setText("0");
+                            //update subtotal
+                            CatalogueFragment.updateSubtotal(orderList);
+                            //update unit subtotal
+                            DecimalFormat df = new DecimalFormat("#0.00");
+                            double unitSub = 0 * product.getUnitPrice();
+                            unitSubtotal.setText("$" + df.format(unitSub));
 
                         } else {
                             //check if qty is in correct multiples
@@ -193,17 +206,25 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //finish();
+                                                    //reset quantity to default prefix
+                                                    System.out.println("PRODUCT QTY is " + product.getDefaultQty());
+                                                    product.setDefaultQty(product.getDefaultQty());
+                                                    qty.setText(Integer.toString(product.getDefaultQty()));
+                                                    DecimalFormat df = new DecimalFormat("#0.00");
+                                                    double unitSub = product.getDefaultQty() * product.getUnitPrice();
+                                                    unitSubtotal.setText("$" + df.format(unitSub));
                                                 }
                                             })
                                             .show();
                                 } else {
                                     new AlertDialog.Builder(itemView.getContext())
-                                            .setMessage(product.getDescription2() + "的数量有误. 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，"+ (qtyMultiples+qtyMultiples) + "等等")
+                                            .setMessage(product.getDescription2() + "的数量有误, 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，"+ (qtyMultiples+qtyMultiples) + "等等")
                                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //finish();
                                                     //reset quantity to default prefix
+                                                    System.out.println("PRODUCT QTY is " + product.getDefaultQty());
                                                     product.setDefaultQty(product.getDefaultQty());
                                                     qty.setText(Integer.toString(product.getDefaultQty()));
                                                     DecimalFormat df = new DecimalFormat("#0.00");
@@ -221,7 +242,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                 CatalogueFragment.updateSubtotal(orderList);
                                 //update unit subtotal
                                 DecimalFormat df = new DecimalFormat("#0.00");
-                                double unitSub = product.getDefaultQty() * product.getUnitPrice();
+                                double unitSub = quantity * product.getUnitPrice();
                                 unitSubtotal.setText("$" + df.format(unitSub));
                             }
                         }
@@ -229,7 +250,45 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                     valueChanged = false;
                 }
             });
+
+            /*
+            //update when on text change instead of clicking tick in keyboard
+            qty.clearFocus();
+            qty.addTextChangedListener(new TextWatcher() {
+                public void afterTextChanged(Editable s) {
+                    int quantity = 0;
+
+                    try {
+                        if (qty.getText().toString().equals("")){
+                            quantity = 0;
+                            //qty.setText("0);
+
+                        } else {
+                            quantity = Integer.parseInt(qty.getText().toString());
+                            //qty.setText(qty.getText().toString());
+                        }
+
+                    } catch(Exception e) {
+                        quantity = 0;
+
+                    }
+
+                    //update subtotal
+                    //product.setDefaultQty(quantity);
+                    CatalogueFragment.updateSubtotal(orderList);
+                    //update unit subtotal
+                    DecimalFormat df = new DecimalFormat("#0.00");
+                    double unitSub = quantity * product.getUnitPrice();
+                    unitSubtotal.setText("$" + df.format(unitSub));
+                 }
+
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            });
+            */
         }
+
     }
 
     public void update(String[] qtyDataSet, ArrayList<Product> catalogueList, ArrayList<Product> tempOrderList){
@@ -263,6 +322,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         public void afterTextChanged(Editable editable) {
             valueChanged = true;
 
+
+
         }
     }
 
@@ -281,6 +342,5 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
     public static ArrayList<Product> getOrderList(){
         return orderList;
     }
-
 
 }

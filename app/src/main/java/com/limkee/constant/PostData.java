@@ -60,10 +60,10 @@ public interface PostData {
 
         @FormUrlEncoded
         @POST("add-order/salesorderdetails")
-        Observable<Boolean> addSalesOrderDetails(@Field("deliveryDate") String deliveryDate, @Field("subtotal") double subtotal, @Field("orderID") String orderID);
+        Observable<Boolean> addSalesOrderDetails(@Field("deliveryDate") String deliveryDate, @Field("subtotal") double subtotal, @Field("orderNo") String orderNo);
 
         @FormUrlEncoded
         @POST("add-order/salesorderquantity")
-        Observable<Integer> addSalesOrderQuantity(@Field("itemQuantity") ArrayList<String> itemQuantity, @Field("orderID") String orderID);
+        Observable<Integer> addSalesOrderQuantity(@Field("itemQuantity") ArrayList<String> itemQuantity, @Field("orderNo") String orderNo, @Field("deliveryDate") String deliveryDate);
 
 }

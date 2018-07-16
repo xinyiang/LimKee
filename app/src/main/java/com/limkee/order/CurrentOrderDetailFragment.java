@@ -22,13 +22,10 @@ import com.limkee.dao.OrderDAO;
 import com.limkee.entity.Customer;
 import com.limkee.entity.OrderDetails;
 import com.limkee.entity.OrderQuantity;
-import com.limkee.entity.Product;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -137,7 +134,16 @@ public class CurrentOrderDetailFragment extends Fragment {
         deliveryTime = (TextView) view.findViewById(R.id.deliveredTime);
 
         orderNo.setText("#" + orderID);
-        deliveryDate.setText(date);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
+        SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            Date datetime = expectedPattern.parse(date);
+            String timestamp = formatter.format(datetime);
+            deliveryDate.setText(timestamp);
+        } catch (Exception e){
+            deliveryDate.setText(date);
+        }
         String address3 = "";
         String address4 = "";
         if (customer.getDeliverAddr3() == null){
@@ -240,16 +246,22 @@ public class CurrentOrderDetailFragment extends Fragment {
                 TextView orderDateTxt = view.findViewById(R.id.orderDate);
                 String orderDate = od.getOrderDate();
 
-                String date = orderDate.substring(8,10);
-                String month = orderDate.substring(5,7);
-                String year = orderDate.substring(0,4);
-                String formatOrderDate = date + "/" + month + "/" + year;
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy h.mm aa");
+                    SimpleDateFormat expectedPattern = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    Date datetime = expectedPattern.parse(orderDate);
+                    String createdTimestamp = sdf.format(datetime);
+                    orderDateTxt.setText(createdTimestamp);
+                } catch (Exception e){
+                    String date = orderDate.substring(8,10);
+                    String month = orderDate.substring(5,7);
+                    String year = orderDate.substring(0,4);
+                    String formatOrderDate = date + "/" + month + "/" + year;
 
-                String hr = orderDate.substring(11,13);
-                String min = orderDate.substring(14,16);
-                System.out.println("date is " + formatOrderDate + " and time is " + hr + ":" + min);
-                orderDateTxt.setText(formatOrderDate + " " + hr + ":" + min);
-
+                    String hr = orderDate.substring(11,13);
+                    String min = orderDate.substring(14,16);
+                    orderDateTxt.setText(formatOrderDate + " " + hr + ":" + min);
+                }
             }
 
             @Override

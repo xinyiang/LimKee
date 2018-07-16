@@ -7,32 +7,58 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import com.limkee.R;
+import com.limkee.catalogue.*;
+import com.limkee.entity.Customer;
+import com.limkee.entity.Product;
 
-public class CurrentOrderDetailActivity extends AppCompatActivity implements ConfirmOrderFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener, CurrentOrderDetailFragment.OnFragmentInteractionListener {
+import java.util.ArrayList;
 
+public class QuickReorderConfirmOrderActivity extends AppCompatActivity implements QuickReorderConfirmOrderFragment.OnFragmentInteractionListener ,QuickReorderFragment.OnFragmentInteractionListener{
+
+    private View rootView;
+    private QuickReorderConfirmOrderFragment confirmOrderFragment = new QuickReorderConfirmOrderFragment();
     public static Bundle myBundle = new Bundle();
-
+    private ArrayList<Product> orderList;
+    private Customer customer;
+    private String isEnglish;
+    private String deliveryShift;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_current_order);
-
-        myBundle = getIntent().getExtras();
-
+        setContentView(R.layout.activity_quick_reorder_confirm_order);
         Toolbar toolbar = findViewById(com.limkee.R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getSupportActionBar().setTitle("Order details");
-       // getSupportActionBar().setTitle("订单详情");
+        getSupportActionBar().setTitle("Confirm Order");
 
+        myBundle = getIntent().getExtras();
+        customer = myBundle.getParcelable("customer");
+        orderList  = myBundle.getParcelableArrayList("orderList");
+        isEnglish = myBundle.getString("language");
+        deliveryShift =  myBundle.getString("deliveryShift");
 
-        CurrentOrderDetailFragment currentOrderDetailFragment = new CurrentOrderDetailFragment();
-        currentOrderDetailFragment.setArguments(myBundle);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("orderList", orderList);
+        bundle.putParcelable("customer",customer);
+        bundle.putString("language", isEnglish);
+        bundle.putString("deliveryShift", deliveryShift);
+        confirmOrderFragment.setArguments(bundle);
+        loadFragment(confirmOrderFragment);
 
-        loadFragment(currentOrderDetailFragment);
+    }
+
+    public View onCreate(LayoutInflater inflater, ViewGroup container,
+                         Bundle savedInstanceState) {
+
+        rootView = inflater.inflate(R.layout.fragment_quick_reorder_confirm_order, container, false);
+
+        return rootView;
     }
 
     private void loadFragment(Fragment fragment) {
@@ -44,6 +70,7 @@ public class CurrentOrderDetailActivity extends AppCompatActivity implements Con
         fragmentTransaction.commit();
 
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -79,6 +106,4 @@ public class CurrentOrderDetailActivity extends AppCompatActivity implements Con
     public void onFragmentInteraction(Uri uri) {
 
     }
-
-
 }

@@ -28,6 +28,8 @@ import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
 import com.limkee.navigation.NavigationActivity;
 import com.limkee.order.ConfirmOrderActivity;
+import com.limkee.order.QuickReorderConfirmOrderActivity;
+
 import android.support.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -174,17 +176,27 @@ public class QuickReorderFragment extends Fragment {
 
                 //check if subtotal hits minimum requirements
                 if(calculateSubtotal(orderList) < 30){
-                    final Toast tag = Toast.makeText(view.getContext(), "Minimum order is $30.00.",  Toast.LENGTH_SHORT);
-                    new CountDownTimer(20000, 1000) {
-                        public void onTick(long millisUntilFinished) {
-                            tag.show();
-                        }
-
-                        public void onFinish() {
-                            tag.show();
-                        }
-
-                    }.start();
+                    if (isEnglish.equals("Yes")){
+                        new AlertDialog.Builder(getContext())
+                                .setMessage("Minimum order is $30.00.")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //finish();
+                                    }
+                                })
+                                .show();
+                    } else {
+                        new AlertDialog.Builder(getContext())
+                                .setMessage("订单总额最少要 $30.00")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //finish();
+                                    }
+                                })
+                                .show();
+                    }
                 } else {
                     DecimalFormat df = new DecimalFormat("#0.00");
                     subtotalAmt = view.findViewById(R.id.subtotalAmt);
@@ -195,7 +207,7 @@ public class QuickReorderFragment extends Fragment {
                     CatalogueDAO.order_list = orderList;
 
                     //store all products with qty > 1 into a temporary arraylist of products
-                    Intent intent = new Intent(view.getContext(), ConfirmOrderActivity.class);
+                    Intent intent = new Intent(view.getContext(), QuickReorderConfirmOrderActivity.class);
                     intent.putParcelableArrayListExtra("orderList", orderList);
                     intent.putExtra("language",isEnglish);
                     intent.putExtra("orderList",orderList);
@@ -326,9 +338,31 @@ public class QuickReorderFragment extends Fragment {
 
     public static void updateSubtotal(ArrayList<Product> orderList) {
         double subtotal = 0;
+        System.out.println("ORDER LIST SIZE is " + orderList.size());
         for(Product p : orderList) {
             int qty = p.getDefaultQty();
-            subtotal += p.getUnitPrice() * qty;
+
+            /*
+            int qtyMultiples = p.getQtyMultiples();
+
+            if (qty % qtyMultiples != 0){
+                subtotal += p.getUnitPrice() * qty;
+
+                final Toast tag = Toast.makeText(view.getContext(), "Wrong qty", Toast.LENGTH_SHORT);
+                new CountDownTimer(2000, 1000) {
+                    public void onTick(long millisUntilFinished) {
+                        tag.show();
+                    }
+
+                    public void onFinish() {
+                        tag.show();
+                    }
+
+                }.start();
+            } else {
+*/
+                subtotal += p.getUnitPrice() * qty;
+           // }
         }
 
         DecimalFormat df = new DecimalFormat("#0.00");
