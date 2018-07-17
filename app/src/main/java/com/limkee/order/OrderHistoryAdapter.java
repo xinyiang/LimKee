@@ -16,7 +16,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * Created by Xin Yi on 4/6/2018.
+ * Created by Xin Yi on 17/7/2018.
  */
 
 public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapter.MyViewHolder> {
@@ -24,18 +24,23 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
     private ArrayList<Order> orderHistoryList;
     private String orderID;
     private Customer customer;
+    private String isEnglish;
+    private String ETADeliveryDate;
+    public RelativeLayout rel;
 
 
-    public OrderHistoryAdapter(OrderHistoryFragment fragment, ArrayList<Order> ohl,Customer customer) {
+    public OrderHistoryAdapter(OrderHistoryFragment fragment, ArrayList<Order> ohl,Customer customer,  String isEnglish) {
         this.fragment = fragment;
         this.orderHistoryList = ohl;
         this.customer = customer;
+        this.isEnglish = isEnglish;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
          View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.orders_recycler_view, parent, false);
+        rel= (RelativeLayout) itemView.findViewById(R.id.view_foreground);
         return new MyViewHolder(itemView);
     }
 
@@ -43,6 +48,23 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         final Order order = orderHistoryList.get(position);
         holder.bindContent(order);
+
+        rel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                orderID = order.getOrderID();
+
+                Intent intent = new Intent(view.getContext(), OrderHistoryDetailActivity.class);
+                intent.putExtra("orderID", orderID);
+                intent.putExtra("language", isEnglish);
+                intent.putExtra("deliveryDate", ETADeliveryDate);
+                intent.putExtra("numItems", order.getNoOfItems());
+                intent.putExtra("deliveryShift", order.getDeliveryShift());
+                intent.putExtra("customer", customer);
+                fragment.startActivity(intent);
+            }
+
+        });
 
         holder.orderID.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -52,7 +74,11 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
-                intent.putExtra("customer", (Serializable) customer);
+                intent.putExtra("language", isEnglish);
+                intent.putExtra("deliveryDate", ETADeliveryDate);
+                intent.putExtra("numItems", order.getNoOfItems());
+                intent.putExtra("deliveryShift", order.getDeliveryShift());
+                intent.putExtra("customer", customer);
                 fragment.startActivity(intent);
 
             }
@@ -66,7 +92,11 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
-                intent.putExtra("customer", (Serializable) customer);
+                intent.putExtra("language", isEnglish);
+                intent.putExtra("deliveryDate", ETADeliveryDate);
+                intent.putExtra("numItems", order.getNoOfItems());
+                intent.putExtra("deliveryShift", order.getDeliveryShift());
+                intent.putExtra("customer", customer);
                 fragment.startActivity(intent);
 
             }
@@ -80,25 +110,17 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
-                intent.putExtra("customer", (Serializable) customer);
+                intent.putExtra("language", isEnglish);
+                intent.putExtra("deliveryDate", ETADeliveryDate);
+                intent.putExtra("numItems", order.getNoOfItems());
+                intent.putExtra("deliveryShift", order.getDeliveryShift());
+                intent.putExtra("customer", customer);
                 fragment.startActivity(intent);
 
             }
         });
 
-        holder.lbl_deliveryDate.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
 
-                orderID = order.getOrderID();
-
-                Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
-                intent.putExtra("orderID", orderID);
-                intent.putExtra("customer", (Serializable) customer);
-                fragment.startActivity(intent);
-
-            }
-        });
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -116,25 +138,31 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
         public void bindContent(Order order) {
 
             orderID.setText(order.getOrderID());
-            deliveryDate.setText(order.getDeliveryDate());
 
-            //if english
-            /*
-            if (){
-                lbl_deliveryDate.setText("Delivering on");
+            String ETA = order.getDeliveryDate();
+            String date = ETA.substring(8);
+            String month = ETA.substring(5,7);
+            String year = ETA.substring(0,4);
+            ETADeliveryDate = date + "/" + month + "/" + year;
+            deliveryDate.setText(ETADeliveryDate);
+
+            if (isEnglish.equals("Yes")){
 
                 if (order.getNoOfItems() == 1){
                     noOfItems.setText(order.getNoOfItems() + " item");
                 } else {
                     noOfItems.setText(order.getNoOfItems() + " items");
                 }
+            } else {
+                noOfItems.setText(order.getNoOfItems() + " 样");
             }
-            */
-
-            noOfItems.setText(order.getNoOfItems() + " 样");
-
 
         }
+    }
+
+    public void update(ArrayList<Order> orderList){
+        orderHistoryList = orderList;
+        notifyDataSetChanged();
     }
 
 
