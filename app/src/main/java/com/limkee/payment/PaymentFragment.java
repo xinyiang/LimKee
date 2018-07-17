@@ -1,31 +1,15 @@
 package com.limkee.payment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.limkee.R;
 import com.limkee.entity.Customer;
-import com.limkee.login.LogoutActivity;
-import com.limkee.navigation.NavigationActivity;
-import com.limkee.order.ConfirmOrderFragment;
-import com.limkee.userProfile.UserProfileFragment;
-import com.stripe.android.Stripe;
-import com.stripe.android.TokenCallback;
-import com.stripe.android.model.Card;
-import com.stripe.android.model.Token;
 import com.stripe.android.view.CardInputWidget;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -95,4 +79,4 @@ public class PaymentFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
-}
+    }
