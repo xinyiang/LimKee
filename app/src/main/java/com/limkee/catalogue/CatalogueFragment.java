@@ -178,29 +178,25 @@ public class CatalogueFragment extends Fragment {
                 //check if subtotal hits minimum requirements
                 if(calculateSubtotal(orderList) < 30){
                     if (isEnglish.equals("Yes")){
-                        final Toast tag = Toast.makeText(view.getContext(), "Minimum order is $30.00.", Toast.LENGTH_SHORT);
-                        new CountDownTimer(20000, 1000) {
-                            public void onTick(long millisUntilFinished) {
-                                tag.show();
-                            }
-
-                            public void onFinish() {
-                                tag.show();
-                            }
-
-                        }.start();
+                        new AlertDialog.Builder(getContext())
+                                .setMessage("Minimum order is $30.00.")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //finish();
+                                    }
+                                })
+                                .show();
                     } else {
-                        final Toast tag = Toast.makeText(view.getContext(), "订单总额最少要 $30.00", Toast.LENGTH_SHORT);
-                        new CountDownTimer(20000, 1000) {
-                            public void onTick(long millisUntilFinished) {
-                                tag.show();
-                            }
-
-                            public void onFinish() {
-                                tag.show();
-                            }
-
-                        }.start();
+                        new AlertDialog.Builder(getContext())
+                                .setMessage("订单总额最少要 $30.00")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //finish();
+                                    }
+                                })
+                                .show();
                     }
                 } else {
                     DecimalFormat df = new DecimalFormat("#0.00");

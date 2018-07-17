@@ -21,6 +21,7 @@
     <string name="payment_unsuccessful_description">您的卡不会被收费\n请重试</string>
     <string name="payment_successful_description"> 已从您的卡里扣除\n很高兴为您服务</string>
     <string name="backTo">返回</string>
+    <string name="totalAmount">总价</string>
 
     <string-array name="qty">
         <item>5</item>
