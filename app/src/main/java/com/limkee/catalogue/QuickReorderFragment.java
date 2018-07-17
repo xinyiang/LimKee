@@ -303,7 +303,7 @@ public class QuickReorderFragment extends Fragment {
                 recyclerView.setVisibility(View.GONE);
                 progressBar.setVisibility(View.VISIBLE);
                 recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
-
+                
                 //by default, let order list be the same as catalogue. if there is any change in qty, it will be updated.
                 tempOrderList = CatalogueDAO.quickReorder_list;
                 String[] qtyDataSet= new String[tempOrderList.size()];

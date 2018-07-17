@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -12,25 +13,37 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.limkee.R;
+import com.limkee.constant.HttpConstant;
+import com.limkee.constant.PostData;
 import com.limkee.dao.OrderDAO;
 import com.limkee.entity.Customer;
+import com.limkee.entity.Order;
 import com.limkee.navigation.NavigationActivity;
 
+import java.util.ArrayList;
+
 import io.reactivex.disposables.CompositeDisposable;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class OrderHistoryFragment extends Fragment {
 
     private OrderHistoryFragment.OnFragmentInteractionListener mListener;
-    CompositeDisposable compositeDisposable;
-    public static Bundle myBundle = new Bundle();
     private OrderHistoryAdapter mAdapter;
     private View view;
+    private CoordinatorLayout coordinatorLayout;
     private RecyclerView recyclerView;
-    private ConstraintLayout coordinatorLayout;
     private Customer customer;
+    private String companyCode;
+    public static Retrofit retrofit;
+    private  String isEnglish;
 
     public OrderHistoryFragment(){}
 
@@ -44,12 +57,16 @@ public class OrderHistoryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((NavigationActivity)getActivity()).setActionBarTitle("Order History");
 
-
-        compositeDisposable = new CompositeDisposable();
         Bundle bundle = getArguments();
-        //customer = (Customer) savedInstanceState.getSerializable("customer");
+        customer = bundle.getParcelable("customer");
+        companyCode = customer.getCompanyCode();
+        isEnglish = bundle.getString("language");
+        if (isEnglish.equals("Yes")){
+            ((NavigationActivity)getActivity()).setActionBarTitle("Orders History");
+        } else {
+            ((NavigationActivity)getActivity()).setActionBarTitle("订单历史");
+        }
 
     }
 
@@ -58,26 +75,61 @@ public class OrderHistoryFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_order_history, container, false);
 
+        TextView lbl_orderIDHeader, lbl_numItemsHeader, lbl_deliveryDateHeader;
+
+        lbl_orderIDHeader = (TextView) view.findViewById(R.id.lbl_orderIDHeader);
+        lbl_deliveryDateHeader = (TextView) view.findViewById(R.id.lbl_deliveryDateHeader);
+        lbl_numItemsHeader = (TextView) view.findViewById(R.id.lbl_numItemsHeader);
+
+        if (isEnglish.equals("Yes")) {
+            lbl_orderIDHeader.setText("Order ID");
+            lbl_deliveryDateHeader.setText("Delivery Date");
+            lbl_numItemsHeader.setText("Total No.");
+        }
 
         recyclerView = view.findViewById(R.id.orderHistoryRecyclerView);
-        Bundle bundle = getArguments();
-        //(Serializable) customer
-        //customer = bundle.getParcelableArrayList("customer");
-        doGetOrderHistory();
-
-        return view;
-    }
-
-    private void doGetOrderHistory() {
         recyclerView = (RecyclerView) view.findViewById(R.id.orderHistoryRecyclerView);
-        mAdapter = new OrderHistoryAdapter(this, OrderDAO.historyOrdersList,customer);
-
-        coordinatorLayout = view.findViewById(com.limkee.R.id.constraint_layout);
+        mAdapter = new OrderHistoryAdapter(this, OrderDAO.historyOrdersList, customer, isEnglish);
+//        coordinatorLayout = view.findViewById(R.id.constraint_layout);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
+        doGetOrderHistory(companyCode);
+
+
+        return view;
+    }
+
+    private void doGetOrderHistory(String companyCode) {
+
+        recyclerView = (RecyclerView) view.findViewById(R.id.orderHistoryRecyclerView);
+        mAdapter = new OrderHistoryAdapter(this, OrderDAO.historyOrdersList, customer, isEnglish);
+
+        if (retrofit == null) {
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(HttpConstant.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        PostData service = retrofit.create(PostData.class);
+        Call<ArrayList<Order>> call = service.getOrderHistory(companyCode);
+        call.enqueue(new Callback<ArrayList<Order>>() {
+
+            @Override
+            public void onResponse(Call<ArrayList<Order>> call, Response<ArrayList<Order>> response) {
+                ArrayList<Order> data = response.body();
+                OrderDAO.historyOrdersList = data;
+                System.out.println("ORDER HISTORY SIZE IS " + data.size());
+                mAdapter.update(OrderDAO.historyOrdersList);
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Order>> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
 
     }
     @Override
