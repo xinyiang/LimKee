@@ -32,9 +32,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class OrderHistoryDetailFragment extends Fragment {
-    private OrderHistoryDetailFragment.OnFragmentInteractionListener mListener;
-    private OrderHistoryDetailAdapter mAdapter;
+public class CancelledOrderDetailFragment extends Fragment {
+    private CancelledOrderDetailFragment.OnFragmentInteractionListener mListener;
+    private CancelledOrderDetailAdapter mAdapter;
     private View view;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
@@ -46,12 +46,12 @@ public class OrderHistoryDetailFragment extends Fragment {
     private int numItems;
     private String deliveryShift;
 
-    public OrderHistoryDetailFragment() {
+    public CancelledOrderDetailFragment() {
         // Required empty public constructor
     }
 
-    public static OrderHistoryDetailFragment newInstance() {
-        OrderHistoryDetailFragment fragment = new OrderHistoryDetailFragment();
+    public static CancelledOrderDetailFragment newInstance() {
+        CancelledOrderDetailFragment fragment = new CancelledOrderDetailFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -75,9 +75,9 @@ public class OrderHistoryDetailFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (isEnglish.equals("Yes")){
-            ((OrderHistoryDetailActivity) getActivity()).setActionBarTitle("Order details");
+            ((CancelledOrderDetailActivity) getActivity()).setActionBarTitle("Order details");
         } else {
-            ((OrderHistoryDetailActivity) getActivity()).setActionBarTitle("订单详情");
+            ((CancelledOrderDetailActivity) getActivity()).setActionBarTitle("订单详情");
         }
 
         Bundle bundle = getArguments();
@@ -94,13 +94,13 @@ public class OrderHistoryDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_order_history_detail, container, false);
+        view = inflater.inflate(R.layout.fragment_cancelled_order_detail, container, false);
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
 
         recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
 
-        mAdapter = new OrderHistoryDetailAdapter(this, isEnglish);
+        mAdapter = new CancelledOrderDetailAdapter(this, isEnglish);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -178,7 +178,7 @@ public class OrderHistoryDetailFragment extends Fragment {
             lbl_status.setText("Status");
 
             lbl_deliveryDetails.setText(" Delivery details");
-            status.setText("Delivered");
+            status.setText("Cancelled");
             lbl_address.setText("Delivery Address");
 
             lbl_date.setText("Delivery Date");
@@ -196,7 +196,7 @@ public class OrderHistoryDetailFragment extends Fragment {
             }
 
         } else {
-            status.setText("已送货");
+            status.setText("取消");
             itemCount.setText(" 订单样品 (" + numItems + " 样)");
         }
 
@@ -218,18 +218,16 @@ public class OrderHistoryDetailFragment extends Fragment {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
-
         PostData service = retrofit.create(PostData.class);
-        Call<OrderDetails> call = service.getOrderHistoryDetails(orderID);
+        Call<OrderDetails> call = service.getCancelledOrderDetails(orderID);
         call.enqueue(new Callback<OrderDetails>() {
 
             @Override
             public void onResponse(Call<OrderDetails> call, Response<OrderDetails> response) {
                 OrderDetails od = response.body();
-                OrderDAO.historyOD = od;
+                OrderDAO.cancelledOD = od;
                 mAdapter.update(od);
 
-                System.out.println("Order details is " + od.getOrderDate());
                 //display order details
                 TextView subtotalAmt, tax, totalAmt;
                 DecimalFormat df = new DecimalFormat("#0.00");
@@ -262,7 +260,7 @@ public class OrderHistoryDetailFragment extends Fragment {
 
                     String hr = orderDate.substring(11,13);
                     String min = orderDate.substring(14,16);
-                    orderDateTxt.setText(formatOrderDate + " " + hr + "." + min);
+                    orderDateTxt.setText(formatOrderDate + " " + hr + ":" + min);
                 }
             }
 
@@ -282,13 +280,13 @@ public class OrderHistoryDetailFragment extends Fragment {
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<ArrayList<OrderQuantity>> call = service.getOrderHistoryQuantity(orderID);
+        Call<ArrayList<OrderQuantity>> call = service.getCancelledOrderQuantity(orderID);
         call.enqueue(new Callback<ArrayList<OrderQuantity>>() {
 
             @Override
             public void onResponse(Call<ArrayList<OrderQuantity>> call, Response<ArrayList<OrderQuantity>> response) {
                 ArrayList<OrderQuantity> oq = response.body();
-                OrderDAO.historyOQ = oq;
+                OrderDAO.cancelledOQ = oq;
                 mAdapter.update2(oq);
             }
 
