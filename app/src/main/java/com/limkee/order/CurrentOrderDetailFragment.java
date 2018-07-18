@@ -108,7 +108,6 @@ public class CurrentOrderDetailFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
         recyclerView.setNestedScrollingEnabled(false);
 
-
         new CountDownTimer(400, 100) {
 
             public void onTick(long millisUntilFinished) {
@@ -206,7 +205,6 @@ public class CurrentOrderDetailFragment extends Fragment {
             deliveryTime.setText("7.50am - 12.30pm");
         }
 
-
         return view;
     }
 
@@ -260,7 +258,7 @@ public class CurrentOrderDetailFragment extends Fragment {
 
                     String hr = orderDate.substring(11,13);
                     String min = orderDate.substring(14,16);
-                    orderDateTxt.setText(formatOrderDate + " " + hr + ":" + min);
+                    orderDateTxt.setText(formatOrderDate + " " + hr + "." + min);
                 }
             }
 

@@ -78,7 +78,6 @@ public class QuickReorderFragment extends Fragment {
         companyCode = customer.getCompanyCode();
         deliveryShift =  bundle.getString("deliveryShift");
 
-
         if (isEnglish.equals("Yes")){
             ((NavigationActivity)getActivity()).setActionBarTitle("Quick Reorder");
         } else {
@@ -95,7 +94,7 @@ public class QuickReorderFragment extends Fragment {
         if(isEnglish.equals("Yes")){
             builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
         } else {
-            builder.setMessage("今日订单请在" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
+            builder.setMessage("今日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
         }
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -113,6 +112,9 @@ public class QuickReorderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_quick_reorder, container, false);
+
+        doGetLastOrder(companyCode);
+
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
@@ -145,8 +147,6 @@ public class QuickReorderFragment extends Fragment {
                 recyclerView.setVisibility(View.VISIBLE);
             }
         }.start();
-
-        doGetLastOrder(companyCode);
 
         return view;
     }

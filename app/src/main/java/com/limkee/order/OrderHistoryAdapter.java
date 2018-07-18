@@ -54,6 +54,12 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
             public void onClick(View view) {
                 orderID = order.getOrderID();
 
+                String ETA = order.getDeliveryDate();
+                String date = ETA.substring(8);
+                String month = ETA.substring(5,7);
+                String year = ETA.substring(0,4);
+                ETADeliveryDate = date + "/" + month + "/" + year;
+
                 Intent intent = new Intent(view.getContext(), OrderHistoryDetailActivity.class);
                 intent.putExtra("orderID", orderID);
                 intent.putExtra("language", isEnglish);
@@ -72,7 +78,13 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
                 orderID = order.getOrderID();
 
-                Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
+                String ETA = order.getDeliveryDate();
+                String date = ETA.substring(8);
+                String month = ETA.substring(5,7);
+                String year = ETA.substring(0,4);
+                ETADeliveryDate = date + "/" + month + "/" + year;
+
+                Intent intent = new Intent(view.getContext(), OrderHistoryDetailActivity.class);
                 intent.putExtra("orderID", orderID);
                 intent.putExtra("language", isEnglish);
                 intent.putExtra("deliveryDate", ETADeliveryDate);
@@ -90,7 +102,13 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
                 orderID = order.getOrderID();
 
-                Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
+                String ETA = order.getDeliveryDate();
+                String date = ETA.substring(8);
+                String month = ETA.substring(5,7);
+                String year = ETA.substring(0,4);
+                ETADeliveryDate = date + "/" + month + "/" + year;
+
+                Intent intent = new Intent(view.getContext(), OrderHistoryDetailActivity.class);
                 intent.putExtra("orderID", orderID);
                 intent.putExtra("language", isEnglish);
                 intent.putExtra("deliveryDate", ETADeliveryDate);
@@ -108,7 +126,13 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
                 orderID = order.getOrderID();
 
-                Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
+                String ETA = order.getDeliveryDate();
+                String date = ETA.substring(8);
+                String month = ETA.substring(5,7);
+                String year = ETA.substring(0,4);
+                ETADeliveryDate = date + "/" + month + "/" + year;
+
+                Intent intent = new Intent(view.getContext(), OrderHistoryDetailActivity.class);
                 intent.putExtra("orderID", orderID);
                 intent.putExtra("language", isEnglish);
                 intent.putExtra("deliveryDate", ETADeliveryDate);
@@ -119,8 +143,6 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapte
 
             }
         });
-
-
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

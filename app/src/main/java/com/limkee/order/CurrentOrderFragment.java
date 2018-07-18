@@ -38,7 +38,7 @@ public class CurrentOrderFragment extends Fragment {
     private String companyCode;
     public static Retrofit retrofit;
     private  String isEnglish;
-
+    boolean show = true;
 
     public CurrentOrderFragment(){}
 
@@ -83,7 +83,6 @@ public class CurrentOrderFragment extends Fragment {
         recyclerView = view.findViewById(R.id.currentOrderRecyclerView);
         recyclerView = (RecyclerView) view.findViewById(R.id.currentOrderRecyclerView);
         mAdapter = new CurrentOrderAdapter(this, OrderDAO.currentOrdersList, customer, isEnglish);
-//        coordinatorLayout = view.findViewById(R.id.constraint_layout);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -95,7 +94,7 @@ public class CurrentOrderFragment extends Fragment {
     }
 
     private void doGetCurrentOrders(String companyCode) {
-
+        //final int numOrders = 0;
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(HttpConstant.BASE_URL)
@@ -110,7 +109,6 @@ public class CurrentOrderFragment extends Fragment {
             public void onResponse(Call<ArrayList<Order>> call, Response<ArrayList<Order>> response) {
                 ArrayList<Order> data = response.body();
                 OrderDAO.currentOrdersList = data;
-
                 mAdapter.update(OrderDAO.currentOrdersList);
             }
 
@@ -119,6 +117,7 @@ public class CurrentOrderFragment extends Fragment {
                 System.out.println(t.getMessage());
             }
         });
+
     }
 
     @Override

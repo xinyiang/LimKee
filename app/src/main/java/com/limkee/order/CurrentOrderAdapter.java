@@ -56,6 +56,12 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
             public void onClick(View view) {
                 orderID = order.getOrderID();
 
+                String ETA = order.getDeliveryDate();
+                String date = ETA.substring(8);
+                String month = ETA.substring(5,7);
+                String year = ETA.substring(0,4);
+                ETADeliveryDate = date + "/" + month + "/" + year;
+
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
                 intent.putExtra("language", isEnglish);
@@ -72,6 +78,12 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
             public void onClick(View view) {
 
                 orderID = order.getOrderID();
+
+                String ETA = order.getDeliveryDate();
+                String date = ETA.substring(8);
+                String month = ETA.substring(5,7);
+                String year = ETA.substring(0,4);
+                ETADeliveryDate = date + "/" + month + "/" + year;
 
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
@@ -91,6 +103,12 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
 
                 orderID = order.getOrderID();
 
+                String ETA = order.getDeliveryDate();
+                String date = ETA.substring(8);
+                String month = ETA.substring(5,7);
+                String year = ETA.substring(0,4);
+                ETADeliveryDate = date + "/" + month + "/" + year;
+
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
                 intent.putExtra("language", isEnglish);
@@ -108,6 +126,12 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
             public void onClick(View view) {
 
                 orderID = order.getOrderID();
+
+                String ETA = order.getDeliveryDate();
+                String date = ETA.substring(8);
+                String month = ETA.substring(5,7);
+                String year = ETA.substring(0,4);
+                ETADeliveryDate = date + "/" + month + "/" + year;
 
                 Intent intent = new Intent(view.getContext(), CurrentOrderDetailActivity.class);
                 intent.putExtra("orderID", orderID);
@@ -133,15 +157,11 @@ public class CurrentOrderAdapter extends RecyclerView.Adapter<CurrentOrderAdapte
             orderID = (TextView) view.findViewById(R.id.orderID);
             deliveryDate = (TextView) view.findViewById(R.id.deliveryDate);
             noOfItems = (TextView) view.findViewById(R.id.noOfitems);
-
         }
 
         public void bindContent(Order order) {
 
-
             orderID.setText(order.getOrderID());
-
-
             String ETA = order.getDeliveryDate();
             String date = ETA.substring(8);
             String month = ETA.substring(5,7);

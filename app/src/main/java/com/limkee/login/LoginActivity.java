@@ -95,9 +95,9 @@ public class LoginActivity extends BaseActivity implements
         if (code.equals("") || pwd.equals("")){
             TextView pwdValidate = findViewById(R.id.pwdvalidation);
             if (isEnglish.equals("Yes")){
-                pwdValidate.setText("Please fill in Company Code and/or Password");
+                pwdValidate.setText("Please fill in Username and/or Password");
             } else {
-                pwdValidate.setText(" 请输入公司代码和/或密码");
+                pwdValidate.setText(" 请输入用户名和/或密码");
             }
 
         } else {

@@ -23,6 +23,7 @@ public class UserProfileFragment extends Fragment {
     CompositeDisposable compositeDisposable;
     private View view;
     private Customer customer;
+    private String isEnglish;
 
     public UserProfileFragment(){}
 
@@ -41,6 +42,7 @@ public class UserProfileFragment extends Fragment {
 
         Bundle bundle = getArguments();
         customer = bundle.getParcelable("customer");
+        isEnglish = bundle.getString("language");
     }
 
     @Override
@@ -56,6 +58,22 @@ public class UserProfileFragment extends Fragment {
         companyCode = view.findViewById(R.id.companyCode);
         address = view.findViewById(R.id.address);
         phone2 = view.findViewById(R.id.phone2);
+
+        if (isEnglish.equals("Yes")){
+            TextView lbl_companyName, lbl_companyCode, lbl_name, lbl_phone, lbl_address;
+            //change label
+            lbl_companyName = view.findViewById(R.id.lbl_companyName);
+            lbl_companyCode = view.findViewById(R.id.lbl_companyCode);
+            lbl_name = view.findViewById(R.id.lbl_name);
+            lbl_phone = view.findViewById(R.id.lbl_phone);
+            lbl_address = view.findViewById(R.id.lbl_address);
+
+            lbl_companyName.setText("Company Name");
+            lbl_companyCode.setText("Username");
+            lbl_name.setText("Name");
+            lbl_phone.setText("Contact Number");
+            lbl_address.setText("Address");
+        }
 
         name.setText(customer.getDebtorName());
         phone.setText(customer.getDeliveryContact());

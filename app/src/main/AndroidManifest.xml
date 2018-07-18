@@ -43,7 +43,12 @@
             android:name=".payment.ConfirmationActivity"
             android:label="@string/title_activity_confirmation"
             android:theme="@style/AppTheme" />
-        <activity android:name=".order.QuickReorderConfirmOrderActivity"></activity>
+        <activity
+            android:name=".order.QuickReorderConfirmOrderActivity"
+            android:parentActivityName=".navigation.NavigationActivity" />
+        <activity android:name=".order.OrderHistoryDetailActivity" />
+        <activity android:name=".order.CancelledOrderDetailActivity" />
+        <activity android:name=".order.CancelledOrderActivity"></activity>
     </application>
 
 </manifest>

@@ -96,7 +96,7 @@ public class CatalogueFragment extends Fragment {
         if(isEnglish.equals("Yes")){
             builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
         } else {
-            builder.setMessage("今日订单请在" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
+            builder.setMessage("今日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
         }
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -115,6 +115,10 @@ public class CatalogueFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_catalogue, container, false);
+
+        doGetCatalogue();
+
+
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
@@ -148,7 +152,6 @@ public class CatalogueFragment extends Fragment {
             }
         }.start();
 
-        doGetCatalogue();
 
         return view;
     }
@@ -318,11 +321,8 @@ public class CatalogueFragment extends Fragment {
                 mAdapter.update(qtyDataSet, CatalogueDAO.catalogue_list, tempOrderList);
                 recyclerView.setItemViewCacheSize(qtyDataSet.length);
 
-
                 DecimalFormat df = new DecimalFormat("#0.00");
                 subtotalAmt.setText("$" + df.format(calculateSubtotal(CatalogueDAO.catalogue_list)));
-
-
             }
 
             @Override

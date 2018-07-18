@@ -3,14 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.limkee.order.OrderHistoryFragment"
+    tools:context="com.limkee.order.CancelledOrderFragment"
     tools:layout_editor_absoluteY="25dp">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/constraint_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
 
 
         <TextView
@@ -65,7 +64,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/orderHistoryRecyclerView"
+            android:id="@+id/cancelledOrderRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -76,22 +75,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lbl_deliveryDateHeader"
             app:layout_constraintVertical_bias="0.0" />
-
-        <Button
-            android:id="@+id/btnCancelledOrders"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Cancelled Orders"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.109"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/orderHistoryRecyclerView"
-            app:layout_constraintVertical_bias="0.914" />
 
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>
