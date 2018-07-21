@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -16,8 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CheckedTextView;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,11 +26,17 @@ import android.widget.Toast;
 import com.limkee.BaseActivity;
 import com.limkee.R;
 
+import com.limkee.entity.Customer;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
 import com.stripe.android.view.CardMultilineWidget;
 import com.stripe.android.Stripe;
 import com.stripe.android.model.Token;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class PaymentActivity extends BaseActivity implements PaymentFragment.OnFragmentInteractionListener{
     private View rootView;
@@ -42,9 +49,9 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
     private TextView errorNameOnCard;
     private Button payButton;
     private CheckBox saveCard;
+    private Customer customer;
     private CardMultilineWidget mCardMultilineWidget;
     private RadioOnClick radioOnClick = new RadioOnClick(0);
-    final String[] cards = {"400000000000", "410000000000"};
     public static Activity activity; //used to finish this activity in backgroundPayment activity
 
     @Override
@@ -58,6 +65,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         myBundle = getIntent().getExtras();
         activity = this;
         context = getApplicationContext();
+        customer = myBundle.getParcelable("customer");
         double tp = myBundle.getDouble("totalPayable");
 
         TextView tv = (TextView)findViewById(R.id.totalPayable);
@@ -70,7 +78,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         payButton = (Button) findViewById(R.id.btnPlaceOrder);
         payButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                pay("pay_with_new_card", -1);
+                pay("pay_with_new_card", null);
             }
         });
 
@@ -78,51 +86,62 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         loadFragment(paymentFragment);
     }
 
-    public void pay(String mType, int selectedCard){
+    public void pay(String mType, String selectedCard){
         //validate credentials to login
         final String type = mType;
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        nameOnCard = (EditText) findViewById(R.id.nameOnCard);
-        errorNameOnCard = (TextView) findViewById(R.id.errNameOnCard);
-        mCardMultilineWidget = (CardMultilineWidget)findViewById(R.id.card_multiline_widget);
-        saveCard = (CheckBox) findViewById(R.id.saveCard);
-        Card card = mCardMultilineWidget.getCard();
-        //card.setName("Customer Name");
 
-        if (card == null || nameOnCard.getText().toString().isEmpty()) {
-            Toast.makeText(context,
-                    "Invalid Card Data",
-                    Toast.LENGTH_LONG
-            ).show();
-            if (nameOnCard.getText().toString().isEmpty()){
-                errorNameOnCard.setVisibility(View.VISIBLE);
-                nameOnCard.setBackgroundResource(R.drawable.text_underline);
-            }
-            else {
-                errorNameOnCard.setVisibility(View.INVISIBLE);
-                nameOnCard.setBackgroundResource(android.R.drawable.edit_text);
-            }
-        } else {
+        if (type.equals("pay_with_saved_card")){
             progressBar.setVisibility(View.VISIBLE);
-            Stripe stripe = new Stripe(context, "pk_test_FPldW3NRDq68iu1drr2o7Anb");
-            stripe.createToken(
-                    card,
-                    new TokenCallback() {
-                        public void onSuccess(Token token) {
-                            if (saveCard.isChecked()){
-                                //Send card details to db
+            BackgroundPayment bp = new BackgroundPayment(context, activity);
+            bp.saveCustomer(customer);
+            bp.execute(type, totalPayable, selectedCard);
+
+        }else{
+            nameOnCard = (EditText) findViewById(R.id.nameOnCard);
+            errorNameOnCard = (TextView) findViewById(R.id.errNameOnCard);
+            mCardMultilineWidget = (CardMultilineWidget)findViewById(R.id.card_multiline_widget);
+            saveCard = (CheckBox) findViewById(R.id.saveCard);
+            final Card card = mCardMultilineWidget.getCard();
+
+            if (card == null || nameOnCard.getText().toString().isEmpty()) {
+                Toast.makeText(context,
+                        "Invalid Card Data",
+                        Toast.LENGTH_LONG
+                ).show();
+                if (nameOnCard.getText().toString().isEmpty()){
+                    errorNameOnCard.setVisibility(View.VISIBLE);
+                    nameOnCard.setBackgroundResource(R.drawable.text_underline);
+                }
+                else {
+                    errorNameOnCard.setVisibility(View.INVISIBLE);
+                    nameOnCard.setBackgroundResource(android.R.drawable.edit_text);
+                }
+            } else {
+                progressBar.setVisibility(View.VISIBLE);
+                Stripe stripe = new Stripe(context, "pk_test_FPldW3NRDq68iu1drr2o7Anb");
+                stripe.createToken(
+                        card,
+                        new TokenCallback() {
+                            public void onSuccess(Token token) {
+                                BackgroundPayment bp = new BackgroundPayment(context, activity);
+                                if (saveCard.isChecked()){
+                                    bp.saveCard(card);
+                                    bp.saveCustomer(customer);
+                                    //Send card details to db
+                                }
+                                bp.execute(type, totalPayable, token.getId());
+                                // Send token to your server
                             }
-                            BackgroundPayment bp = new BackgroundPayment(context, activity);
-                            bp.execute(type, totalPayable, token.getId());
-                            // Send token to your server
+                            public void onError(Exception error) {
+                                // Show localized error message
+                                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show();
+                            }
                         }
-                        public void onError(Exception error) {
-                            // Show localized error message
-                            Toast.makeText(context, "Error", Toast.LENGTH_LONG).show();
-                        }
-                    }
-            );
+                );
+            }
         }
+
 //        new CountDownTimer(6000, 100) {
 //
 //            public void onTick(long millisUntilFinished) {
@@ -174,18 +193,55 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
     }
 
     public void selectSavedCard(View view) {
-        AlertDialog ad = new AlertDialog.Builder(this).setTitle("选择您要使用的卡")
+        //get saved card
+        GetJson getSavedCards = (GetJson) new GetJson(
+                new AsyncResponse() {
+                    @Override
+                    public void processFinish(String output) {
+                        if (output == null){
+                            Toast.makeText(context, "没有储存的卡", Toast.LENGTH_SHORT).show();
+                        }else{
+                            try{
+                                loadIntoAlertDialog(output);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+        ).execute(customer.getDebtorCode());
+        //getSavedCards.execute(customer.getDebtorCode());
+//        if (result == null){
+//           Toast.makeText(context, "没有储存的卡", Toast.LENGTH_SHORT).show();
+//        }else{
+//            try{
+//                loadIntoAlertDialog(result);
+//            }catch (JSONException e){
+//                e.printStackTrace();
+//            }
+//        }
+
+    }
+
+    private void loadIntoAlertDialog(String json) throws JSONException{
+        JSONArray jsonArray = new JSONArray(json);
+        String[] cards = new String[jsonArray.length()];
+        for (int i = 0; i < jsonArray.length(); i++){
+            JSONObject obj = jsonArray.getJSONObject(i);
+            cards[i] = "XXXX XXXX XXXX " + obj.getString("LastFourDigit");
+        }
+
+        AlertDialog ad = new AlertDialog.Builder(PaymentActivity.this).setTitle("选择您要使用的卡")
                 .setSingleChoiceItems(cards,radioOnClick.getIndex(),radioOnClick)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener(){
                             public void onClick(DialogInterface dialog, int whichButton){
-                                int selectedCard = radioOnClick.getIndex();
-                                pay("pay_with_saved_card", selectedCard);
-                                //Toast.makeText(PaymentActivity.this, "您已经选择了： " + selectedCard + ":" + cards[selectedCard], Toast.LENGTH_LONG).show();
-                                //dialog.dismiss();
+                                ListView lw = ((AlertDialog)dialog).getListView();
+                                Object selectedItem = lw.getAdapter().getItem(lw.getCheckedItemPosition());
+                                String selectedCard = selectedItem.toString();
+                                pay("pay_with_saved_card", selectedCard.substring(selectedCard.length() - 4));
                             }
                         }
                 ).setNegativeButton("取消", null).create();
-        //cardsRadioListView = ad.getListView();
         ad.show();
     }
 

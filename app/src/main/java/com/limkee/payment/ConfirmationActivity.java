@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.limkee.BaseActivity;
 import com.limkee.R;
+import com.limkee.entity.Customer;
 import com.limkee.navigation.NavigationActivity;
 import com.limkee.order.ConfirmOrderActivity;
 
@@ -17,6 +18,7 @@ public class ConfirmationActivity extends BaseActivity {
     public static Bundle myBundle = new Bundle();
     String result;
     Context context;
+    Customer customer;
     double tp = 0.00;
 
     @Override
@@ -27,10 +29,11 @@ public class ConfirmationActivity extends BaseActivity {
         context = getApplicationContext();
         result = myBundle.getString("result");
         tp = getIntent().getDoubleExtra("totalPayable",0.00);
+        customer = getIntent().getParcelableExtra("customer");
         TextView pmtResult = ((Activity)this).findViewById(R.id.pmtResult);
         TextView description = ((Activity)this).findViewById(R.id.description);
         ImageView iv = findViewById(R.id.status);
-        if (result.equals("success")){
+        if (result != null && result.equals("success")){
             pmtResult.setText(getResources().getString(R.string.payment_successful));
             description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_successful_description));
             iv.setImageResource(R.drawable.success);
@@ -43,13 +46,14 @@ public class ConfirmationActivity extends BaseActivity {
     }
 
     public void backTo(View view){
-        if (result.equals("success")){
+        if (result != null && result.equals("success")){
             Intent it = new Intent(getApplicationContext(), NavigationActivity.class);
             context.startActivity(it);
             this.finish();
         }else{
             Intent it = new Intent(getApplicationContext(), PaymentActivity.class);
             it.putExtra("totalPayable", tp);
+            it.putExtra("customer", customer);
             context.startActivity(it);
             this.finish();
         }

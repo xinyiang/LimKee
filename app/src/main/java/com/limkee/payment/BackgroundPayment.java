@@ -18,23 +18,37 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import com.limkee.entity.Customer;
+import com.stripe.android.model.Card;
+
     public class BackgroundPayment extends AsyncTask<String,Void,String> {
         private Context context;
         private Activity activity;
         private String totalPayable;
+        private Card card;
+        private Customer customer;
 
     BackgroundPayment(Context ctx, Activity act) {
         context = ctx;
         activity = act;
     }
 
+    protected void saveCard (Card card){
+        this.card = card;
+    }
+
+    protected void saveCustomer (Customer customer){
+        this.customer = customer;
+    }
+
     @Override
     protected String doInBackground(String... params) {
         String type = params[0];
         totalPayable = params[1];
-        String token = params[2];
         String payment_url = "http://13.229.114.72:80/JavaBridge/";
+        String post_data;
         if(type.equals("pay_with_new_card")){
+            String token = params[2];
             try {
                 payment_url += "payment_newcard.php";
                 URL url = new URL(payment_url);
@@ -44,8 +58,18 @@ import java.net.URLEncoder;
                 huc.setDoOutput(true);
                 OutputStream ops = huc.getOutputStream();
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(ops,"UTF-8"));
-                String post_data = URLEncoder.encode("token","UTF-8")+"="+URLEncoder.encode(token,"UTF-8")
-                        +"&"+URLEncoder.encode("totalPayable","UTF-8")+"="+URLEncoder.encode(totalPayable,"UTF-8");
+                if (card == null){
+                    post_data = URLEncoder.encode("token","UTF-8")+"="+URLEncoder.encode(token,"UTF-8")
+                            +"&"+URLEncoder.encode("totalPayable","UTF-8")+"="+URLEncoder.encode(totalPayable,"UTF-8");
+                } else {
+                    post_data = URLEncoder.encode("token","UTF-8")+"="+URLEncoder.encode(token,"UTF-8")
+                            +"&"+URLEncoder.encode("totalPayable","UTF-8")+"="+URLEncoder.encode(totalPayable,"UTF-8")
+                            +"&"+URLEncoder.encode("cardNumber","UTF-8")+"="+URLEncoder.encode(card.getNumber(),"UTF-8")
+                            +"&"+URLEncoder.encode("cardExpMonth","UTF-8")+"="+URLEncoder.encode(card.getExpMonth().toString(),"UTF-8")
+                            +"&"+URLEncoder.encode("cardExpYear","UTF-8")+"="+URLEncoder.encode(card.getExpYear().toString(),"UTF-8")
+                            +"&"+URLEncoder.encode("cardCVC","UTF-8")+"="+URLEncoder.encode(card.getCVC(),"UTF-8")
+                            +"&"+URLEncoder.encode("debtorCode","UTF-8")+"="+URLEncoder.encode(customer.getDebtorCode(),"UTF-8");
+                }
                 bw.write(post_data);
                 bw.flush();
                 bw.close();
@@ -72,6 +96,7 @@ import java.net.URLEncoder;
             }
         }
         else if (type.equals("pay_with_saved_card")){
+            String lastFourDigit = params[2];
             try {
                 payment_url += "payment_savedcard.php";
                 URL url = new URL(payment_url);
@@ -81,8 +106,9 @@ import java.net.URLEncoder;
                 huc.setDoOutput(true);
                 OutputStream ops = huc.getOutputStream();
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(ops,"UTF-8"));
-                String post_data = URLEncoder.encode("token","UTF-8")+"="+URLEncoder.encode(token,"UTF-8")
-                        +"&"+URLEncoder.encode("totalPayable","UTF-8")+"="+URLEncoder.encode(totalPayable,"UTF-8");
+                post_data = URLEncoder.encode("lastFourDigit","UTF-8")+"="+URLEncoder.encode(lastFourDigit,"UTF-8")
+                        +"&"+URLEncoder.encode("totalPayable","UTF-8")+"="+URLEncoder.encode(totalPayable,"UTF-8")
+                        +"&"+URLEncoder.encode("debtorCode","UTF-8")+"="+URLEncoder.encode(customer.getDebtorCode(),"UTF-8");
                 bw.write(post_data);
                 bw.flush();
                 bw.close();
@@ -113,11 +139,11 @@ import java.net.URLEncoder;
 
     @Override
     protected void onPostExecute(String result) {
-        System.out.println("finally");
         Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
         it.putExtra("result",result);
         Double tp = Double.parseDouble(totalPayable);
         it.putExtra("totalPayable", tp/100);
+        it.putExtra("customer", customer);
         context.startActivity(it);
         activity.finish();
     }

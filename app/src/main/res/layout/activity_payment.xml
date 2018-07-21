@@ -39,7 +39,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="136dp"
+        android:layout_marginTop="108dp"
         android:text="$0.00"
         android:textAlignment="center"
         android:textSize="50dp"
