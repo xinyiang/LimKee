@@ -26,5 +26,11 @@
     <string name="payment_successful_description">\s will be charged to your card</string>
     <string name="backTo">Back</string>
     <string name="logout">logout</string>
+    <string name="userprofile">User Profile</string>
+    <string name="totalAmount">Total Amount</string>
+    <string name="orderslip">Order Slip</string>
+    <string name="quickreorder">Quick Reorder</string>
+    <string name="currentorders">Current orders</string>
+    <string name="orderhistory">Order History</string>
 
 </resources>
