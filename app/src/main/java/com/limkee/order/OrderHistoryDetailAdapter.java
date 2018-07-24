@@ -11,10 +11,6 @@ import com.limkee.entity.OrderQuantity;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-/**
- * Created by Xin Yi on 17/7/2018.
- */
-
 public class OrderHistoryDetailAdapter extends RecyclerView.Adapter<OrderHistoryDetailAdapter.MyViewHolder> {
 
     private ArrayList<OrderQuantity> oqList;
@@ -62,7 +58,15 @@ public class OrderHistoryDetailAdapter extends RecyclerView.Adapter<OrderHistory
                 uom = product.getUom();
             }
 
-            qty.setText(Integer.toString(product.getQty()));
+            //show deducted qty if there is return qty
+            int returnQty = product.getReturnedQty();
+            if (returnQty != 0){
+                int quantity = product.getQty() - returnQty;
+                qty.setText(Integer.toString(quantity));
+            } else {
+                qty.setText(Integer.toString(product.getQty()));
+            }
+
             unitOfMetric.setText(uom);
             double unitSub = product.getQty() * product.getUnitPrice();
             unitSubtotal.setText("$" + df.format(unitSub));

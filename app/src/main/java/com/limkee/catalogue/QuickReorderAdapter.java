@@ -25,11 +25,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import com.limkee.R;
 
-
-/**
- * Created by Xin Yi on 29/6/2018.
- */
-
 public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapter.ViewHolder>  {
     private ArrayList<Product> catalogueList;
     private QuickReorderFragment fragment;
@@ -237,10 +232,7 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
             qty.addTextChangedListener(new TextWatcher() {
                 int quantity = 0;
                 public void afterTextChanged(Editable s) {
-                    //int quantity = 0;
-
                     try {
-
 
                         if (qty.getText().toString().equals("")){
                             quantity = 0;
@@ -251,34 +243,13 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                             //qty.setText(qty.getText().toString());
                         }
 
-
-                        //need to validate final qty entered is in product multiples  qty
-                        int qtyMultiples = product.getQtyMultiples();
-
-                        /*
-                        if (quantity % qtyMultiples != 0){ //not working as wanted. only when text is finished "eg: 10" not "1... typing to 10"
-
-                            final Toast tag = Toast.makeText(itemView.getContext(), "Wrong qty", Toast.LENGTH_SHORT);
-                            new CountDownTimer(2000, 1000) {
-                                public void onTick(long millisUntilFinished) {
-                                    tag.show();
-                                }
-
-                                public void onFinish() {
-                                    tag.show();
-                                }
-
-                            }.start();
-                            } else {
-                            */
-                                product.setDefaultQty(quantity);           //did not validate qty multiples
-                                //update unit subtotal
-                                DecimalFormat df = new DecimalFormat("#0.00");
-                                double unitSub = quantity * product.getUnitPrice();
-                                unitSubtotal.setText("$" + df.format(unitSub));
-                                //update subtotal
-                                QuickReorderFragment.updateSubtotal(orderList);
-                       // }
+                        product.setDefaultQty(quantity);           //did not validate qty multiples, do it at Next button
+                        //update unit subtotal
+                        DecimalFormat df = new DecimalFormat("#0.00");
+                        double unitSub = quantity * product.getUnitPrice();
+                        unitSubtotal.setText("$" + df.format(unitSub));
+                        //update subtotal
+                        QuickReorderFragment.updateSubtotal(orderList);
 
                     } catch(Exception e) {
                         quantity = 0;

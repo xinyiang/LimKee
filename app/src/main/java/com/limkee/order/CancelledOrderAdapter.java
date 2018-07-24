@@ -12,9 +12,6 @@ import com.limkee.entity.Customer;
 import com.limkee.entity.Order;
 import java.util.ArrayList;
 
-/**
- * Created by Xin Yi on 18/7/2018.
- */
 public class CancelledOrderAdapter extends RecyclerView.Adapter<com.limkee.order.CancelledOrderAdapter.MyViewHolder> {
         CancelledOrderFragment fragment;
         private ArrayList<Order> cancelledOrderList;

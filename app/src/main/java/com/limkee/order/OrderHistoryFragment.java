@@ -47,6 +47,7 @@ public class OrderHistoryFragment extends Fragment {
     private String isEnglish;
     private Button goToCancelledOrders;
     private Bundle myBundle = new Bundle();
+    TextView lbl_noOrders;
 
     public OrderHistoryFragment(){}
 
@@ -135,6 +136,18 @@ public class OrderHistoryFragment extends Fragment {
                 OrderDAO.historyOrdersList = data;
 
                 mAdapter.update(OrderDAO.historyOrdersList);
+
+                if (data.size() == 0) {
+                    if (isEnglish.equals("Yes")) {
+                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
+                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
+                        lbl_noOrders.setText("No order history");
+                    } else {
+                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
+                        lbl_noOrders.setText("没有历史订单");
+                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
+                    }
+                }
             }
 
             @Override

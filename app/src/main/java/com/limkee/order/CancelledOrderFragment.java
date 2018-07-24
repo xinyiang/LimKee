@@ -39,6 +39,7 @@ public class CancelledOrderFragment extends Fragment {
     public static Retrofit retrofit;
     private  String isEnglish;
     boolean show = true;
+    TextView lbl_noOrders;
 
     public CancelledOrderFragment(){}
 
@@ -87,7 +88,6 @@ public class CancelledOrderFragment extends Fragment {
         recyclerView = view.findViewById(R.id.cancelledOrderRecyclerView);
         recyclerView = (RecyclerView) view.findViewById(R.id.cancelledOrderRecyclerView);
         mAdapter = new CancelledOrderAdapter(this, OrderDAO.cancelledOrdersList, customer, isEnglish);
-//        coordinatorLayout = view.findViewById(R.id.constraint_layout);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -116,15 +116,29 @@ public class CancelledOrderFragment extends Fragment {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
+        System.out.println("CANCELLED COMPANY " + companyCode);
         PostData service = retrofit.create(PostData.class);
-        Call<ArrayList<Order>> call = service.getCancelledOrder(companyCode);
+        Call<ArrayList<Order>> call = service.getCancelledOrders(companyCode);
         call.enqueue(new Callback<ArrayList<Order>>() {
 
             @Override
             public void onResponse(Call<ArrayList<Order>> call, Response<ArrayList<Order>> response) {
                 ArrayList<Order> data = response.body();
                 OrderDAO.cancelledOrdersList = data;
+                System.out.println("cancelled company data " + data.size());
+
                 mAdapter.update(OrderDAO.cancelledOrdersList);
+                if (data.size() == 0) {
+                    if (isEnglish.equals("Yes")) {
+                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
+                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
+                        lbl_noOrders.setText("No cancelled orders");
+                    } else {
+                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
+                        lbl_noOrders.setText("没有取消订单");
+                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
+                    }
+                }
             }
 
             @Override

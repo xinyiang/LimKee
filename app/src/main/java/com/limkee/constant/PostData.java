@@ -46,7 +46,7 @@ public interface PostData {
         Call<ArrayList<OrderQuantity>> getOrderHistoryQuantity(@Query("orderNo") String orderNo);
 
         @GET("get-order/cancelledorder")
-        Call<ArrayList<Order>> getCancelledOrder(@Query("companyCode") String companyCode);
+        Call<ArrayList<Order>> getCancelledOrders(@Query("companyCode") String companyCode);
 
         @GET("get-order/cancelledorderdetails")
         Call<OrderDetails> getCancelledOrderDetails(@Query("orderNo") String orderNo);
