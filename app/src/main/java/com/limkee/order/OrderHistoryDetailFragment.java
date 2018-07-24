@@ -219,8 +219,10 @@ public class OrderHistoryDetailFragment extends Fragment {
                     .build();
         }
 
+        System.out.println("order details" + orderID);
         PostData service = retrofit.create(PostData.class);
         Call<OrderDetails> call = service.getOrderHistoryDetails(orderID);
+
         call.enqueue(new Callback<OrderDetails>() {
 
             @Override
@@ -228,9 +230,8 @@ public class OrderHistoryDetailFragment extends Fragment {
                 OrderDetails od = response.body();
                 OrderDAO.historyOD = od;
                 mAdapter.update(od);
-
-                System.out.println("Order details is " + od.getOrderDate());
                 //display order details
+
                 TextView subtotalAmt, tax, totalAmt;
                 DecimalFormat df = new DecimalFormat("#0.00");
                 subtotalAmt = view.findViewById(R.id.subtotalAmt);
@@ -269,6 +270,8 @@ public class OrderHistoryDetailFragment extends Fragment {
             @Override
             public void onFailure(Call<OrderDetails> call, Throwable t) {
                 System.out.println(t.getMessage());
+                System.out.println("order details error " + t.getMessage());
+
             }
         });
     }

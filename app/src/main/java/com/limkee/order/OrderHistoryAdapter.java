@@ -15,10 +15,6 @@ import com.limkee.entity.Order;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
- * Created by Xin Yi on 17/7/2018.
- */
-
 public class OrderHistoryAdapter extends RecyclerView.Adapter<OrderHistoryAdapter.MyViewHolder> {
     OrderHistoryFragment fragment;
     private ArrayList<Order> orderHistoryList;

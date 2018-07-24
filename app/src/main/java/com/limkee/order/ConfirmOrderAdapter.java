@@ -10,10 +10,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import com.limkee.R;
 
-/**
- * Created by Xin Yi on 4/7/2018.
- */
-
 public class ConfirmOrderAdapter extends RecyclerView.Adapter<ConfirmOrderAdapter.MyViewHolder>  {
         private ArrayList<Product> orderList;
         private ConfirmOrderFragment fragment;

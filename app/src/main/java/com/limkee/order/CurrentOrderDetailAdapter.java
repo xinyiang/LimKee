@@ -11,9 +11,6 @@ import com.limkee.entity.OrderQuantity;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-/**
- * Created by Xin Yi on 8/7/2018.
- */
 
 public class CurrentOrderDetailAdapter extends RecyclerView.Adapter<CurrentOrderDetailAdapter.MyViewHolder> {
 

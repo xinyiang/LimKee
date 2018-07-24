@@ -11,10 +11,6 @@ import com.limkee.entity.OrderQuantity;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-/**
- * Created by Xin Yi on 18/7/2018.
- */
-
 public class CancelledOrderDetailAdapter extends RecyclerView.Adapter<CancelledOrderDetailAdapter.MyViewHolder> {
 
     private ArrayList<OrderQuantity> oqList;

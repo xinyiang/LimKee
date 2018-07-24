@@ -30,10 +30,6 @@ import com.limkee.R;
 import org.w3c.dom.Text;
 
 
-/**
- * Created by Xin Yi on 24/4/2018.
- */
-
 public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.ViewHolder>  {
     private ArrayList<Product> catalogueList;
     private CatalogueFragment fragment;
@@ -134,21 +130,6 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                     .error(R.mipmap.ic_launcher)
                     .placeholder(R.mipmap.ic_launcher)
                     .into(image);
-
-
-
-        //hide next button when edit text is clicked
-            qty.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                    //CatalogueFragment.confirmOrder.setVisibility(View.INVISIBLE);
-                    //CatalogueFragment.lbl_subtotal.setVisibility(View.INVISIBLE);
-
-                    return false;
-                }
-            });
-
 
             InputMethodManager imm = (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(qty.getWindowToken(), 0);
@@ -251,44 +232,45 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                 }
             });
 
-            /*
             //update when on text change instead of clicking tick in keyboard
             qty.clearFocus();
             qty.addTextChangedListener(new TextWatcher() {
+                int quantity = 0;
                 public void afterTextChanged(Editable s) {
-                    int quantity = 0;
-
                     try {
+
                         if (qty.getText().toString().equals("")){
                             quantity = 0;
                             //qty.setText("0);
 
                         } else {
                             quantity = Integer.parseInt(qty.getText().toString());
-                            //qty.setText(qty.getText().toString());
                         }
+
+                        product.setDefaultQty(quantity);           //did not validate qty multiples, do it at Next button
+                        //update unit subtotal
+                        DecimalFormat df = new DecimalFormat("#0.00");
+                        double unitSub = quantity * product.getUnitPrice();
+                        unitSubtotal.setText("$" + df.format(unitSub));
+                        //update subtotal
+                        QuickReorderFragment.updateSubtotal(orderList);
 
                     } catch(Exception e) {
                         quantity = 0;
 
                     }
 
-                    //update subtotal
-                    //product.setDefaultQty(quantity);
-                    CatalogueFragment.updateSubtotal(orderList);
-                    //update unit subtotal
-                    DecimalFormat df = new DecimalFormat("#0.00");
-                    double unitSub = quantity * product.getUnitPrice();
-                    unitSubtotal.setText("$" + df.format(unitSub));
-                 }
+
+                }
 
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-                public void onTextChanged(CharSequence s, int start, int before, int count) {}
-            });
-            */
-        }
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
 
+
+                }
+            });
+        }
     }
 
     public void update(String[] qtyDataSet, ArrayList<Product> catalogueList, ArrayList<Product> tempOrderList){

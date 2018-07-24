@@ -38,7 +38,7 @@ public class CurrentOrderFragment extends Fragment {
     private String companyCode;
     public static Retrofit retrofit;
     private  String isEnglish;
-    boolean show = true;
+    TextView lbl_noOrders;
 
     public CurrentOrderFragment(){}
 
@@ -68,7 +68,7 @@ public class CurrentOrderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_current_order, container, false);
-        TextView lbl_orderIDHeader, lbl_numItemsHeader, lbl_deliveryDateHeader;
+        TextView lbl_orderIDHeader, lbl_numItemsHeader, lbl_deliveryDateHeader, lbl_noOrders;
 
         lbl_orderIDHeader = (TextView) view.findViewById(R.id.lbl_orderIDHeader);
         lbl_deliveryDateHeader = (TextView) view.findViewById(R.id.lbl_deliveryDateHeader);
@@ -94,7 +94,6 @@ public class CurrentOrderFragment extends Fragment {
     }
 
     private void doGetCurrentOrders(String companyCode) {
-        //final int numOrders = 0;
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(HttpConstant.BASE_URL)
@@ -110,6 +109,18 @@ public class CurrentOrderFragment extends Fragment {
                 ArrayList<Order> data = response.body();
                 OrderDAO.currentOrdersList = data;
                 mAdapter.update(OrderDAO.currentOrdersList);
+
+                if (data.size() == 0) {
+                    if (isEnglish.equals("Yes")) {
+                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
+                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
+                        lbl_noOrders.setText("No current orders");
+                    } else {
+                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
+                        lbl_noOrders.setText("没有当前订单");
+                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
+                    }
+                }
             }
 
             @Override
