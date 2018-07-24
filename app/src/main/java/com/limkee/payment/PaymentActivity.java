@@ -3,9 +3,9 @@ package com.limkee.payment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -43,11 +43,13 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
     private String totalPayable;
     private PaymentFragment paymentFragment = new PaymentFragment();
     public static Bundle myBundle = new Bundle();
+    private String deliveryDate;
     private Context context;
     private ProgressBar progressBar;
     private EditText nameOnCard;
     private TextView errorNameOnCard;
     private Button payButton;
+    private Button selectSavedCard;
     private CheckBox saveCard;
     private Customer customer;
     private CardMultilineWidget mCardMultilineWidget;
@@ -63,10 +65,14 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("@string/payment");
         myBundle = getIntent().getExtras();
+
+
         activity = this;
         context = getApplicationContext();
         customer = myBundle.getParcelable("customer");
+        deliveryDate = myBundle.getString("deliveryDate");
         double tp = myBundle.getDouble("totalPayable");
+        String isEnglish = myBundle.getString("language");
 
         TextView tv = (TextView)findViewById(R.id.totalPayable);
         tv.setText(String.format("$%.2f", tp));
@@ -75,27 +81,64 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         Bundle bundle = new Bundle();
         //bundle.putString("totalPayable",totalPayable);
 
+        selectSavedCard = (Button)findViewById(R.id.select_saved_card);
+        selectSavedCard.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                selectSavedCard();
+            }
+        });
+
         payButton = (Button) findViewById(R.id.btnPlaceOrder);
         payButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 pay("pay_with_new_card", null);
             }
         });
-
+        bundle.putParcelable("customer", customer);
+        bundle.putString("language", isEnglish);
         paymentFragment.setArguments(bundle);
         loadFragment(paymentFragment);
+
     }
 
-    public void pay(String mType, String selectedCard){
+    public void pay(String mType, String lastFourDigit){
         //validate credentials to login
         final String type = mType;
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         if (type.equals("pay_with_saved_card")){
-            progressBar.setVisibility(View.VISIBLE);
-            BackgroundPayment bp = new BackgroundPayment(context, activity);
-            bp.saveCustomer(customer);
-            bp.execute(type, totalPayable, selectedCard);
+            AlertDialog ad = new AlertDialog.Builder(PaymentActivity.this).setTitle(getResources().getString(R.string.key_in_cvc)).create();
+            final EditText edittext = new EditText(PaymentActivity.this);
+            ad.setView(edittext);
+            ad.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.confirm), new DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog, int whichButton){
+                    String CVC = edittext.getText().toString();
+                    progressBar.setVisibility(View.VISIBLE);
+                    BackgroundValidation bv = (BackgroundValidation) new BackgroundValidation(
+                            new AsyncResponse() {
+                                @Override
+                                public void processFinish(String output) {
+                                    if (output != null && output.equals("success")){
+                                        BackgroundPayment bp = new BackgroundPayment(context, activity);
+                                        bp.saveCustomer(customer);
+                                        bp.saveDeliveryDate(deliveryDate);
+                                        bp.execute(type, totalPayable, lastFourDigit);
+                                    }else{
+                                        progressBar.setVisibility(View.INVISIBLE);
+                                        Toast.makeText(context, getResources().getString(R.string.cvc_error), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }
+                    ).execute(customer.getDebtorCode(), lastFourDigit, CVC);
+                }
+            });
+            ad.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int i) {
+                    dialog.cancel();
+                }
+            });
+            ad.show();
 
         }else{
             nameOnCard = (EditText) findViewById(R.id.nameOnCard);
@@ -106,7 +149,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
 
             if (card == null || nameOnCard.getText().toString().isEmpty()) {
                 Toast.makeText(context,
-                        "Invalid Card Data",
+                        getResources().getString(R.string.invalid_card),
                         Toast.LENGTH_LONG
                 ).show();
                 if (nameOnCard.getText().toString().isEmpty()){
@@ -128,6 +171,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                                 if (saveCard.isChecked()){
                                     bp.saveCard(card);
                                     bp.saveCustomer(customer);
+                                    bp.saveDeliveryDate(deliveryDate);
                                     //Send card details to db
                                 }
                                 bp.execute(type, totalPayable, token.getId());
@@ -192,14 +236,14 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
     public void onFragmentInteraction(Uri uri) {
     }
 
-    public void selectSavedCard(View view) {
+    public void selectSavedCard() {
         //get saved card
         GetJson getSavedCards = (GetJson) new GetJson(
                 new AsyncResponse() {
                     @Override
                     public void processFinish(String output) {
                         if (output == null){
-                            Toast.makeText(context, "没有储存的卡", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, R.string.no_saved_card, Toast.LENGTH_SHORT).show();
                         }else{
                             try{
                                 loadIntoAlertDialog(output);
@@ -231,17 +275,53 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
             cards[i] = "XXXX XXXX XXXX " + obj.getString("LastFourDigit");
         }
 
-        AlertDialog ad = new AlertDialog.Builder(PaymentActivity.this).setTitle("选择您要使用的卡")
-                .setSingleChoiceItems(cards,radioOnClick.getIndex(),radioOnClick)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener(){
-                            public void onClick(DialogInterface dialog, int whichButton){
-                                ListView lw = ((AlertDialog)dialog).getListView();
-                                Object selectedItem = lw.getAdapter().getItem(lw.getCheckedItemPosition());
-                                String selectedCard = selectedItem.toString();
-                                pay("pay_with_saved_card", selectedCard.substring(selectedCard.length() - 4));
+        AlertDialog ad = new AlertDialog.Builder(PaymentActivity.this).setTitle(getResources().getString(R.string.select_card))
+                .setSingleChoiceItems(cards,radioOnClick.getIndex(),radioOnClick).create();
+        ad.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.confirm), new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton){
+                ListView lw = ((AlertDialog)dialog).getListView();
+                Object selectedItem = lw.getAdapter().getItem(lw.getCheckedItemPosition());
+                String selectedCard = selectedItem.toString();
+
+                pay("pay_with_saved_card", selectedCard.substring(selectedCard.length() - 4));
+                }
+        });
+        ad.setButton(DialogInterface.BUTTON_NEUTRAL, getResources().getString(R.string.delete_card), new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int whichButton){
+                ListView lw = ((AlertDialog)dialog).getListView();
+                Object selectedItem = lw.getAdapter().getItem(lw.getCheckedItemPosition());
+                String selectedCard = selectedItem.toString();
+                deleteCard(dialog, selectedCard.substring(selectedCard.length() - 4));
+                }
+        });
+        ad.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                dialog.cancel();
+            }
+        });
+        ad.show();
+    }
+
+    protected void deleteCard(DialogInterface singleChoiceDialog, String lastFourDigit){
+        AlertDialog ad = new AlertDialog.Builder(PaymentActivity.this).setMessage(getResources().getString(R.string.confirm_delete) + lastFourDigit).create();
+        ad.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.confirm), new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int i){
+                BackgroundDelete bd = (BackgroundDelete) new BackgroundDelete(
+                        new AsyncResponse() {
+                            @Override
+                            public void processFinish(String output) {
+                                selectSavedCard();
                             }
                         }
-                ).setNegativeButton("取消", null).create();
+                ).execute(customer.getDebtorCode(), lastFourDigit);
+            }
+        });
+        ad.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog, int i){
+                dialog.cancel();
+            }
+        });
         ad.show();
     }
 

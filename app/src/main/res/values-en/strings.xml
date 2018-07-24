@@ -6,7 +6,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_logout">LogoutActivity</string>
-    <string name="company_code">Company Code</string>
+    <string name="company_code">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
 
@@ -20,17 +20,28 @@
     <string name="payment">Payment</string>
     <string name="paymentdetails">Payment Details</string>
     <string name="pay">Pay</string>
-    <string name="payment_unsuccessful">Payment Unsuccessful!</string>
-    <string name="payment_successful">Payment Successful!</string>
+    <string name="payment_unsuccessful">Fail to place order. Payment Unsuccessful!</string>
+    <string name="payment_successful">Already place order. Payment Successful!</string>
     <string name="payment_unsuccessful_description">Your card will not be charged\n please try again</string>
     <string name="payment_successful_description">\s will be charged to your card</string>
     <string name="backTo">Back</string>
-    <string name="logout">logout</string>
+    <string name="logout">Logout</string>
     <string name="userprofile">User Profile</string>
     <string name="totalAmount">Total Amount</string>
     <string name="orderslip">Order Slip</string>
     <string name="quickreorder">Quick Reorder</string>
     <string name="currentorders">Current orders</string>
     <string name="orderhistory">Order History</string>
+    <string name="save_this_card">Save This Card</string>
+    <string name="pay_with_saved_cards">Pay with saved cards</string>
+    <string name="confirm">confirm</string>
+    <string name="cancel">cancel</string>
+    <string name="key_in_cvc">Please enter your CVC:</string>
+    <string name="cvc_error">CVC Error</string>
+    <string name="no_saved_card">No saved card</string>
+    <string name="delete_card">Delete card</string>
+    <string name="select_card">Select your card</string>
+    <string name="confirm_delete">Confirm to delete the card ending with: </string>
+    <string name="invalid_card">Invalid card data</string>
 
 </resources>

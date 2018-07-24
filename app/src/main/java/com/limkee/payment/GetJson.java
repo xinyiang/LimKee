@@ -17,7 +17,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 public class GetJson extends AsyncTask<String,Void,String> {
-    private Context context;
 
     public AsyncResponse delegate = null;
 

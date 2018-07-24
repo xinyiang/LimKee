@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
@@ -18,7 +17,6 @@ import com.limkee.R;
 import com.limkee.catalogue.CatalogueFragment;
 import com.limkee.locale.MyContextWrapper;
 import com.limkee.navigation.NavigationActivity;
-import com.limkee.payment.PaymentActivity;
 
 import java.security.MessageDigest;
 
