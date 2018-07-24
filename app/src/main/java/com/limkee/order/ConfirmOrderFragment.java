@@ -429,18 +429,9 @@ public class ConfirmOrderFragment extends Fragment {
 
                         //check if today's delivery is before cut off time
 
-                        //insert into database 3 tables
-                        createSalesOrder();
+
 
                         //go to payment activity
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable("customer", customer);
-                        bundle.putParcelableArrayList("orderList", orderList);
-                        bundle.putDouble("subtotal", subtotal);
-                        bundle.putDouble("taxAmt", taxAmt);
-                        bundle.putString("deliveryDate", ETADeliveryDate);
-                        bundle.putDouble("totalPayable", totalPayable);
-
                         Intent intent = new Intent(view.getContext(), PaymentActivity.class);
                         intent.putParcelableArrayListExtra("orderList", orderList);
                         intent.putExtra("customer", customer);
@@ -448,6 +439,7 @@ public class ConfirmOrderFragment extends Fragment {
                         intent.putExtra("taxAmt", taxAmt);
                         intent.putExtra("deliveryDate", ETADeliveryDate);
                         intent.putExtra("totalPayable", totalPayable);
+                        intent.putExtra("language",isEnglish);
                         getActivity().startActivity(intent);
 
                 }
@@ -491,23 +483,7 @@ public class ConfirmOrderFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    private void createSalesOrder() {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
 
-        PostData postData = new Retrofit.Builder()
-                .baseUrl(HttpConstant.BASE_URL)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build().create(PostData.class);
-
-        compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode(), ETADeliveryDate)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(this::handleSalesOrderResponse, this::handleError));
-    }
 
     private void handleSalesOrderResponse(String orderNo) {
 

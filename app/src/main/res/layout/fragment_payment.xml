@@ -14,15 +14,14 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:text="保存此卡"
+        android:text="@string/save_this_card"
         app:layout_constraintEnd_toEndOf="@+id/card_multiline_widget"
         app:layout_constraintTop_toBottomOf="@+id/card_multiline_widget" />
 
     <com.stripe.android.view.CardMultilineWidget
         android:id="@+id/card_multiline_widget"
         android:layout_width="349dp"
-        android:layout_height="147dp"
+        android:layout_height="162dp"
         android:layout_marginBottom="108dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
@@ -75,16 +74,6 @@
         android:textSize="12sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/card_multiline_widget"
-        app:layout_constraintStart_toStartOf="@+id/nameOnCard" />
-
-    <Button
-        android:id="@+id/select_saved_card"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:onClick="selectSavedCard"
-        android:text="使用已保存的卡"
-        app:layout_constraintBottom_toTopOf="@+id/nameOnCard"
         app:layout_constraintStart_toStartOf="@+id/nameOnCard" />
 
 

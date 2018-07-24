@@ -139,7 +139,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
                     loginPrefsEditor.putBoolean("isLogin", true);
                     loginPrefsEditor.putBoolean("isAlertDialogue", true);
                     loginPrefsEditor.putString("language", isEnglish);
-                    loginPrefsEditor.commit();
+                    loginPrefsEditor.apply();
 
                     context.startActivity(it);
         } else{

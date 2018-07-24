@@ -5,7 +5,7 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_logout">LogoutActivity</string>
-    <string name="company_code">公司代码</string>
+    <string name="company_code">用户名</string>
     <string name="password">密码</string>
     <string name="login">登陆</string>
     <string name="backTo">返回</string>
@@ -20,8 +20,8 @@
     <string name="payment">付款</string>
     <string name="paymentdetails">付款详情</string>
     <string name="pay">付款</string>
-    <string name="payment_unsuccessful">付款失败！</string>
-    <string name="payment_successful">付款成功！</string>
+    <string name="payment_unsuccessful">未下单，付款失败！</string>
+    <string name="payment_successful">已下单，付款成功！</string>
     <string name="payment_unsuccessful_description">您的卡不会被收费\n请重试</string>
     <string name="payment_successful_description"> 已从您的卡里扣除</string>
     <string name="userprofile">用户资料</string>
@@ -31,5 +31,16 @@
     <string name="currentorders">当下订单</string>
     <string name="orderhistory">订单历史</string>
     <string name="totalAmount">总价</string>
+    <string name="save_this_card">保存此卡</string>
+    <string name="pay_with_saved_cards">使用已储存的卡支付</string>
+    <string name="confirm">确定</string>
+    <string name="cancel">取消</string>
+    <string name="key_in_cvc">请输入您的CVC号码：</string>
+    <string name="cvc_error">CVC错误</string>
+    <string name="no_saved_card">没有储存的卡</string>
+    <string name="delete_card">删除此卡</string>
+    <string name="select_card">选择您要使用的卡</string>
+    <string name="confirm_delete">您确定删除此尾号的卡吗： </string>
+    <string name="invalid_card">卡信息错误</string>
 
 </resources>

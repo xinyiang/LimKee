@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.limkee.R;
 import com.limkee.entity.Customer;
+import com.limkee.order.ConfirmOrderActivity;
 import com.stripe.android.view.CardInputWidget;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -23,6 +24,7 @@ public class PaymentFragment extends Fragment {
     private CardInputWidget mCardInputWidget;
     private Context context;
     private String totalPayable;
+    private String isEnglish;
 
     public PaymentFragment() {
         // Required empty public constructor
@@ -44,6 +46,16 @@ public class PaymentFragment extends Fragment {
         Bundle bundle = getArguments();
         customer = bundle.getParcelable("customer");
         totalPayable = String.valueOf(bundle.getDouble("totalPayable"));
+        isEnglish = bundle.getString("language");
+
+        if (getActivity() instanceof PaymentActivity) {
+            if (isEnglish.equals("Yes")) {
+                ((PaymentActivity) getActivity()).setActionBarTitle("Payment");
+            } else {
+                ((PaymentActivity) getActivity()).setActionBarTitle("付款");
+            }
+        }
+
     }
 
     @Override
