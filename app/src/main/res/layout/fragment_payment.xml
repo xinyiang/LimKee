@@ -34,21 +34,34 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints" />
 
-    <EditText
-        android:id="@+id/nameOnCard"
-        style="@android:style/Widget.EditText"
-        android:layout_width="349dp"
-        android:layout_height="49dp"
-        android:layout_marginBottom="8dp"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/nameOnCard_inputLayout"
+        android:layout_width="348dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:ems="10"
-        android:hint="Name on Card"
-        android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/card_multiline_widget"
         app:layout_constraintEnd_toEndOf="@+id/card_multiline_widget"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/card_multiline_widget" />
+        app:layout_constraintStart_toStartOf="@+id/card_multiline_widget">
+
+        <EditText
+            android:id="@+id/nameOnCard"
+            style="@android:style/Widget.EditText"
+            android:layout_width="349dp"
+            android:layout_height="51dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:ems="10"
+            android:hint="Name on Card"
+            android:inputType="textPersonName"
+            app:layout_constraintBottom_toTopOf="@+id/card_multiline_widget"
+            app:layout_constraintEnd_toEndOf="@+id/card_multiline_widget"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/card_multiline_widget" />
+
+    </android.support.design.widget.TextInputLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
