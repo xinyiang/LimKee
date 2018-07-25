@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +51,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
     private ProgressBar progressBar;
     private EditText nameOnCard;
     private TextView errorNameOnCard;
+    private Drawable originalDrawable;
     private Button payButton;
     private Button selectSavedCard;
     private CheckBox saveCard;
@@ -145,6 +149,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
             errorNameOnCard = (TextView) findViewById(R.id.errNameOnCard);
             mCardMultilineWidget = (CardMultilineWidget)findViewById(R.id.card_multiline_widget);
             saveCard = (CheckBox) findViewById(R.id.saveCard);
+            originalDrawable = nameOnCard.getBackground();
             final Card card = mCardMultilineWidget.getCard();
 
             if (card == null || nameOnCard.getText().toString().isEmpty()) {
@@ -156,10 +161,8 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                     errorNameOnCard.setVisibility(View.VISIBLE);
                     nameOnCard.setBackgroundResource(R.drawable.text_underline);
                 }
-                else {
-                    errorNameOnCard.setVisibility(View.INVISIBLE);
-                    nameOnCard.setBackgroundResource(android.R.drawable.edit_text);
-                }
+                nameOnCard.addTextChangedListener(filterTextWatcher);
+
             } else {
                 progressBar.setVisibility(View.VISIBLE);
                 Stripe stripe = new Stripe(context, "pk_test_FPldW3NRDq68iu1drr2o7Anb");
@@ -343,4 +346,24 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
             setIndex(whichButton);
         }
     }
+
+    private TextWatcher filterTextWatcher = new TextWatcher() {
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            errorNameOnCard.setVisibility(View.INVISIBLE);
+            nameOnCard.setBackground(originalDrawable);
+        }
+
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 }
