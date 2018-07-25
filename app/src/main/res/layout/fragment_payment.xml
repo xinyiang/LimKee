@@ -87,7 +87,8 @@
         android:textSize="12sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/card_multiline_widget"
-        app:layout_constraintStart_toStartOf="@+id/nameOnCard" />
+        app:layout_constraintStart_toStartOf="@+id/nameOnCard"
+        tools:ignore="NotSibling" />
 
 
 </android.support.constraint.ConstraintLayout>
