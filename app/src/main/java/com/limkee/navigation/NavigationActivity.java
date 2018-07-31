@@ -1,8 +1,6 @@
 package com.limkee.navigation;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -23,7 +21,7 @@ import com.google.gson.Gson;
 import com.limkee.BaseActivity;
 import com.limkee.catalogue.CatalogueFragment;
 import com.limkee.R;
-import com.limkee.catalogue.QuickReorderFragment;
+import com.limkee.order.QuickReorderFragment;
 import com.limkee.entity.Customer;
 import com.limkee.login.LoginActivity;
 import com.limkee.login.LogoutActivity;
@@ -144,7 +142,7 @@ public class NavigationActivity extends BaseActivity implements
             fragmentClass = CatalogueFragment.class;
             loadFragment(fragmentClass);
         } else if (id == R.id.nav_quickreorder) {
-            fragmentClass = com.limkee.catalogue.QuickReorderFragment.class;
+            fragmentClass = QuickReorderFragment.class;
             loadFragment(fragmentClass);
         } else if (id == R.id.nav_logout) {
             Intent intent = new Intent(this,LogoutActivity.class);

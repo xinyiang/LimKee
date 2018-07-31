@@ -250,7 +250,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             }
 
             amtDetails.setText(" Amount details");
-            deliveryDate.setText("DD/MM/YY");
+            deliveryDate.setText("DD/MM/YYYY");
             placeOrder.setText("Place Order");
 
         } else {
@@ -262,11 +262,10 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         }
 
         if (deliveryShift.equals("AM")) {
-            deliveryTime.setText("4.30am - 6.30am");
+            deliveryTime.setText("4.30 am - 6.30 am");
         } else {
-            deliveryTime.setText("7.50am - 12.30pm");
+            deliveryTime.setText("7.50 am - 12.30 pm");
         }
-
 
         return view;
     }
@@ -431,17 +430,9 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     //check if today's delivery is before cut off time
 
                     //insert into database 3 tables
-                    createSalesOrder();
+                  //  createSalesOrder();
 
                     //go to payment activity
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("customer", customer);
-                    bundle.putParcelableArrayList("orderList", orderList);
-                    bundle.putDouble("subtotal", subtotal);
-                    bundle.putDouble("taxAmt", taxAmt);
-                    bundle.putString("deliveryDate", ETADeliveryDate);
-                    bundle.putDouble("totalPayable", totalPayable);
-
                     Intent intent = new Intent(view.getContext(), PaymentActivity.class);
                     intent.putParcelableArrayListExtra("orderList", orderList);
                     intent.putExtra("customer", customer);
@@ -449,8 +440,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     intent.putExtra("taxAmt", taxAmt);
                     intent.putExtra("deliveryDate", ETADeliveryDate);
                     intent.putExtra("totalPayable", totalPayable);
-                    getActivity().startActivity(intent);
-
+                    intent.putExtra("language",isEnglish);
                 }
             }
         });
@@ -469,15 +459,11 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        try {
-            mListener = (OnFragmentInteractionListener) getActivity();
-        } catch (ClassCastException e) {
-            throw new ClassCastException(getActivity().toString()
+        System.out.println("BACKK " + context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
     }
@@ -514,7 +500,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
 
         if (orderNo != null) {
 
-
             //create Sales Order Details
             newOrderID = orderNo;
             createSalesOrderDetails(newOrderID);
@@ -537,7 +522,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderDetailsResponse, this::handleError));
-
     }
 
     private void handleSalesOrderDetailsResponse(boolean added) {
@@ -546,10 +530,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         if (added) {
             //create Sales Order Quantity
             createSalesOrderQuantity();
-
-
         }
-
     }
 
     private void createSalesOrderQuantity() {

@@ -2,14 +2,12 @@ package com.limkee.catalogue;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -18,16 +16,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.limkee.entity.Product;
+import com.limkee.order.QuickReorderFragment;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import com.limkee.R;
-
-import org.w3c.dom.Text;
 
 
 public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.ViewHolder>  {
