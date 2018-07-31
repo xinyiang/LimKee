@@ -1,4 +1,4 @@
-package com.limkee.catalogue;
+package com.limkee.order;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
@@ -27,8 +27,6 @@ import com.limkee.dao.CatalogueDAO;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
 import com.limkee.navigation.NavigationActivity;
-import com.limkee.order.ConfirmOrderActivity;
-import com.limkee.order.QuickReorderConfirmOrderActivity;
 
 import android.support.annotation.Nullable;
 import java.text.DecimalFormat;
@@ -254,7 +252,6 @@ public class QuickReorderFragment extends Fragment {
                         subtotal = calculateSubtotal(orderList);
                         subtotalAmt.setText("$" + df.format(subtotal));
 
-
                         //updateSubtotal(orderList);
                         CatalogueDAO.order_list = orderList;
 
@@ -353,6 +350,13 @@ public class QuickReorderFragment extends Fragment {
             public void onResponse(Call<ArrayList<Product>> call, Response<ArrayList<Product>> response) {
                 ArrayList<Product> data = response.body();
                 CatalogueDAO.quickReorder_list = data;
+
+                if (data.size() == 0){
+                    //show default catalogue
+                    doGetCatalogue();
+                }
+                System.out.println("Quick order " + data.size());
+
                 recyclerView.setVisibility(View.GONE);
                 progressBar.setVisibility(View.VISIBLE);
                 recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
@@ -422,6 +426,50 @@ public class QuickReorderFragment extends Fragment {
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
         subtotalAmt.setText("$" + df.format(subtotal));
         recyclerView.setItemViewCacheSize(orderList.size());
+    }
+
+    private void doGetCatalogue() {
+        if (retrofit == null) {
+
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(HttpConstant.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        PostData service = retrofit.create(PostData.class);
+        Call<ArrayList<Product>> call = service.getCatalogue();
+        call.enqueue(new Callback<ArrayList<Product>>() {
+
+            @Override
+            public void onResponse(Call<ArrayList<Product>> call, Response<ArrayList<Product>> response) {
+                ArrayList<Product> data = response.body();
+                CatalogueDAO.quickReorder_list = data;
+
+                recyclerView.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+                recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
+
+                //by default, let order list be the same as catalogue. if there is any change in qty, it will be updated.
+                tempOrderList = CatalogueDAO.quickReorder_list;
+                String[] qtyDataSet= new String[tempOrderList.size()];
+                for (int i = 0; i <tempOrderList.size(); i++) {
+                    Product p = tempOrderList.get(i);
+                    qtyDataSet[i] = Integer.toString(p.getDefaultQty());
+                }
+
+                mAdapter.update(qtyDataSet, CatalogueDAO.quickReorder_list, tempOrderList);
+                recyclerView.setItemViewCacheSize(qtyDataSet.length);
+
+                DecimalFormat df = new DecimalFormat("#0.00");
+                subtotalAmt.setText("$" + df.format(calculateSubtotal(CatalogueDAO.quickReorder_list)));
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Product>> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
+
     }
 
     @Override

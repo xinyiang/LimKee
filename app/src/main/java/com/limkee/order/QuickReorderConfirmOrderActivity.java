@@ -7,13 +7,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 import com.limkee.R;
-import com.limkee.catalogue.*;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
 
@@ -21,13 +17,12 @@ import java.util.ArrayList;
 
 public class QuickReorderConfirmOrderActivity extends AppCompatActivity implements QuickReorderConfirmOrderFragment.OnFragmentInteractionListener ,QuickReorderFragment.OnFragmentInteractionListener{
 
-    private View rootView;
-    private QuickReorderConfirmOrderFragment confirmOrderFragment = new QuickReorderConfirmOrderFragment();
     public static Bundle myBundle = new Bundle();
     private ArrayList<Product> orderList;
     private Customer customer;
     private String isEnglish;
     private String deliveryShift;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +30,7 @@ public class QuickReorderConfirmOrderActivity extends AppCompatActivity implemen
         Toolbar toolbar = findViewById(com.limkee.R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Confirm Order");
+      //  getSupportActionBar().setTitle("Confirm Order");
 
         myBundle = getIntent().getExtras();
         customer = myBundle.getParcelable("customer");
@@ -48,17 +43,10 @@ public class QuickReorderConfirmOrderActivity extends AppCompatActivity implemen
         bundle.putParcelable("customer",customer);
         bundle.putString("language", isEnglish);
         bundle.putString("deliveryShift", deliveryShift);
+
+        QuickReorderConfirmOrderFragment confirmOrderFragment = new QuickReorderConfirmOrderFragment();
         confirmOrderFragment.setArguments(bundle);
         loadFragment(confirmOrderFragment);
-
-    }
-
-    public View onCreate(LayoutInflater inflater, ViewGroup container,
-                         Bundle savedInstanceState) {
-
-        rootView = inflater.inflate(R.layout.fragment_quick_reorder_confirm_order, container, false);
-
-        return rootView;
     }
 
     private void loadFragment(Fragment fragment) {

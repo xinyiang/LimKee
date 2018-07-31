@@ -1,8 +1,7 @@
-package com.limkee.catalogue;
+package com.limkee.order;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -18,7 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.limkee.entity.Product;
 import com.squareup.picasso.Picasso;
 import java.text.DecimalFormat;
@@ -49,13 +48,12 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
     }
 
 
-    public QuickReorderAdapter(QuickReorderFragment fragment, ArrayList<Product> catalogueList, String[] qtyDataSet, ArrayList<Product> tempOrderList, String isEnglish) {
+    public QuickReorderAdapter(QuickReorderFragment fragment, ArrayList<Product> orderList, String isEnglish) {
         this.fragment = fragment;
-        this.catalogueList = catalogueList;
-        this.qtyDataSet = qtyDataSet;
-        this.orderList = tempOrderList;
+        this.orderList = orderList;
         this.isEnglish = isEnglish;
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
