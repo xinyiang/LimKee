@@ -2,6 +2,7 @@ package com.limkee.payment;
 
 
 import android.os.AsyncTask;
+import android.util.Base64;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -25,6 +27,16 @@ public class BackgroundValidation extends AsyncTask<String,Void,String> {
 
     public BackgroundValidation(AsyncResponse delegate){
         this.delegate = delegate;
+    }
+
+    protected String encodeBase64 (String data){
+        try{
+            byte[] temp = data.getBytes("UTF-8");
+            return Base64.encodeToString(temp,Base64.NO_WRAP | Base64.URL_SAFE);
+        }catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+        return "";
     }
 
 @Override
@@ -44,7 +56,7 @@ protected String doInBackground(String... params) {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(ops,"UTF-8"));
         post_data = URLEncoder.encode("debtorCode","UTF-8")+"="+URLEncoder.encode(debtorCode,"UTF-8")
                 +"&"+URLEncoder.encode("lastFourDigit","UTF-8")+"="+URLEncoder.encode(lastFourDigit,"UTF-8")
-                +"&"+URLEncoder.encode("cvc","UTF-8")+"="+URLEncoder.encode(CVC,"UTF-8");
+                +"&"+URLEncoder.encode("cvc","UTF-8")+"="+URLEncoder.encode(encodeBase64(CVC),"UTF-8");
         bw.write(post_data);
         bw.flush();
         bw.close();
