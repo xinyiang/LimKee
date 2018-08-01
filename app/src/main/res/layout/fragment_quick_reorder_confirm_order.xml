@@ -31,7 +31,7 @@
             android:background="#DCDCDC"
             android:text=" 送货详情"
             android:textColor="@color/colorPrimary"
-            android:textSize="15dp"
+            android:textSize="17dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/lbl_name"
             app:layout_constraintEnd_toEndOf="parent"

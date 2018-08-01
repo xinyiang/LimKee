@@ -67,6 +67,7 @@ public class ConfirmOrderFragment extends Fragment {
     private int month;
     private int year;
     private String dayOfWeek;
+    String orderID = null;
 
     public ConfirmOrderFragment() {
         // Required empty public constructor
@@ -249,7 +250,7 @@ public class ConfirmOrderFragment extends Fragment {
             }
 
             amtDetails.setText(" Amount details");
-            deliveryDate.setText("DD/MM/YY");
+            deliveryDate.setText("DD/MM/YYYY");
             placeOrder.setText("Place Order");
 
         } else {
@@ -261,9 +262,9 @@ public class ConfirmOrderFragment extends Fragment {
         }
 
         if (deliveryShift.equals("AM")) {
-            deliveryTime.setText("4.30am - 6.30am");
+            deliveryTime.setText("4.30 am - 6.30 am");
         } else {
-            deliveryTime.setText("7.50am - 12.30pm");
+            deliveryTime.setText("7.50 am - 12.30 pm");
         }
 
 
@@ -292,7 +293,6 @@ public class ConfirmOrderFragment extends Fragment {
                         year = selectedYear;
                         month = selectedMonth;
                         day = selectedDay;
-
 
                         SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
                         Date date = new Date(selectedYear, selectedMonth, selectedDay - 1);
@@ -428,7 +428,6 @@ public class ConfirmOrderFragment extends Fragment {
                 } else {
 
                         //check if today's delivery is before cut off time
-
 
 
                         //go to payment activity
