@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -30,6 +31,7 @@ import com.limkee.BaseActivity;
 import com.limkee.R;
 
 import com.limkee.entity.Customer;
+import com.limkee.entity.Product;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
 import com.stripe.android.view.CardMultilineWidget;
@@ -39,6 +41,8 @@ import com.stripe.android.model.Token;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 
 public class PaymentActivity extends BaseActivity implements PaymentFragment.OnFragmentInteractionListener{
@@ -50,12 +54,14 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
     private Context context;
     private ProgressBar progressBar;
     private EditText nameOnCard;
-    private TextView errorNameOnCard;
+    private TextInputLayout err;
     private Drawable originalDrawable;
     private Button payButton;
     private Button selectSavedCard;
     private CheckBox saveCard;
     private Customer customer;
+    private double subtotal;
+    private ArrayList<Product> orderList;
     private CardMultilineWidget mCardMultilineWidget;
     private RadioOnClick radioOnClick = new RadioOnClick(0);
     public static Activity activity; //used to finish this activity in backgroundPayment activity
@@ -69,13 +75,13 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("@string/payment");
         myBundle = getIntent().getExtras();
-
-
         activity = this;
         context = getApplicationContext();
         customer = myBundle.getParcelable("customer");
         deliveryDate = myBundle.getString("deliveryDate");
+        orderList = myBundle.getParcelableArrayList("orderList");
         double tp = myBundle.getDouble("totalPayable");
+        subtotal = tp;
         String isEnglish = myBundle.getString("language");
 
         TextView tv = (TextView)findViewById(R.id.totalPayable);
@@ -83,8 +89,6 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
 
         totalPayable = String.valueOf((int) Math.round(tp * 100));
         Bundle bundle = new Bundle();
-        //bundle.putString("totalPayable",totalPayable);
-
         selectSavedCard = (Button)findViewById(R.id.select_saved_card);
         selectSavedCard.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -100,6 +104,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         });
         bundle.putParcelable("customer", customer);
         bundle.putString("language", isEnglish);
+        bundle.putParcelableArrayList("orderList",orderList);
         paymentFragment.setArguments(bundle);
         loadFragment(paymentFragment);
 
@@ -126,6 +131,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                                         BackgroundPayment bp = new BackgroundPayment(context, activity);
                                         bp.saveCustomer(customer);
                                         bp.saveDeliveryDate(deliveryDate);
+                                        bp.saveOrderList(orderList);
                                         bp.execute(type, totalPayable, lastFourDigit);
                                     }else{
                                         progressBar.setVisibility(View.INVISIBLE);
@@ -146,7 +152,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
 
         }else{
             nameOnCard = (EditText) findViewById(R.id.nameOnCard);
-            errorNameOnCard = (TextView) findViewById(R.id.errNameOnCard);
+            err = (TextInputLayout) findViewById(R.id.nameOnCard_inputLayout);
             mCardMultilineWidget = (CardMultilineWidget)findViewById(R.id.card_multiline_widget);
             saveCard = (CheckBox) findViewById(R.id.saveCard);
             originalDrawable = nameOnCard.getBackground();
@@ -158,8 +164,8 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                         Toast.LENGTH_LONG
                 ).show();
                 if (nameOnCard.getText().toString().isEmpty()){
-                    errorNameOnCard.setVisibility(View.VISIBLE);
-                    nameOnCard.setBackgroundResource(R.drawable.text_underline);
+                    err.setError("Your name on card is invalid");
+                    //nameOnCard.setBackgroundResource(R.drawable.text_underline);
                 }
                 nameOnCard.addTextChangedListener(filterTextWatcher);
 
@@ -351,14 +357,12 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            errorNameOnCard.setVisibility(View.INVISIBLE);
-            nameOnCard.setBackground(originalDrawable);
+            //nameOnCard.setBackground(originalDrawable);
+            err.setError(null);
         }
-
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
         }
 
         @Override

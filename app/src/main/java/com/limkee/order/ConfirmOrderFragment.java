@@ -483,8 +483,6 @@ public class ConfirmOrderFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-
-
     private void handleSalesOrderResponse(String orderNo) {
 
         if (orderNo != null) {

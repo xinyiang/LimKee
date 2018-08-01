@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Base64;
 import android.view.View;
 
 import java.io.BufferedReader;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -41,12 +43,12 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     private Context context;
     private Activity activity;
     private String totalPayable;
+    private double tp;
     private Card card;
     private static Customer customer;
     CompositeDisposable compositeDisposable  = new CompositeDisposable();
     private String ETADeliveryDate;
     private String newOrderID;
-    private double subtotal;
     private ArrayList<Product> orderList;
     private String isEnglish;
     private View view;
@@ -66,6 +68,20 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
 
     protected void saveDeliveryDate (String deliveryDate){
         ETADeliveryDate = deliveryDate;
+    }
+
+    protected void saveOrderList (ArrayList<Product> orderList){
+        this.orderList = orderList;
+    }
+
+    protected String encodeBase64 (String data){
+        try{
+            byte[] temp = data.getBytes("UTF-8");
+            return Base64.encodeToString(temp,Base64.NO_WRAP | Base64.URL_SAFE);
+        }catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @Override
@@ -91,10 +107,10 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 } else {
                     post_data = URLEncoder.encode("token","UTF-8")+"="+URLEncoder.encode(token,"UTF-8")
                             +"&"+URLEncoder.encode("totalPayable","UTF-8")+"="+URLEncoder.encode(totalPayable,"UTF-8")
-                            +"&"+URLEncoder.encode("cardNumber","UTF-8")+"="+URLEncoder.encode(card.getNumber(),"UTF-8")
+                            +"&"+URLEncoder.encode("cardNumber","UTF-8")+"="+URLEncoder.encode(encodeBase64(card.getNumber()),"UTF-8")
                             +"&"+URLEncoder.encode("cardExpMonth","UTF-8")+"="+URLEncoder.encode(card.getExpMonth().toString(),"UTF-8")
                             +"&"+URLEncoder.encode("cardExpYear","UTF-8")+"="+URLEncoder.encode(card.getExpYear().toString(),"UTF-8")
-                            +"&"+URLEncoder.encode("cardCVC","UTF-8")+"="+URLEncoder.encode(card.getCVC(),"UTF-8")
+                            +"&"+URLEncoder.encode("cardCVC","UTF-8")+"="+URLEncoder.encode(encodeBase64(card.getCVC()),"UTF-8")
                             +"&"+URLEncoder.encode("debtorCode","UTF-8")+"="+URLEncoder.encode(customer.getDebtorCode(),"UTF-8");
                 }
                 bw.write(post_data);
@@ -121,8 +137,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else if (type.equals("pay_with_saved_card")){
+        } else if (type.equals("pay_with_saved_card")){
             String lastFourDigit = params[2];
             try {
                 payment_url += "payment_savedcard.php";
@@ -166,14 +181,15 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
 
     @Override
     protected void onPostExecute(String result) {
+        tp = Double.parseDouble(totalPayable);
+        tp = tp/100;
         if (result != null && result.equals("success")){
             //insert into database 3 tables
             createSalesOrder();
         }
         Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
         it.putExtra("result",result);
-        Double tp = Double.parseDouble(totalPayable);
-        it.putExtra("totalPayable", tp/100);
+        it.putExtra("totalPayable", tp);
         it.putExtra("customer", customer);
         context.startActivity(it);
         activity.finish();
@@ -231,7 +247,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 .client(client)
                 .build().create(PostData.class);
 
-        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, subtotal, orderNo)
+        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, tp, orderNo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderDetailsResponse, this::handleError));
@@ -276,7 +292,6 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         System.out.println("SALES ORDER NUMBER OF PRODUCTS " + numProducts + " and order list size is " + orderList.size());
 
         if (numProducts == orderList.size()) {
-
             //concatenate zeros
             if (newOrderID.length() == 1){
                 newOrderID = "00000" + newOrderID;
@@ -319,7 +334,6 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 //finish();
-
                             }
                         })
                         .show();
@@ -330,7 +344,6 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 //finish();
-
                             }
                         })
                         .show();
@@ -358,23 +371,16 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                         })
                         .show();
             }
-
-
             final Toast tag = Toast.makeText(view.getContext(), "Order #" + newOrderID + " is placed successfully", Toast.LENGTH_SHORT);
             new CountDownTimer(2000, 1000) {
                 public void onTick(long millisUntilFinished) {
                     tag.show();
                 }
-
                 public void onFinish() {
                     tag.show();
                 }
-
             }.start();
         */
         }
-
     }
-
-
 }
