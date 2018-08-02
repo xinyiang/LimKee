@@ -45,7 +45,7 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".order.QuickReorderConfirmOrderActivity"
-            android:parentActivityName=".navigation.NavigationActivity" />
+            android:parentActivityName=".order.QuickReorderConfirmOrderActivity" />
         <activity android:name=".order.OrderHistoryDetailActivity" />
         <activity android:name=".order.CancelledOrderDetailActivity" />
         <activity android:name=".order.CancelledOrderActivity"></activity>
