@@ -177,10 +177,11 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                         new TokenCallback() {
                             public void onSuccess(Token token) {
                                 BackgroundPayment bp = new BackgroundPayment(context, activity);
+                                bp.saveCustomer(customer);
+                                bp.saveDeliveryDate(deliveryDate);
+                                bp.saveOrderList(orderList);
                                 if (saveCard.isChecked()){
                                     bp.saveCard(card);
-                                    bp.saveCustomer(customer);
-                                    bp.saveDeliveryDate(deliveryDate);
                                     //Send card details to db
                                 }
                                 bp.execute(type, totalPayable, token.getId());
@@ -194,17 +195,6 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                 );
             }
         }
-
-//        new CountDownTimer(6000, 100) {
-//
-//            public void onTick(long millisUntilFinished) {
-//
-//            }
-//
-//            public void onFinish() {
-//                progressBar.setVisibility(View.GONE);
-//            }
-//        }.start();
     }
 
     public View onCreate(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -252,7 +242,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                     @Override
                     public void processFinish(String output) {
                         if (output == null){
-                            Toast.makeText(context, R.string.no_saved_card, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, getResources().getString(R.string.no_saved_card), Toast.LENGTH_SHORT).show();
                         }else{
                             try{
                                 loadIntoAlertDialog(output);
@@ -263,16 +253,6 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                     }
                 }
         ).execute(customer.getDebtorCode());
-        //getSavedCards.execute(customer.getDebtorCode());
-//        if (result == null){
-//           Toast.makeText(context, "没有储存的卡", Toast.LENGTH_SHORT).show();
-//        }else{
-//            try{
-//                loadIntoAlertDialog(result);
-//            }catch (JSONException e){
-//                e.printStackTrace();
-//            }
-//        }
 
     }
 

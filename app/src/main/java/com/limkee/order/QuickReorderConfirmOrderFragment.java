@@ -441,6 +441,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     intent.putExtra("deliveryDate", ETADeliveryDate);
                     intent.putExtra("totalPayable", totalPayable);
                     intent.putExtra("language",isEnglish);
+                    getActivity().startActivity(intent);
                 }
             }
         });

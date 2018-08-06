@@ -37,7 +37,7 @@
     <string name="confirm">confirm</string>
     <string name="cancel">cancel</string>
     <string name="key_in_cvc">Please enter your CVC:</string>
-    <string name="cvc_error">CVC Error</string>
+    <string name="cvc_error">Invalid CVC</string>
     <string name="no_saved_card">No saved card</string>
     <string name="delete_card">Delete card</string>
     <string name="select_card">Select your card</string>
