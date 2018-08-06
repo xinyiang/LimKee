@@ -91,7 +91,7 @@
         android:layout_marginTop="452dp"
         android:text="@string/pay_with_saved_cards"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toTopOf="@+id/nameOnCard"
+        app:layout_constraintBottom_toTopOf="@+id/btnPlaceOrder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
