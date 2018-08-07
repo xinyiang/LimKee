@@ -7,10 +7,6 @@ import com.limkee.entity.OrderQuantity;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * Created by Xin Yi on 4/6/2018.
- */
-
 public class OrderDAO {
 
     public static ArrayList<Order> currentOrdersList = new ArrayList<Order>();

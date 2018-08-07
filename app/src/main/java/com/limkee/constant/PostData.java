@@ -14,11 +14,6 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
-/**
- * Created by Xin Yi on 20/5/2018.
- */
-
-
 public interface PostData {
 
         @GET("get-catalogue")

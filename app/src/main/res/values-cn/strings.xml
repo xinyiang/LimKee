@@ -9,14 +9,6 @@
     <string name="password">密码</string>
     <string name="login">登陆</string>
     <string name="backTo">返回</string>
-
-    <string-array name="qty">
-        <item>5</item>
-        <item>10</item>
-        <item>15</item>
-        <item>20</item>
-        <item>25</item>
-    </string-array>
     <string name="payment">付款</string>
     <string name="paymentdetails">付款详情</string>
     <string name="pay">付款</string>
@@ -28,7 +20,7 @@
     <string name="logout">登出</string>
     <string name="orderslip">订单表</string>
     <string name="quickreorder">快速下单</string>
-    <string name="currentorders">当下订单</string>
+    <string name="currentorders">当前订单</string>
     <string name="orderhistory">订单历史</string>
     <string name="totalAmount">总价</string>
     <string name="save_this_card">保存此卡</string>
