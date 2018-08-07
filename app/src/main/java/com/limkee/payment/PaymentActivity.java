@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -118,6 +119,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         if (type.equals("pay_with_saved_card")){
             AlertDialog ad = new AlertDialog.Builder(PaymentActivity.this).setTitle(getResources().getString(R.string.key_in_cvc)).create();
             final EditText edittext = new EditText(PaymentActivity.this);
+            edittext.setRawInputType(Configuration.KEYBOARD_12KEY);
             ad.setView(edittext);
             ad.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.confirm), new DialogInterface.OnClickListener(){
                 public void onClick(DialogInterface dialog, int whichButton){
