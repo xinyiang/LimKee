@@ -245,7 +245,7 @@ public class CurrentOrderDetailFragment extends Fragment {
                 String orderDate = od.getOrderDate();
 
                 try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy h.mm aa");
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy h.mmaa");
                     SimpleDateFormat expectedPattern = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                     Date datetime = expectedPattern.parse(orderDate);
                     String createdTimestamp = sdf.format(datetime);

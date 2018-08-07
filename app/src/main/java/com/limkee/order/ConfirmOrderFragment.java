@@ -262,9 +262,9 @@ public class ConfirmOrderFragment extends Fragment {
         }
 
         if (deliveryShift.equals("AM")) {
-            deliveryTime.setText("4.30 am - 6.30 am");
+            deliveryTime.setText("4.30am - 6.30am");
         } else {
-            deliveryTime.setText("7.50 am - 12.30 pm");
+            deliveryTime.setText("7.50am - 12.30pm");
         }
 
 
