@@ -20,7 +20,11 @@
     <string name="payment_unsuccessful_description">您的卡不会被收费\n请重试</string>
     <string name="payment_successful_description"> 已从您的卡里扣除\n很高兴为您服务</string>
     <string name="backTo">返回</string>
-    <string name="totalAmount">总价</string>
+    <string name="subtotal">小计</string>
+    <string name="tax">7% 税</string>
+    <string name="totalAmount">总额</string>
+    <string name="deliveryDetails">送货详情</string>
+    <string name="amountDetails">价钱详情</string>
     <string name="save_this_card">保存此卡</string>
     <string name="pay_with_saved_cards">使用已储存的卡支付</string>
     <string name="confirm">确定</string>
