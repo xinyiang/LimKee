@@ -61,13 +61,10 @@ public class ConfirmOrderFragment extends Fragment {
     private Customer customer;
     private String deliveryShift;
     CompositeDisposable compositeDisposable;
-    private String newOrderID;
     private String ETADeliveryDate;
     private int day;
     private int month;
     private int year;
-    private String dayOfWeek;
-    String orderID = null;
 
     public ConfirmOrderFragment() {
         // Required empty public constructor
@@ -97,7 +94,6 @@ public class ConfirmOrderFragment extends Fragment {
                 ((ConfirmOrderActivity) getActivity()).setActionBarTitle("确认订单");
             }
         }
-
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -116,7 +112,7 @@ public class ConfirmOrderFragment extends Fragment {
         if (isEnglish.equals("Yes")) {
             lblSubtotal.setText("Sub Total");
             lblTax.setText("7% GST");
-            lblFinalTotal.setText("Total");
+            lblFinalTotal.setText("Total Amount");
         } else {
             lblSubtotal.setText("小计");
             lblTax.setText("7% 税");
@@ -179,7 +175,7 @@ public class ConfirmOrderFragment extends Fragment {
 
             lbl_subtotal_amt.setText("Sub Total");
             lbl_tax_amt.setText("Add 7% GST");
-            lbl_total_amt.setText("Total");
+            lbl_total_amt.setText("Total Amount");
             lbl_delivery_details.setText("Delivery Details");
             lbl_name.setText("Name");
             lbl_contact.setText("Contact No");
@@ -204,7 +200,6 @@ public class ConfirmOrderFragment extends Fragment {
         amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
         deliveryTime = (TextView) view.findViewById(R.id.deliveryTime);
         placeOrder = (Button) view.findViewById(R.id.btnPlaceOrder);
-
 
         //display customer details
         name.setText(customer.getDebtorName());
@@ -482,182 +477,9 @@ public class ConfirmOrderFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    private void handleSalesOrderResponse(String orderNo) {
-
-        if (orderNo != null) {
 
 
-            //create Sales Order Details
-            newOrderID = orderNo;
-            createSalesOrderDetails(newOrderID);
-        }
-    }
 
-    private void createSalesOrderDetails(String orderNo) {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
-
-        PostData postData = new Retrofit.Builder()
-                .baseUrl(HttpConstant.BASE_URL)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build().create(PostData.class);
-
-        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, subtotal, orderNo)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(this::handleSalesOrderDetailsResponse, this::handleError));
-
-    }
-
-    private void handleSalesOrderDetailsResponse(boolean added) {
-        System.out.println("SALES ORDER ADDED " + added);
-
-        if (added) {
-            //create Sales Order Quantity
-            createSalesOrderQuantity();
-
-
-        }
-
-    }
-
-    private void createSalesOrderQuantity() {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
-
-        PostData postData = new Retrofit.Builder()
-                .baseUrl(HttpConstant.BASE_URL)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build().create(PostData.class);
-
-        ArrayList<String> itemQuantity = new ArrayList<String>();
-
-        for (Product p : orderList) {
-            itemQuantity.add(p.getItemCode() + "&" + p.getDefaultQty());
-        }
-
-        compositeDisposable.add(postData.addSalesOrderQuantity(itemQuantity, newOrderID, ETADeliveryDate)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(this::handleSalesOrderQuantityResponse, this::handleError));
-
-    }
-
-    private void handleSalesOrderQuantityResponse(int numProducts) {
-        String orderID = null;
-        System.out.println("SALES ORDER NUMBER OF PRODUCTS " + numProducts + " and order list size is " + orderList.size());
-
-        if (numProducts == orderList.size()) {
-
-            //concatenate zeros
-            if (newOrderID.length() == 1){
-                newOrderID = "00000" + newOrderID;
-            } else if (newOrderID.length() == 2) {
-                newOrderID = "0000" + newOrderID;
-
-            } else if (newOrderID.length() == 3) {
-                newOrderID = "000" + newOrderID;
-
-            } else if (newOrderID.length() == 4) {
-                newOrderID = "00" + newOrderID;
-
-            } else if (newOrderID.length() == 5) {
-                newOrderID = "0" + newOrderID;
-
-            } else {
-                //remain as original orderNo
-            }
-
-            //get the last 2 digit of the year
-            String deliverYear = ETADeliveryDate.substring(2,4);
-            //get the 2 digit of the month
-            String deliverMonth= ETADeliveryDate.substring(6,7);
-            //if delivery month contains "-", single digit month. add 0
-            //else double digit month
-            if (deliverMonth.equals("-")){
-                deliverMonth = "0" + ETADeliveryDate.substring(5,6);
-            } else {
-                deliverMonth = ETADeliveryDate.substring(5,7);
-            }
-
-            orderID = deliverYear + deliverMonth + "-" + newOrderID;
-            System.out.println("SALES ORDER IS " + orderID);
-
-            if (isEnglish.equals("Yes")) {
-
-                new AlertDialog.Builder(view.getContext())
-                        .setMessage("Order #" + orderID + " is placed successfully")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //finish();
-
-                            }
-                        })
-                        .show();
-            } else {
-                new AlertDialog.Builder(view.getContext())
-                        .setMessage("订单 #" + orderID + " 成功下单")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //finish();
-
-                            }
-                        })
-                        .show();
-            }
-        } else {
-            if (isEnglish.equals("Yes")) {
-
-                new AlertDialog.Builder(view.getContext())
-                        .setMessage("Order not placed successfully. Please retry or contact Lim Kee.")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //finish();
-                            }
-                        })
-                        .show();
-            } else {
-                new AlertDialog.Builder(view.getContext())
-                        .setMessage("订单没有成功下单")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //finish();
-                            }
-                        })
-                        .show();
-        }
-
-        /*
-            final Toast tag = Toast.makeText(view.getContext(), "Order #" + newOrderID + " is placed successfully", Toast.LENGTH_SHORT);
-            new CountDownTimer(2000, 1000) {
-                public void onTick(long millisUntilFinished) {
-                    tag.show();
-                }
-
-                public void onFinish() {
-                    tag.show();
-                }
-
-            }.start();
-        */
-        }
-
-    }
-
-
-    private void handleError(Throwable error) {
-
-    }
 
 
 }
