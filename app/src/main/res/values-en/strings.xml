@@ -13,7 +13,7 @@
     <string name="paymentdetails">Payment Details</string>
     <string name="pay">Pay</string>
     <string name="payment_unsuccessful">Fail to place order. Payment Unsuccessful!</string>
-    <string name="payment_successful">Already place order. Payment Successful!</string>
+    <string name="payment_successful">already placed order. Payment Successful!</string>
     <string name="payment_unsuccessful_description">Your card will not be charged\n please try again</string>
     <string name="payment_successful_description">\ will be charged to your card</string>
     <string name="backTo">Back</string>

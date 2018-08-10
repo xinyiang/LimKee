@@ -37,7 +37,7 @@ public class ConfirmationActivity extends BaseActivity {
         TextView description = ((Activity)this).findViewById(R.id.description);
         ImageView iv = findViewById(R.id.status);
         if (result != null && result.equals("success")){
-            pmtResult.setText("Order Id: "+orderId+getResources().getString(R.string.payment_successful));
+            pmtResult.setText("Order ID: #"+orderId+" "+ getResources().getString(R.string.payment_successful));
             description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_successful_description));
             iv.setImageResource(R.drawable.success);
         }else{
