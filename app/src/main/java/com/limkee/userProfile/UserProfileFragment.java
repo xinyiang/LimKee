@@ -43,6 +43,11 @@ public class UserProfileFragment extends Fragment {
         Bundle bundle = getArguments();
         customer = bundle.getParcelable("customer");
         isEnglish = bundle.getString("language");
+        if (isEnglish.equals("Yes")) {
+            ((NavigationActivity)getActivity()).setActionBarTitle("User Profile");
+        } else {
+            ((NavigationActivity)getActivity()).setActionBarTitle("用户资料");
+        }
     }
 
     @Override
