@@ -15,7 +15,7 @@
     <string name="payment_unsuccessful">Fail to place order. Payment Unsuccessful!</string>
     <string name="payment_successful">Already place order. Payment Successful!</string>
     <string name="payment_unsuccessful_description">Your card will not be charged\n please try again</string>
-    <string name="payment_successful_description">\s will be charged to your card</string>
+    <string name="payment_successful_description">\ will be charged to your card</string>
     <string name="backTo">Back</string>
     <string name="logout">Logout</string>
     <string name="userprofile">User Profile</string>

@@ -187,12 +187,6 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             //insert into database 3 tables
             createSalesOrder();
         }
-        Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
-        it.putExtra("result",result);
-        it.putExtra("totalPayable", tp);
-        it.putExtra("customer", customer);
-        context.startActivity(it);
-        activity.finish();
     }
 
     @Override
@@ -325,62 +319,14 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
 
             orderID = deliverYear + deliverMonth + "-" + newOrderID;
             System.out.println("SALES ORDER IS " + orderID);
-/*
-            if (isEnglish.equals("Yes")) {
-
-                new AlertDialog.Builder(view.getContext())
-                        .setMessage("Order #" + orderID + " is placed successfully")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //finish();
-                            }
-                        })
-                        .show();
-            } else {
-                new AlertDialog.Builder(view.getContext())
-                        .setMessage("订单 #" + orderID + " 成功下单")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //finish();
-                            }
-                        })
-                        .show();
-            }*/
         } else {
-          /*  if (isEnglish.equals("Yes")) {
-
-                new AlertDialog.Builder(view.getContext())
-                        .setMessage("Order not placed successfully. Please retry or contact Lim Kee.")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //finish();
-                            }
-                        })
-                        .show();
-            } else {
-                new AlertDialog.Builder(view.getContext())
-                        .setMessage("订单没有成功下单")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //finish();
-                            }
-                        })
-                        .show();
-            }
-            final Toast tag = Toast.makeText(view.getContext(), "Order #" + newOrderID + " is placed successfully", Toast.LENGTH_SHORT);
-            new CountDownTimer(2000, 1000) {
-                public void onTick(long millisUntilFinished) {
-                    tag.show();
-                }
-                public void onFinish() {
-                    tag.show();
-                }
-            }.start();
-        */
         }
+        Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
+        it.putExtra("result","success");
+        it.putExtra("totalPayable", tp);
+        it.putExtra("customer", customer);
+        it.putExtra("orderId", newOrderID);
+        context.startActivity(it);
+        activity.finish();
     }
 }
