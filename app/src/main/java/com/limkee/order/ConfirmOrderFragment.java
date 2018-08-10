@@ -183,7 +183,7 @@ public class ConfirmOrderFragment extends Fragment {
             lbl_date.setText("Date");
             lbl_time.setText("Time");
             lbl_item_details.setText(" " + orderList.size() + "items");
-            lbl_amt_details.setText("Amount details");
+            lbl_amt_details.setText("Amount Details");
             btnNext.setText("Place Order");
         }
 
@@ -236,15 +236,15 @@ public class ConfirmOrderFragment extends Fragment {
         address.setText(customer.getDeliverAddr1() + " " + address2 + " " + address3 + " " + address4);
 
         if (isEnglish.equals("Yes")) {
-            deliveryDetails.setText(" Delivery details");
+            deliveryDetails.setText(" Delivery Details");
 
             if (orderList.size() == 1) {
-                numItems.setText(" Product details (" + orderList.size() + " item)");
+                numItems.setText(" Product Details (" + orderList.size() + " item)");
             } else {
-                numItems.setText(" Product details (" + orderList.size() + " items)");
+                numItems.setText(" Product Details (" + orderList.size() + " items)");
             }
 
-            amtDetails.setText(" Amount details");
+            amtDetails.setText(" Amount Details");
             deliveryDate.setText("DD/MM/YYYY");
             placeOrder.setText("Place Order");
 
@@ -292,8 +292,7 @@ public class ConfirmOrderFragment extends Fragment {
                         SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
                         Date date = new Date(selectedYear, selectedMonth, selectedDay - 1);
                         String dayOfWeek = sdf.format(date);
-
-                        if (dayOfWeek.equals("Sunday")) {
+                        if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
                             //show error msg for no delivery
                             if (isEnglish.equals("Yes")) {
                                 new AlertDialog.Builder(view.getContext())

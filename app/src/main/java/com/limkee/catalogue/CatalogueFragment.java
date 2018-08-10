@@ -96,7 +96,6 @@ public class CatalogueFragment extends Fragment {
         String cutoffTime = loginPreferences.getString("cutofftime", "");
         loginPrefsEditor.commit();
 
-        //format cut off time to remove seconds
         if(isEnglish.equals("Yes")){
             builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
         } else {
@@ -204,7 +203,7 @@ public class CatalogueFragment extends Fragment {
                     if (isEnglish.equals("Yes")) {
                         new AlertDialog.Builder(getContext())
                                 .setMessage("Minimum order is $30.00.")
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
@@ -214,7 +213,7 @@ public class CatalogueFragment extends Fragment {
                     } else {
                         new AlertDialog.Builder(getContext())
                                 .setMessage("订单总额最少要 $30.00")
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
