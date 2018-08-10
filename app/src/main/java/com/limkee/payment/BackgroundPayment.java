@@ -217,7 +217,6 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     }
 
     private void handleSalesOrderResponse(String orderNo) {
-
         if (orderNo != null) {
             //create Sales Order Details
             newOrderID = orderNo;
@@ -249,7 +248,6 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     }
 
     private void handleSalesOrderDetailsResponse(boolean added) {
-        System.out.println("SALES ORDER ADDED " + added);
         if (added) {
             //create Sales Order Quantity
             createSalesOrderQuantity();
@@ -278,13 +276,9 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderQuantityResponse, this::handleError));
-
     }
 
     private void handleSalesOrderQuantityResponse(int numProducts) {
-        String orderID = null;
-        System.out.println("SALES ORDER NUMBER OF PRODUCTS " + numProducts + " and order list size is " + orderList.size());
-
         if (numProducts == orderList.size()) {
             //concatenate zeros
             if (newOrderID.length() == 1){
@@ -317,8 +311,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 deliverMonth = ETADeliveryDate.substring(5,7);
             }
 
-            orderID = deliverYear + deliverMonth + "-" + newOrderID;
-            System.out.println("SALES ORDER IS " + orderID);
+            newOrderID = deliverYear + deliverMonth + "-" + newOrderID;
         } else {
         }
         Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
