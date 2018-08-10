@@ -259,7 +259,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:background="@color/colorPrimary"
-            android:text="登出"
+            android:text="@string/logout"
             android:textColor="@color/colorPrimaryFont"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
