@@ -75,7 +75,7 @@ public class CurrentOrderDetailFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (isEnglish.equals("Yes")){
-            ((CurrentOrderDetailActivity) getActivity()).setActionBarTitle("Order details");
+            ((CurrentOrderDetailActivity) getActivity()).setActionBarTitle("Order Details");
         } else {
             ((CurrentOrderDetailActivity) getActivity()).setActionBarTitle("订单详情");
         }
@@ -171,27 +171,27 @@ public class CurrentOrderDetailFragment extends Fragment {
             lbl_deliveryDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
             lbl_amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
 
-            lbl_orderDetails.setText(" Order details");
+            lbl_orderDetails.setText(" Order Details");
             lbl_orderID.setText("Order ID");
             lbl_orderDate.setText("Order Date");
             lbl_status.setText("Status");
 
-            lbl_deliveryDetails.setText(" Delivery details");
+            lbl_deliveryDetails.setText(" Delivery Details");
             status.setText("Pending Delivery");
             lbl_address.setText("Delivery Address");
 
             lbl_date.setText("Delivery Date");
             lbl_time.setText("Delivery Time");
 
-            lbl_amtDetails.setText(" Amount details");
+            lbl_amtDetails.setText(" Amount Details");
             lbl_subtotal_amt.setText("Sub Total");
             lbl_tax_amt.setText("GST (7%)");
-            lbl_total_amt.setText("Total");
+            lbl_total_amt.setText("Total A");
 
             if (numItems == 1){
-                itemCount.setText(" Product details (" + numItems + " item)");
+                itemCount.setText(" Product Details (" + numItems + " item)");
             } else {
-                itemCount.setText(" Product details (" + numItems + " items)");
+                itemCount.setText(" Product Details (" + numItems + " items)");
             }
 
         } else {

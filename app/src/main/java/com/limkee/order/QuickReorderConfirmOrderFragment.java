@@ -295,7 +295,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                         Date date = new Date(selectedYear, selectedMonth, selectedDay - 1);
                         String dayOfWeek = sdf.format(date);
 
-                        if (dayOfWeek.equals("Sunday")) {
+                        if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
                             //show error msg for no delivery
                             if (isEnglish.equals("Yes")) {
                                 new AlertDialog.Builder(view.getContext())

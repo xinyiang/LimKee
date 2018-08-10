@@ -57,11 +57,13 @@ public class CurrentOrderFragment extends Fragment {
         customer = bundle.getParcelable("customer");
         companyCode = customer.getCompanyCode();
         isEnglish = bundle.getString("language");
+
         if (isEnglish.equals("Yes")){
             ((NavigationActivity)getActivity()).setActionBarTitle("Current Orders");
         } else {
             ((NavigationActivity)getActivity()).setActionBarTitle("当前订单");
         }
+
     }
 
     @Override
@@ -114,7 +116,7 @@ public class CurrentOrderFragment extends Fragment {
                     if (isEnglish.equals("Yes")) {
                         lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
                         view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
-                        lbl_noOrders.setText("No current orders");
+                        lbl_noOrders.setText("No Current Orders");
                     } else {
                         lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
                         lbl_noOrders.setText("没有当前订单");
