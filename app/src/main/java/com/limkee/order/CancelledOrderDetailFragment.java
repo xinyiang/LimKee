@@ -187,7 +187,7 @@ public class CancelledOrderDetailFragment extends Fragment {
             lbl_amtDetails.setText(" Amount Details");
             lbl_subtotal_amt.setText("Sub Total");
             lbl_tax_amt.setText("GST (7%)");
-            lbl_total_amt.setText("Total");
+            lbl_total_amt.setText("Total Amount");
 
             if (numItems == 1){
                 itemCount.setText(" Product Details (" + numItems + " item)");
