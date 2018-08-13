@@ -114,8 +114,8 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
             unitSubtotal.setText("$" + df.format(unitSub));
 
             Picasso.with(fragment.getContext()).load(product.getImageUrl())
-                    .error(R.mipmap.ic_launcher)
-                    .placeholder(R.mipmap.ic_launcher)
+                    .error(R.mipmap.launchicon)
+                    .placeholder(R.mipmap.launchicon)
                     .into(image);
 
 
