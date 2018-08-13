@@ -123,8 +123,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
             unitSubtotal.setText("$" + df.format(unitSub));
 
             Picasso.with(fragment.getContext()).load(product.getImageUrl())
-                    .error(R.mipmap.ic_launcher)
-                    .placeholder(R.mipmap.ic_launcher)
+                    .error(R.mipmap.launchicon)
+                    .placeholder(R.mipmap.launchicon)
                     .into(image);
 
             InputMethodManager imm = (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
