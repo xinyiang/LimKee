@@ -2,6 +2,8 @@ package com.limkee.order;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -18,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.limkee.catalogue.ProductDetailsActivity;
 import com.limkee.entity.Product;
 import com.squareup.picasso.Picasso;
 import java.text.DecimalFormat;
@@ -117,7 +120,6 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                     .error(R.mipmap.launchicon)
                     .placeholder(R.mipmap.launchicon)
                     .into(image);
-
 
 
             //hide next button when edit text is clicked
@@ -261,6 +263,21 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
 
 
+                }
+            });
+
+            image.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+
+                    System.out.println(product.getDescription());
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("product", product);
+                    bundle.putString("language", isEnglish);
+                    Intent intent = new Intent(view.getContext(), ProductDetailsActivity.class);
+                    intent.putExtra("product", product);
+                    intent.putExtra("language",isEnglish);
+                    fragment.startActivity(intent);
                 }
             });
         }
