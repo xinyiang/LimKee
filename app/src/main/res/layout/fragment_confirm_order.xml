@@ -141,6 +141,7 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:textSize="15dp"
+            android:textStyle="bold"
             android:textColor="#000000"
             app:layout_constraintBottom_toTopOf="@+id/deliveryTime"
             app:layout_constraintEnd_toEndOf="parent"

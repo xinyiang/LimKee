@@ -2,6 +2,8 @@ package com.limkee.catalogue;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -37,6 +39,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
     private RecyclerView mRecyclerView;
     private String uom ="";
     private EditText quantity;
+    private String itemCode;
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -78,8 +81,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         DecimalFormat df = new DecimalFormat("#0.00");
         double unitSub = product.getDefaultQty() * product.getUnitPrice();
         holder.unitSubtotal.setText("$" + df.format(unitSub));
-
     }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView description, unitOfMetric, unitPrice, unitSubtotal;
@@ -100,8 +103,6 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
             unitSubtotal = (TextView) view.findViewById(R.id.unitSubtotal);
             this.quantityEditTextListener = quantityEditTextListener;
             this.qty.addTextChangedListener(quantityEditTextListener);
-
-
 
         }
 
@@ -266,6 +267,22 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
                 }
             });
+
+            image.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+
+                    System.out.println(product.getDescription());
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("product", product);
+                    bundle.putString("language", isEnglish);
+                    Intent intent = new Intent(view.getContext(), ProductDetailsActivity.class);
+                    intent.putExtra("product", product);
+                    intent.putExtra("language",isEnglish);
+                    fragment.startActivity(intent);
+                }
+            });
+
         }
     }
 

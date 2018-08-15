@@ -20,7 +20,9 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.limkee.R;
@@ -199,6 +201,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     }
 
     private void createSalesOrder() {
+
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
@@ -217,11 +220,14 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     }
 
     private void handleSalesOrderResponse(String orderNo) {
+
         if (orderNo != null) {
+            System.out.println("SALES ORDER CREATED " + orderNo);
             //create Sales Order Details
             newOrderID = orderNo;
             createSalesOrderDetails(newOrderID);
         }
+        System.out.println("SALES ORDER CREATED " + orderNo);
     }
 
     private void handleError(Throwable error) {
@@ -248,6 +254,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     }
 
     private void handleSalesOrderDetailsResponse(boolean added) {
+        System.out.println("SALES ORDER ADDED " + added);
         if (added) {
             //create Sales Order Quantity
             createSalesOrderQuantity();
@@ -276,9 +283,13 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderQuantityResponse, this::handleError));
+
     }
 
     private void handleSalesOrderQuantityResponse(int numProducts) {
+        String orderID = null;
+        System.out.println("SALES ORDER NUMBER OF PRODUCTS " + numProducts + " and order list size is " + orderList.size());
+
         if (numProducts == orderList.size()) {
             //concatenate zeros
             if (newOrderID.length() == 1){
@@ -310,10 +321,18 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             } else {
                 deliverMonth = ETADeliveryDate.substring(5,7);
             }
+            /*
+            Date todayDate = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyMM");
+            String todayYearMonth = formatter.format(todayDate);
 
+            newOrderID = todayYearMonth + "-" + newOrderID;
+            */
             newOrderID = deliverYear + deliverMonth + "-" + newOrderID;
+            System.out.println("SALES ORDER IS " + newOrderID);
         } else {
         }
+
         Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
         it.putExtra("result","success");
         it.putExtra("totalPayable", tp);
