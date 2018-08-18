@@ -21,6 +21,9 @@ import com.google.gson.Gson;
 import com.limkee.BaseActivity;
 import com.limkee.catalogue.CatalogueFragment;
 import com.limkee.R;
+import com.limkee.catalogue.ProductDetailsFragment;
+import com.limkee.order.CancelledOrderFragment;
+import com.limkee.order.MainOrderHistoryFragment;
 import com.limkee.order.QuickReorderFragment;
 import com.limkee.entity.Customer;
 import com.limkee.login.LoginActivity;
@@ -34,7 +37,7 @@ public class NavigationActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener, CatalogueFragment.OnFragmentInteractionListener,
         UserProfileFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener,
         OrderHistoryFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener,
-        PaymentFragment.OnFragmentInteractionListener{
+        PaymentFragment.OnFragmentInteractionListener, CancelledOrderFragment.OnFragmentInteractionListener, ProductDetailsFragment.OnFragmentInteractionListener, MainOrderHistoryFragment.OnFragmentInteractionListener {
 
     Customer customer;
     Bundle bundle;
@@ -151,8 +154,8 @@ public class NavigationActivity extends BaseActivity implements
             fragmentClass = UserProfileFragment.class;
             loadFragment(fragmentClass);
         } else if (id == R.id.nav_orderhistory) {
-            fragmentClass = OrderHistoryFragment.class;
-            loadFragment(fragmentClass);
+             fragmentClass = MainOrderHistoryFragment.class;
+             loadFragment(fragmentClass);
         } else if (id == R.id.nav_currentorder) {
             fragmentClass = CurrentOrderFragment.class;
             loadFragment(fragmentClass);
