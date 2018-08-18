@@ -245,8 +245,8 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build().create(PostData.class);
-
-        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, tp, orderNo)
+        double taxAmt = tp * 0.07;
+        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, tp-taxAmt, orderNo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderDetailsResponse, this::handleError));

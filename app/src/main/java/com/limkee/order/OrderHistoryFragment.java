@@ -1,13 +1,9 @@
 package com.limkee.order;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
@@ -23,11 +18,7 @@ import com.limkee.constant.PostData;
 import com.limkee.dao.OrderDAO;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Order;
-import com.limkee.navigation.NavigationActivity;
-
 import java.util.ArrayList;
-
-import io.reactivex.disposables.CompositeDisposable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,7 +36,6 @@ public class OrderHistoryFragment extends Fragment {
     private String companyCode;
     public static Retrofit retrofit;
     private String isEnglish;
-    private Button goToCancelledOrders;
     private Bundle myBundle = new Bundle();
     TextView lbl_noOrders;
 
@@ -62,6 +52,7 @@ public class OrderHistoryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         Bundle bundle = getArguments();
         customer = bundle.getParcelable("customer");
         companyCode = customer.getCompanyCode();
@@ -70,12 +61,9 @@ public class OrderHistoryFragment extends Fragment {
         myBundle.putParcelable("customer", customer);
         myBundle.putString("language", isEnglish);
 
-        if (isEnglish.equals("Yes")){
-            ((NavigationActivity)getActivity()).setActionBarTitle("Order History");
-        } else {
-            ((NavigationActivity)getActivity()).setActionBarTitle("订单历史");
-        }
+
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -87,17 +75,6 @@ public class OrderHistoryFragment extends Fragment {
         lbl_orderIDHeader = (TextView) view.findViewById(R.id.lbl_orderIDHeader);
         lbl_deliveryDateHeader = (TextView) view.findViewById(R.id.lbl_deliveryDateHeader);
         lbl_numItemsHeader = (TextView) view.findViewById(R.id.lbl_numItemsHeader);
-        goToCancelledOrders = (Button) view.findViewById(R.id.btnCancelledOrders);
-
-        goToCancelledOrders.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View rootView) {
-                Intent intent = new Intent(view.getContext(), CancelledOrderActivity.class);
-                intent.putExtra("customer", customer);
-                intent.putExtra("language", isEnglish);
-                getActivity().startActivity(intent);
-            }
-        });
 
         if (isEnglish.equals("Yes")) {
             lbl_orderIDHeader.setText("Order ID");
@@ -134,7 +111,7 @@ public class OrderHistoryFragment extends Fragment {
             public void onResponse(Call<ArrayList<Order>> call, Response<ArrayList<Order>> response) {
                 ArrayList<Order> data = response.body();
                 OrderDAO.historyOrdersList = data;
-
+                System.out.println("Order History Size is " + data.size());
                 mAdapter.update(OrderDAO.historyOrdersList);
 
                 if (data.size() == 0) {
@@ -157,17 +134,17 @@ public class OrderHistoryFragment extends Fragment {
         });
 
     }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof NavigationActivity) {
-            mListener = (OrderHistoryFragment.OnFragmentInteractionListener) context;
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
     }
-
 
     @Override
     public void onDetach() {

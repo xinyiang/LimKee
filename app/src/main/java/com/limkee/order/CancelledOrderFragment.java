@@ -60,13 +60,6 @@ public class CancelledOrderFragment extends Fragment {
         companyCode = customer.getCompanyCode();
         isEnglish = bundle.getString("language");
 
-        if (getActivity() instanceof CancelledOrderActivity) {
-            if (isEnglish.equals("Yes")) {
-                ((CancelledOrderActivity) getActivity()).setActionBarTitle("Cancelled Orders");
-            } else {
-                ((CancelledOrderActivity) getActivity()).setActionBarTitle("取消订单");
-            }
-        }
     }
 
     @Override
@@ -149,11 +142,17 @@ public class CancelledOrderFragment extends Fragment {
 
     }
 
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
-
 
     @Override
     public void onDetach() {
