@@ -22,26 +22,17 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.limkee.R;
-import com.limkee.constant.HttpConstant;
-import com.limkee.constant.PostData;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
 import com.limkee.payment.PaymentActivity;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 
 public class QuickReorderConfirmOrderFragment extends Fragment {
 
@@ -66,6 +57,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
     private int day;
     private int month;
     private int year;
+    private String cutoffTime;
 
     public QuickReorderConfirmOrderFragment() {
         // Required empty public constructor
@@ -87,7 +79,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         customer = bundle.getParcelable("customer");
         isEnglish = bundle.getString("language");
         deliveryShift = bundle.getString("deliveryShift");
-
+        cutoffTime = bundle.getString("cutoffTime");
         if (getActivity() instanceof QuickReorderConfirmOrderActivity) {
             if (isEnglish.equals("Yes")) {
                 ((QuickReorderConfirmOrderActivity) getActivity()).setActionBarTitle("Confirm Order");
@@ -322,6 +314,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                             }
 
                         } else {
+
                             Calendar c = Calendar.getInstance();
 
                             // set the calendar to start of today
@@ -381,8 +374,12 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                 deliveryDate.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
                             }
 
+                            if (selectedMonth < 10){
+                                ETADeliveryDate = selectedYear + "-0" + selectedMonth + "-" + selectedDay;
+                            } else {
+                                ETADeliveryDate = selectedYear + "-" + selectedMonth + "-" + selectedDay;
+                            }
 
-                            ETADeliveryDate = selectedYear + "-" + selectedMonth + "-" + selectedDay;
                             mCurrentDate.set(selectedDay, selectedMonth, selectedYear);
                         }
 
@@ -424,19 +421,62 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     }
 
                 } else {
-
                     //check if today's delivery is before cut off time
+                    try{
+                        Date currentTimestamp = new Date();
 
-                    //go to payment activity
-                    Intent intent = new Intent(view.getContext(), PaymentActivity.class);
-                    intent.putParcelableArrayListExtra("orderList", orderList);
-                    intent.putExtra("customer", customer);
-                    intent.putExtra("subtotal", subtotal);
-                    intent.putExtra("taxAmt", taxAmt);
-                    intent.putExtra("deliveryDate", ETADeliveryDate);
-                    intent.putExtra("totalPayable", totalPayable);
-                    intent.putExtra("language",isEnglish);
-                    getActivity().startActivity(intent);
+                        //cut off time stamp takes ETADeliveryDate
+                        String deliveryDateTime = ETADeliveryDate + " " + cutoffTime;
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+                        Date cutoffTimestamp = sdf.parse(deliveryDateTime);
+
+                        //compare delivery datetime is < cut off time
+                        if (currentTimestamp.before(cutoffTimestamp)) {
+                            System.out.println("delivery time before cut off");
+
+                            //go to payment activity
+                            Intent intent = new Intent(view.getContext(), PaymentActivity.class);
+                            intent.putParcelableArrayListExtra("orderList", orderList);
+                            intent.putExtra("customer", customer);
+                            intent.putExtra("subtotal", subtotal);
+                            intent.putExtra("taxAmt", taxAmt);
+                            intent.putExtra("deliveryDate", ETADeliveryDate);
+                            intent.putExtra("totalPayable", totalPayable);
+                            intent.putExtra("language", isEnglish);
+                            getActivity().startActivity(intent);
+                        } else {
+                            System.out.println("delivery time after cut off");
+                            //show error message
+                            if (isEnglish.equals("Yes")) {
+
+                                new AlertDialog.Builder(view.getContext())
+                                        .setMessage("Today's delivery is over. Please choose another delivery date.")
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                //finish();
+                                            }
+                                        })
+                                        .show();
+                            } else {
+                                new AlertDialog.Builder(view.getContext())
+                                        .setMessage("今日送货已结束，请选其他送货日期")
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                //finish();
+                                            }
+                                        })
+                                        .show();
+                            }
+                        }
+
+                    } catch (ParseException e) {
+                        System.out.println(e.getMessage());
+                    }
+
+
                 }
             }
         });

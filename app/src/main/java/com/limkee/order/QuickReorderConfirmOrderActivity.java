@@ -22,6 +22,7 @@ public class QuickReorderConfirmOrderActivity extends AppCompatActivity implemen
     private Customer customer;
     private String isEnglish;
     private String deliveryShift;
+    private String cutofftime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +37,15 @@ public class QuickReorderConfirmOrderActivity extends AppCompatActivity implemen
         customer = myBundle.getParcelable("customer");
         orderList  = myBundle.getParcelableArrayList("orderList");
         isEnglish = myBundle.getString("language");
-        deliveryShift =  myBundle.getString("deliveryShift");
+        deliveryShift = myBundle.getString("deliveryShift");
+        cutofftime = myBundle.getString("cutoffTime");
 
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("orderList", orderList);
         bundle.putParcelable("customer",customer);
         bundle.putString("language", isEnglish);
         bundle.putString("deliveryShift", deliveryShift);
+        bundle.putString("cutoffTime", cutofftime);
 
         QuickReorderConfirmOrderFragment confirmOrderFragment = new QuickReorderConfirmOrderFragment();
         confirmOrderFragment.setArguments(bundle);

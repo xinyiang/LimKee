@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
@@ -27,10 +26,10 @@ import com.limkee.dao.CatalogueDAO;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
 import com.limkee.navigation.NavigationActivity;
-
 import android.support.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -59,6 +58,7 @@ public class QuickReorderFragment extends Fragment {
     String invalidDesc;
     String invalidDesc2;
     int qtyMultiples;
+    String cutoffTime;
 
     public QuickReorderFragment(){
     }
@@ -88,23 +88,53 @@ public class QuickReorderFragment extends Fragment {
         builder= new AlertDialog.Builder(getContext());
         loginPreferences = getContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         loginPrefsEditor = loginPreferences.edit();
-        String cutoffTime = loginPreferences.getString("cutofftime", "");
+        cutoffTime = loginPreferences.getString("cutofftime", "");
 
         loginPrefsEditor.commit();
-        //format cut off time to remove seconds
-        if(isEnglish.equals("Yes")){
-            builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
-        } else {
-            builder.setMessage("今日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
-        }
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
 
-                dialog.dismiss();
+        //alert dialogue show is for today/tmr's time based on current timestamp
+        Date currentTimestamp = new Date();
+        String time = cutoffTime.substring(0,cutoffTime.length()-3);
+        String hour = time.substring(0,2);
+        String mins = time.substring(3,5);
+
+        Date cutoffTimestamp = new Date();
+        cutoffTimestamp.setHours(Integer.parseInt(hour));
+        cutoffTimestamp.setMinutes(Integer.parseInt(mins));
+
+        //compare current time is < cut off time
+        if (currentTimestamp.before(cutoffTimestamp)) {
+            System.out.println("current time before cut off");
+            if(isEnglish.equals("Yes")) {
+                //format cut off time to remove seconds
+                builder.setMessage("Please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM for today's delivery");
+            } else {
+                builder.setMessage("今日订单请在早上" + getChineseTime(cutoffTime.substring(0, cutoffTime.length()-3)) + "前下单");
             }
-        });
-        final AlertDialog ad = builder.create();
-        ad.show();
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    dialog.dismiss();
+                }
+            });
+            final AlertDialog ad = builder.create();
+            ad.show();
+        } else {
+            System.out.println("current time after cut off");
+            if(isEnglish.equals("Yes")) {
+                builder.setMessage("Please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM for tomorrow's delivery");
+            } else {
+                builder.setMessage("明日订单请在早上" + getChineseTime(cutoffTime.substring(0, cutoffTime.length()-3)) + "前下单");
+            }
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    dialog.dismiss();
+                }
+            });
+            final AlertDialog ad = builder.create();
+            ad.show();
+        }
 
        // doGetLastOrder(companyCode);
     }
@@ -262,6 +292,7 @@ public class QuickReorderFragment extends Fragment {
                         intent.putExtra("orderList", orderList);
                         intent.putExtra("customer", customer);
                         intent.putExtra("deliveryShift", deliveryShift);
+                        intent.putExtra("cutoffTime", cutoffTime);
                         getActivity().startActivity(intent);
                     }
                 }

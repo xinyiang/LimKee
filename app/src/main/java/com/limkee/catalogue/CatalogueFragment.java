@@ -19,9 +19,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.gson.Gson;
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
@@ -31,11 +28,9 @@ import com.limkee.entity.Product;
 import com.limkee.navigation.NavigationActivity;
 import com.limkee.order.ConfirmOrderActivity;
 import android.support.annotation.Nullable;
-
-import org.w3c.dom.Text;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,7 +59,7 @@ public class CatalogueFragment extends Fragment {
     String invalidDesc;
     String invalidDesc2;
     int qtyMultiples;
-
+    String cutoffTime;
 
     public CatalogueFragment(){
     }
@@ -93,9 +88,54 @@ public class CatalogueFragment extends Fragment {
         builder= new AlertDialog.Builder(getContext());
         loginPreferences = getContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         loginPrefsEditor = loginPreferences.edit();
-        String cutoffTime = loginPreferences.getString("cutofftime", "");
+        cutoffTime = loginPreferences.getString("cutofftime", "");
         loginPrefsEditor.commit();
 
+        //alert dialogue show is for today/tmr's time based on current timestamp
+        Date currentTimestamp = new Date();
+        String time = cutoffTime.substring(0,cutoffTime.length()-3);
+        String hour = time.substring(0,2);
+        String mins = time.substring(3,5);
+
+        Date cutoffTimestamp = new Date();
+        cutoffTimestamp.setHours(Integer.parseInt(hour));
+        cutoffTimestamp.setMinutes(Integer.parseInt(mins));
+
+        //compare current time is < cut off time
+        if (currentTimestamp.before(cutoffTimestamp)) {
+            System.out.println("current time before cut off");
+            if(isEnglish.equals("Yes")) {
+                //format cut off time to remove seconds
+                builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
+            } else {
+                builder.setMessage("今日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
+            }
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    dialog.dismiss();
+                }
+            });
+            final AlertDialog ad = builder.create();
+            ad.show();
+        } else {
+            System.out.println("current time after cut off");
+            if(isEnglish.equals("Yes")) {
+                builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for tomorrow's delivery");
+            } else {
+                builder.setMessage("明日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
+            }
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    dialog.dismiss();
+                }
+            });
+            final AlertDialog ad = builder.create();
+            ad.show();
+        }
+
+        /*
         if(isEnglish.equals("Yes")){
             builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
         } else {
@@ -110,7 +150,7 @@ public class CatalogueFragment extends Fragment {
         });
         final AlertDialog ad = builder.create();
         ad.show();
-
+     */
 
     }
 
@@ -266,6 +306,7 @@ public class CatalogueFragment extends Fragment {
                             intent.putExtra("orderList", orderList);
                             intent.putExtra("customer", customer);
                             intent.putExtra("deliveryShift", deliveryShift);
+                            intent.putExtra("cutoffTime", cutoffTime);
                             getActivity().startActivity(intent);
                         }
                     }
