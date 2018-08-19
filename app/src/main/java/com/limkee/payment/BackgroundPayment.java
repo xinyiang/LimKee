@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Base64;
 import android.view.View;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -20,19 +19,13 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
-import com.limkee.navigation.NavigationActivity;
 import com.stripe.android.model.Card;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -52,8 +45,6 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     private String ETADeliveryDate;
     private String newOrderID;
     private ArrayList<Product> orderList;
-    private String isEnglish;
-    private View view;
 
     BackgroundPayment(Context ctx, Activity act) {
         context = ctx;
@@ -245,8 +236,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build().create(PostData.class);
-        double taxAmt = tp * 0.07;
-        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, tp-taxAmt, orderNo)
+        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, tp*(100.0/107.0), orderNo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderDetailsResponse, this::handleError));

@@ -1,7 +1,6 @@
 package com.limkee.order;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,36 +8,15 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.Button;
-import android.widget.TextView;
 import com.limkee.R;
-import com.limkee.constant.HttpConstant;
-import com.limkee.constant.PostData;
-import com.limkee.dao.OrderDAO;
 import com.limkee.entity.Customer;
-import com.limkee.entity.Order;
 import com.limkee.navigation.NavigationActivity;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.disposables.CompositeDisposable;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 
 public class MainOrderHistoryFragment extends Fragment {
 
@@ -86,7 +64,6 @@ public class MainOrderHistoryFragment extends Fragment {
 
         pastFragment.setArguments(myBundle);
         cancelledFragment.setArguments(myBundle);
-
         if (isEnglish.equals("Yes")){
             adapter.addFragment(pastFragment, "Completed");
             adapter.addFragment(cancelledFragment, "Cancelled");

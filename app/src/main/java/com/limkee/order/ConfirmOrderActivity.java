@@ -29,6 +29,7 @@ public class ConfirmOrderActivity extends AppCompatActivity implements ConfirmOr
     private Customer customer;
     private String isEnglish;
     private String deliveryShift;
+    private  String cutofftime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +45,16 @@ public class ConfirmOrderActivity extends AppCompatActivity implements ConfirmOr
         customer = myBundle.getParcelable("customer");
         orderList  = myBundle.getParcelableArrayList("orderList");
         isEnglish = myBundle.getString("language");
-        deliveryShift =  myBundle.getString("deliveryShift");
+        deliveryShift = myBundle.getString("deliveryShift");
+        cutofftime = myBundle.getString("cutoffTime");
 
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("orderList", orderList);
         bundle.putParcelable("customer",customer);
         bundle.putString("language", isEnglish);
         bundle.putString("deliveryShift", deliveryShift);
+        bundle.putString("cutoffTime", cutofftime);
+
         confirmOrderFragment.setArguments(bundle);
         loadFragment(confirmOrderFragment);
 
