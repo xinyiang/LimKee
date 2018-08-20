@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Base64;
-import android.view.View;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -45,6 +44,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     private String ETADeliveryDate;
     private String newOrderID;
     private ArrayList<Product> orderList;
+    private String isEnglish;
 
     BackgroundPayment(Context ctx, Activity act) {
         context = ctx;
@@ -83,6 +83,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         totalPayable = params[1];
         String payment_url = "http://13.229.114.72:80/JavaBridge/";
         String post_data;
+        isEnglish = params[3];
         if(type.equals("pay_with_new_card")){
             String token = params[2];
             try {
@@ -277,7 +278,6 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     }
 
     private void handleSalesOrderQuantityResponse(int numProducts) {
-        String orderID = null;
         System.out.println("SALES ORDER NUMBER OF PRODUCTS " + numProducts + " and order list size is " + orderList.size());
 
         if (numProducts == orderList.size()) {
@@ -320,15 +320,40 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             */
             newOrderID = deliverYear + deliverMonth + "-" + newOrderID;
             System.out.println("SALES ORDER IS " + newOrderID);
-        } else {
-        }
+            System.out.println("Langauge is " + isEnglish);
 
-        Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
-        it.putExtra("result","success");
-        it.putExtra("totalPayable", tp);
-        it.putExtra("customer", customer);
-        it.putExtra("orderId", newOrderID);
-        context.startActivity(it);
-        activity.finish();
+            //get the last 2 digit of the year
+            String year = ETADeliveryDate.substring(0,4);
+            //get the 2 digit of the month
+            String month = ETADeliveryDate.substring(6,7);
+            //if delivery month contains "-", single digit month. add 0
+            //else double digit month
+            if (month.equals("-")){
+                month = "0" + ETADeliveryDate.substring(5,6);
+            } else {
+                month = ETADeliveryDate.substring(5,7);
+            }
+            String day = ETADeliveryDate.substring(8);
+            if (day.length() == 1){
+                 day = "0" + day;
+            }
+            String deliveryDate = day + "/" + month + "/" + year;
+
+            //SMSNotification notif = new SMSNotification(context, activity);
+            //notif.execute(customer.getDeliveryContact(), deliveryDate, newOrderID, isEnglish);
+
+            Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
+            it.putExtra("result","success");
+            it.putExtra("totalPayable", tp);
+            it.putExtra("customer", customer);
+            it.putExtra("orderId", newOrderID);
+            context.startActivity(it);
+
+            activity.finish();
+
+        } else {
+            System.out.println("Background payment failed in line 335");
+        }
     }
+
 }

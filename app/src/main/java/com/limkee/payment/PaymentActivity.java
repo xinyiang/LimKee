@@ -62,6 +62,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
     private CheckBox saveCard;
     private Customer customer;
     private double subtotal;
+    private String isEnglish;
     private ArrayList<Product> orderList;
     private CardMultilineWidget mCardMultilineWidget;
     private RadioOnClick radioOnClick = new RadioOnClick(0);
@@ -83,7 +84,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         orderList = myBundle.getParcelableArrayList("orderList");
         double tp = myBundle.getDouble("totalPayable");
         subtotal = tp;
-        String isEnglish = myBundle.getString("language");
+        isEnglish = myBundle.getString("language");
 
         TextView tv = (TextView)findViewById(R.id.totalPayable);
         tv.setText(String.format("$%.2f", tp));
@@ -134,7 +135,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                                         bp.saveCustomer(customer);
                                         bp.saveDeliveryDate(deliveryDate);
                                         bp.saveOrderList(orderList);
-                                        bp.execute(type, totalPayable, lastFourDigit);
+                                        bp.execute(type, totalPayable, lastFourDigit, isEnglish);
                                     }else{
                                         progressBar.setVisibility(View.INVISIBLE);
                                         Toast.makeText(context, getResources().getString(R.string.cvc_error), Toast.LENGTH_SHORT).show();
