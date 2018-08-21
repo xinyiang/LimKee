@@ -187,7 +187,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                                     bp.saveCard(card);
                                     //Send card details to db
                                 }
-                                bp.execute(type, totalPayable, token.getId());
+                                bp.execute(type, totalPayable, token.getId(), isEnglish);
                                 // Send token to your server
                             }
                             public void onError(Exception error) {

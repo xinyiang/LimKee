@@ -1,9 +1,11 @@
 package com.limkee.order;
 
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -23,6 +25,8 @@ public class QuickReorderConfirmOrderActivity extends AppCompatActivity implemen
     private String isEnglish;
     private String deliveryShift;
     private String cutofftime;
+    private AlertDialog ad;
+    boolean result = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +63,7 @@ public class QuickReorderConfirmOrderActivity extends AppCompatActivity implemen
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(com.limkee.R.id.flContent, fragment);
         fragmentTransaction.commit();
-
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -69,16 +71,53 @@ public class QuickReorderConfirmOrderActivity extends AppCompatActivity implemen
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
-        //
-        //  HANDLE BACK BUTTON
-        //
         int id = item.getItemId();
         if (id == android.R.id.home) {
             // Back button clicked
-            this.finish();
+            //   this.finish();
+
+            //show alert of order loss
+            if (isEnglish.equals("Yes")) {
+                ad = new AlertDialog.Builder(this)
+                        .setMessage("All your orders will be lost. Do you want to proceed?")
+                        .setPositiveButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                            }
+                        })
+                        .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                                QuickReorderConfirmOrderActivity.this.finish();
+                                result = false;
+                            }
+                        })
+                        .show();
+            } else {
+                ad = new AlertDialog.Builder(this)
+                        .setMessage("你的所有订单都将取消。您要继续吗？")
+                        .setPositiveButton("否", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                            }
+                        })
+                        .setNegativeButton("是", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                                QuickReorderConfirmOrderActivity.this.finish();
+                                result = false;
+                            }
+                        })
+                        .show();
+            }
         }
 
-        return super.onOptionsItemSelected(item);
+        return result;
+        //  return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -96,5 +135,53 @@ public class QuickReorderConfirmOrderActivity extends AppCompatActivity implemen
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        int count = getFragmentManager().getBackStackEntryCount();
+        if (count == 0) {
+
+            //show alert of order loss
+            if (isEnglish.equals("Yes")) {
+                new AlertDialog.Builder(this)
+                        .setMessage("All your orders will be lost. Do you want to proceed?")
+                        .setPositiveButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                            }
+                        })
+                        .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                                QuickReorderConfirmOrderActivity.super.onBackPressed();
+                            }
+                        })
+                        .show();
+            } else {
+                new AlertDialog.Builder(this)
+                        .setMessage("你的所有订单都将取消。您要继续吗？")
+                        .setPositiveButton("否", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                            }
+                        })
+                        .setNegativeButton("是", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //finish();
+                                QuickReorderConfirmOrderActivity.super.onBackPressed();
+                            }
+                        })
+                        .show();
+            }
+
+        } else {
+            getFragmentManager().popBackStack();
+        }
     }
 }
