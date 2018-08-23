@@ -111,7 +111,11 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
             if (isEnglish.equals("Yes")) {
                 description.setText(product.getDescription());
-                uom = "pcs";
+                if (product.getItemCode().equals("CS")){
+                    uom = "btl";
+                } else {
+                    uom = "pcs";
+                }
             } else {
                 description.setText(product.getDescription2());
                 uom = product.getUom();

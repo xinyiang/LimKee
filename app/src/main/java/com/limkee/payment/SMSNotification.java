@@ -38,14 +38,21 @@ public class SMSNotification  extends AsyncTask<String,Void,String> {
 
             String recipient = "+65" + contactNumber;
             String myData = "";
-            if (isEnglish.equals("Yes")){
-                myData = "{to: \"" + "+6597597790\", encoding: \"UNICODE\", body: \"Your Lim Kee order #" + orderNo
-                        + " for delivery on " + deliveryDate + " has been placed!" +  "\"}";
-            } else {
-                myData = "{to: \"" + "+6597597790\", encoding: \"UNICODE\", body: \"您的林记订単 #" + orderNo
-                        + " 送货日期为 " + deliveryDate + " 已成功下単!" +  "\"}";
-            }
 
+            if (isEnglish.equals("Yes")){
+                myData = "{to: \"" + "+6597597790\", encoding: \"UNICODE\", body: \"[Lim Kee] Order #" + orderNo
+                        + "\n" + "Your order for delivery on " + deliveryDate + " has been placed!" +  "\"}";
+
+                // myData = "{to: \"" + "+6597597790\", encoding: \"UNICODE\", body: \"Your Lim Kee order #" + orderNo
+                //       + " for delivery on " + deliveryDate + " has been placed!" +  "\"}";
+            } else {
+
+                myData = "{to: \"" + "+6597597790\", encoding: \"UNICODE\", body: \"[林记] 订単号 #" + orderNo
+                        + "\n" + "您的订単送货日期为 " + deliveryDate + " 已成功下単!" + "\"}";
+
+                //   myData = "{to: \"" + "+6597597790\", encoding: \"UNICODE\", body: \"您的林记订単 #" + orderNo
+                //           + " 送货日期为 " + deliveryDate + " 已成功下単!" +  "\"}";
+            }
             // build the request based on the supplied settings
             URL url = new URL(myURI);
             HttpURLConnection request = (HttpURLConnection) url.openConnection();
