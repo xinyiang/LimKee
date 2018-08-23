@@ -122,7 +122,11 @@ public class ProductDetailsFragment extends Fragment {
 
         if (isEnglish.equals("Yes")){
             productName.setText(product.getDescription());
-            price.setText("$" + df.format(product.getUnitPrice()) + "/piece");
+            if (product.getItemCode().equals("CS")){
+                price.setText("$" + df.format(product.getUnitPrice()) + "/bottle");
+            } else {
+                price.setText("$" + df.format(product.getUnitPrice()) + "/piece");
+            }
         } else {
             productName.setText(product.getDescription2());
             price.setText("$" + df.format(product.getUnitPrice()) + "/" + product.getUom());

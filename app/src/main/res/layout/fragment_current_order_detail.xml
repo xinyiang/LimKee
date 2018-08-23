@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:text="订单ID"
+                android:text="订单号"
                 android:textSize="15dp"
                 app:layout_constraintEnd_toStartOf="@+id/orderID"
                 app:layout_constraintHorizontal_bias="0.0"
