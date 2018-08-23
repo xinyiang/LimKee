@@ -1,14 +1,22 @@
 package com.limkee.catalogue;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
@@ -26,6 +35,7 @@ import com.limkee.dao.CatalogueDAO;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
 import com.limkee.navigation.NavigationActivity;
+import com.limkee.notification.AlarmReceiver;
 import com.limkee.order.ConfirmOrderActivity;
 import android.support.annotation.Nullable;
 import java.text.DecimalFormat;
@@ -101,18 +111,20 @@ public class CatalogueFragment extends Fragment {
         cutoffTimestamp.setHours(Integer.parseInt(hour));
         cutoffTimestamp.setMinutes(Integer.parseInt(mins));
 
+        String notif = "";
         //compare current time is < cut off time
         if (currentTimestamp.before(cutoffTimestamp)) {
             System.out.println("current time before cut off");
             if(isEnglish.equals("Yes")) {
                 //format cut off time to remove seconds
+                notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery";
                 builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
             } else {
+                notif = "今日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单";
                 builder.setMessage("今日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
             }
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-
                     dialog.dismiss();
                 }
             });
@@ -121,13 +133,14 @@ public class CatalogueFragment extends Fragment {
         } else {
             System.out.println("current time after cut off");
             if(isEnglish.equals("Yes")) {
+                notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for tomorrow's delivery";
                 builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for tomorrow's delivery");
             } else {
+                notif = "明日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单";
                 builder.setMessage("明日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
             }
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-
                     dialog.dismiss();
                 }
             });
@@ -135,23 +148,43 @@ public class CatalogueFragment extends Fragment {
             ad.show();
         }
 
-        /*
-        if(isEnglish.equals("Yes")){
-            builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
-        } else {
-            builder.setMessage("今日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
-        }
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+        scheduleNotification(getContext(), 1000*60*24, 0, notif);
+    }
 
-                dialog.dismiss();
-               // doGetCatalogue();
-            }
-        });
-        final AlertDialog ad = builder.create();
-        ad.show();
-     */
+    public void scheduleNotification(Context context, long interval, int notificationId, String content) {
+        final String id = "my_channel_id_01";
+        CharSequence name = "channel_name";
+        String description = "channel_description";
+        int importance = NotificationManager.IMPORTANCE_LOW;
+        String time = cutoffTime.substring(0,cutoffTime.length()-3);
+        String hour = time.substring(0,2);
+        String mins = time.substring(3,5);
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour) - 1);
+        calendar.set(Calendar.MINUTE, Integer.parseInt(mins));
+
+        NotificationChannel mChannel = new NotificationChannel(id, name,importance);
+        mChannel.setDescription(description);
+        NotificationManager mNotificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.createNotificationChannel(mChannel);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "my_channel_id_01")
+                .setContentTitle("Gentle reminder")
+                .setContentText(content)
+                .setSmallIcon(R.drawable.logo)
+                .setAutoCancel(true);
+        Intent intent = new Intent(context, CatalogueFragment.class);
+        PendingIntent activity = PendingIntent.getActivity(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        builder.setContentIntent(activity);
+        Notification notification = builder.build();
+        Intent notificationIntent = new Intent(context, AlarmReceiver.class);
+        notificationIntent.putExtra(AlarmReceiver.NOTIFICATION_ID, notificationId);
+        notificationIntent.putExtra(AlarmReceiver.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), interval, pendingIntent);
     }
 
     @Override

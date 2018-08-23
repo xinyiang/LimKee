@@ -16,6 +16,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -120,6 +121,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
             AlertDialog ad = new AlertDialog.Builder(PaymentActivity.this).setTitle(getResources().getString(R.string.key_in_cvc)).create();
             final EditText edittext = new EditText(PaymentActivity.this);
             edittext.setRawInputType(Configuration.KEYBOARD_12KEY);
+            edittext.setTransformationMethod(PasswordTransformationMethod.getInstance());
             ad.setView(edittext);
             ad.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.confirm), new DialogInterface.OnClickListener(){
                 public void onClick(DialogInterface dialog, int whichButton){

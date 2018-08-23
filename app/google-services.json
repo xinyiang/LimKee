@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "715839507290",
+    "firebase_url": "https://limkee-c1d16.firebaseio.com",
+    "project_id": "limkee-c1d16",
+    "storage_bucket": "limkee-c1d16.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715839507290:android:0857d28936709b1e",
+        "android_client_info": {
+          "package_name": "com.limkee"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "715839507290-il504em6rvrafb5pa6hm6s4j770s1uh6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCh63w4uH_Uc_JcE0xukXa831txZCTVZJo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
