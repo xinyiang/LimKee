@@ -47,6 +47,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static android.app.AlarmManager.INTERVAL_DAY;
+
 public class CatalogueFragment extends Fragment {
     private CatalogueFragment.OnFragmentInteractionListener mListener;
     public static View view;
@@ -184,7 +186,8 @@ public class CatalogueFragment extends Fragment {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), interval, pendingIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), INTERVAL_DAY , pendingIntent);
+        System.out.println(calendar.getTime()+" from 1970");
     }
 
     @Override
