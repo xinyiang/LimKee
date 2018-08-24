@@ -2,14 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.limkee">
-    <uses-permission android:name="android.alarm.permission.SET_ALARM"/>
+
+    <uses-permission android:name="android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="false"
@@ -54,11 +54,14 @@
         <activity android:name=".order.OrderHistoryDetailActivity" />
         <activity android:name=".order.CancelledOrderDetailActivity" />
         <activity android:name=".order.CancelledOrderActivity" />
-        <activity android:name=".catalogue.ProductDetailsActivity"></activity>
-        <receiver android:name=".notification.AlarmReceiver"
+        <activity android:name=".catalogue.ProductDetailsActivity" />
+
+        <receiver
+            android:name=".notification.AlarmReceiver"
             android:enabled="true"
-            android:exported="true">
-        </receiver>
+            android:exported="true"></receiver>
+
+        <activity android:name=".dashboard.DashboardActivity"></activity>
     </application>
 
 </manifest>

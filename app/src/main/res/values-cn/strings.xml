@@ -38,5 +38,6 @@
     <string name="select_card">选择您要使用的卡</string>
     <string name="confirm_delete">您确定删除此尾号的卡吗： </string>
     <string name="invalid_card">卡信息错误</string>
+    <string name="dashboard">仪表板</string>
 
 </resources>
