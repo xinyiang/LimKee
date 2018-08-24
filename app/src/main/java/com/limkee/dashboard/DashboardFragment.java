@@ -12,8 +12,8 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.limkee.R;
-import com.limkee.entity.Product;
 import com.limkee.navigation.NavigationActivity;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +42,8 @@ public class DashboardFragment extends Fragment {
 
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
+
+
     }
 
     @Override
@@ -82,12 +84,13 @@ public class DashboardFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_main_order_history, container, false);
-        // Set ViewPager for each Tabs
+
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
         setupViewPager(viewPager);
-        // Set Tabs inside Toolbar
         TabLayout tabs = (TabLayout) view.findViewById(R.id.tabs);
+        tabs.bringToFront();
         tabs.setupWithViewPager(viewPager);
+
         return view;
     }
 
