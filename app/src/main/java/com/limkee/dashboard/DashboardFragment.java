@@ -1,0 +1,174 @@
+package com.limkee.dashboard;
+
+import android.content.Context;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import com.limkee.R;
+import com.limkee.entity.Product;
+import com.limkee.navigation.NavigationActivity;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DashboardFragment extends Fragment {
+    private DashboardFragment.OnFragmentInteractionListener mListener;
+    private DashboardFragment mAdapter;
+    static DashboardFragment fragment;
+    private View view;
+    private String isEnglish;
+    private Bundle myBundle;
+
+    public DashboardFragment() {
+    }
+
+    public static DashboardFragment newInstance() {
+        DashboardFragment fragment = new DashboardFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle bundle = getArguments();
+        isEnglish = bundle.getString("language");
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (isEnglish.equals("Yes")){
+            ((NavigationActivity) getActivity()).setActionBarTitle("Dashboard");
+        } else {
+            ((NavigationActivity) getActivity()).setActionBarTitle("仪表板");
+        }
+        Bundle bundle = getArguments();
+        isEnglish = bundle.getString("language");
+    }
+
+
+    // Add Fragments to Tabs
+    private void setupViewPager(ViewPager viewPager) {
+        DashboardFragment.Adapter adapter = new DashboardFragment.Adapter(getChildFragmentManager());
+        Fragment pastFragment = new TotalSalesFragment();
+        Fragment cancelledFragment = new TopPurchasedFragment();
+
+        myBundle = new Bundle();
+        myBundle.putString("language", isEnglish);
+
+        pastFragment.setArguments(myBundle);
+        cancelledFragment.setArguments(myBundle);
+        if (isEnglish.equals("Yes")){
+            adapter.addFragment(pastFragment, "Total sales");
+            adapter.addFragment(cancelledFragment, "Top Purchased Items");
+        } else {
+            adapter.addFragment(pastFragment, "总销量");
+            adapter.addFragment(cancelledFragment, "最畅销产品");
+        }
+        viewPager.setAdapter(adapter);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_main_order_history, container, false);
+        // Set ViewPager for each Tabs
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
+        setupViewPager(viewPager);
+        // Set Tabs inside Toolbar
+        TabLayout tabs = (TabLayout) view.findViewById(R.id.tabs);
+        tabs.setupWithViewPager(viewPager);
+        return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof DashboardFragment.OnFragmentInteractionListener) {
+            mListener = (DashboardFragment.OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+    }
+
+    //adaptor
+    static class Adapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public Adapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+    }
+
+    // Adapter for the viewpager using FragmentPagerAdapter
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+    }
+}

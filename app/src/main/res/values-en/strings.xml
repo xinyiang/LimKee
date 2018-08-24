@@ -39,5 +39,6 @@
     <string name="select_card">Select your card</string>
     <string name="confirm_delete">Confirm to delete the card ending with: </string>
     <string name="invalid_card">Invalid card data</string>
+    <string name="dashboard">Dashboard</string>
 
 </resources>
