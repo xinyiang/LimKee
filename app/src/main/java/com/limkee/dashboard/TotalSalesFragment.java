@@ -13,6 +13,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.limkee.R;
@@ -32,18 +35,21 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class TotalSalesFragment extends Fragment {
+public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
     private TotalSalesFragment.OnFragmentInteractionListener mListener;
     private View view;
     private Customer customer;
     public static Retrofit retrofit;
     private  String isEnglish;
+    private Spinner spinner;
+    static TotalSalesFragment fragment;
+    private static final String[] paths = {"3 months", "6 months", "12 months"};
 
     public TotalSalesFragment(){}
 
     public static TotalSalesFragment newInstance() {
-        TotalSalesFragment fragment = new TotalSalesFragment();
+        fragment = new TotalSalesFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -60,6 +66,12 @@ public class TotalSalesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_total_sales, container, false);
+        spinner = (Spinner)view.findViewById(R.id.spinner1);
+        ArrayAdapter<String>adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, paths );
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(fragment);
         return view;
     }
 
@@ -86,6 +98,27 @@ public class TotalSalesFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        switch (i) {
+            case 0:
+                // Whatever you want to happen when the first item gets selected
+                break;
+            case 1:
+                // Whatever you want to happen when the second item gets selected
+                break;
+            case 2:
+                // Whatever you want to happen when the thrid item gets selected
+                break;
+
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 
     public interface OnFragmentInteractionListener {
