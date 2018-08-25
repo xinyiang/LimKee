@@ -3,6 +3,7 @@ package com.limkee.payment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,6 +22,7 @@ public class ConfirmationActivity extends BaseActivity {
     private View view;
     double tp = 0.00;
     private String orderId;
+    private String language;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,14 +34,24 @@ public class ConfirmationActivity extends BaseActivity {
         tp = getIntent().getDoubleExtra("totalPayable",0.00);
         customer = myBundle.getParcelable("customer");
         orderId = myBundle.getString("orderId");
+        language = myBundle.getString("language");
         System.out.println(orderId+"!!!");
         TextView pmtResult = ((Activity)this).findViewById(R.id.pmtResult);
         TextView description = ((Activity)this).findViewById(R.id.description);
+        TextView notifDescription = ((Activity)this).findViewById(R.id.smsNotification);
+        notifDescription.setTypeface(notifDescription.getTypeface(), Typeface.ITALIC);
         ImageView iv = findViewById(R.id.status);
+
         if (result != null && result.equals("success")){
-            pmtResult.setText("Order ID: #"+orderId+" "+ getResources().getString(R.string.payment_successful));
-            description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_successful_description));
             iv.setImageResource(R.drawable.success);
+            description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_successful_description));
+            if (language.equals("Yes")){
+                pmtResult.setText("Order ID: #" + orderId + "\n" + getResources().getString(R.string.payment_successful));
+                notifDescription.setText("A SMS will be sent to +65 " + customer.getDeliveryContact() + ". Please contact Lim Kee for hp updates.");
+            } else {
+                pmtResult.setText("订单号: #" + orderId + "\n" + getResources().getString(R.string.payment_successful));
+                notifDescription.setText("确认短信会发至+65 " + customer.getDeliveryContact() + "。 如果电话号码改变，请拨打电话至林记告知。");
+            }
         }else{
             //pmtResult.setText(getResources().getString(R.string.payment_unsuccessful));
             //description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_unsuccessful_description));

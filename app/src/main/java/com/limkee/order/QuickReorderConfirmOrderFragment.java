@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -58,6 +59,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
     private int month;
     private int year;
     private String cutoffTime;
+    private String paperBagNeeded;
 
     public QuickReorderConfirmOrderFragment() {
         // Required empty public constructor
@@ -102,15 +104,21 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         TextView lblSubtotal = view.findViewById(R.id.lbl_subtotal_amt);
         TextView lblTax = view.findViewById(R.id.lbl_tax_amt);
         TextView lblFinalTotal = view.findViewById(R.id.lbl_total_amt);
+        TextView lblPaperBagRequired = view.findViewById(R.id.lbl_paperBag);
+        CheckBox paperBagRequired = view.findViewById(R.id.checkBox);
 
         if (isEnglish.equals("Yes")) {
             lblSubtotal.setText("Sub Total");
             lblTax.setText("7% GST");
             lblFinalTotal.setText("Total Amount");
+            lblPaperBagRequired.setText("Paper Bag");
+            paperBagRequired.setText("Yes");
         } else {
             lblSubtotal.setText("小计");
             lblTax.setText("7% 税");
             lblFinalTotal.setText("总额");
+            lblPaperBagRequired.setText("纸袋");
+            paperBagRequired.setText("有");
         }
 
         recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
@@ -421,6 +429,17 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     }
 
                 } else {
+
+                    //check if paper bag is required
+                    CheckBox paperBagRequired = (CheckBox)view.findViewById(R.id.checkBox);
+                    if (paperBagRequired.isChecked()) {
+                        System.out.println("Checkbox is checked");
+                        paperBagNeeded = "yes";
+                    } else {
+                        System.out.println("Checkbox is not checked");
+                        paperBagNeeded = "no";
+                    }
+
                     //check if today's delivery is before cut off time
                     try{
                         Date currentTimestamp = new Date();
@@ -444,6 +463,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                             intent.putExtra("deliveryDate", ETADeliveryDate);
                             intent.putExtra("totalPayable", totalPayable);
                             intent.putExtra("language", isEnglish);
+                            intent.putExtra("paperBagRequired", paperBagNeeded);
                             getActivity().startActivity(intent);
                         } else {
                             System.out.println("delivery time after cut off");

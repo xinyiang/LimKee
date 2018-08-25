@@ -2,7 +2,6 @@
     <string name="app_name">林记</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_logout">LogoutActivity</string>
     <string name="company_code">用户名</string>
@@ -13,7 +12,7 @@
     <string name="paymentdetails">付款详情</string>
     <string name="pay">付款</string>
     <string name="payment_unsuccessful">未下单，付款失败！</string>
-    <string name="payment_successful">已下单，付款成功！</string>
+    <string name="payment_successful">付款成功！</string>
     <string name="payment_unsuccessful_description">您的卡不会被收费\n请重试</string>
     <string name="payment_successful_description"> 已从您的卡里扣除</string>
     <string name="userprofile">用户资料</string>

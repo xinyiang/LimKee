@@ -1,25 +1,23 @@
 package com.limkee.entity;
 
-/**
- * Created by Xin Yi on 24/6/2018.
- */
-
 public class OrderDetails {
     String orderID;
     String orderDate;
     double subtotal;
     String status;
-    String cancelledReason;
+    String deliveryDate;
+    int paperBagRequired;
 
     public OrderDetails(){
     }
 
-    public OrderDetails(String orderID, String orderDate, String status, String cancelledReason, double subtotal){
+    public OrderDetails(String orderID, String orderDate, String status, String deliveryDate, double subtotal, int paperBagRequired){
         this.orderID = orderID;
         this.orderDate = orderDate;
         this.status = status;
-        this.cancelledReason = cancelledReason;
+        this.deliveryDate = deliveryDate;
         this.subtotal = subtotal;
+        this.paperBagRequired = paperBagRequired;
     }
 
     public String getOrderID() {
@@ -54,11 +52,19 @@ public class OrderDetails {
         this.status = status;
     }
 
-    public String getCancelledReason() {
-        return cancelledReason;
+    public String getDeliveryDate() {
+        return deliveryDate;
     }
 
-    public void setCancelledReason(String cancelledReason) {
-        this.cancelledReason = cancelledReason;
+    public void setDeliveryDate(String deliveryDate) {
+        this.deliveryDate = deliveryDate;
+    }
+
+    public int getPaperBagRequired() {
+        return paperBagRequired;
+    }
+
+    public void setPaperBagRequired(int paperBagRequired) {
+        this.paperBagRequired = paperBagRequired;
     }
 }

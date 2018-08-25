@@ -50,7 +50,11 @@ public class QuickReorderConfirmOrderAdapter extends RecyclerView.Adapter<QuickR
             DecimalFormat df = new DecimalFormat("#0.00");
             if (isEnglish.equals("Yes")) {
                 description.setText(product.getDescription());
-                uom = "pcs";
+                if (product.getItemCode().equals("CS")){
+                    uom = "btl";
+                } else {
+                    uom = "pcs";
+                }
             } else {
                 description.setText(product.getDescription2());
                 uom = product.getUom();

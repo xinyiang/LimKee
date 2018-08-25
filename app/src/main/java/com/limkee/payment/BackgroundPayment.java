@@ -45,6 +45,8 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     private String newOrderID;
     private ArrayList<Product> orderList;
     private String isEnglish;
+    private String paperBagNeeded;
+    private int paperBagRequired;
 
     BackgroundPayment(Context ctx, Activity act) {
         context = ctx;
@@ -84,6 +86,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         String payment_url = "http://13.229.114.72:80/JavaBridge/";
         String post_data;
         isEnglish = params[3];
+        paperBagNeeded = params[4];
         if(type.equals("pay_with_new_card")){
             String token = params[2];
             try {
@@ -205,7 +208,16 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 .client(client)
                 .build().create(PostData.class);
 
-        compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode(), ETADeliveryDate)
+        System.out.println("Paper bag needed is " + paperBagNeeded);
+        if (paperBagNeeded.equals("yes")) {
+            paperBagRequired = 1;
+        } else {
+            paperBagRequired = 0;
+        }
+
+        System.out.println("Paper bag required is " + paperBagRequired);
+
+        compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode(), ETADeliveryDate, paperBagRequired)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderResponse, this::handleError));
@@ -339,14 +351,15 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             }
             String deliveryDate = day + "/" + month + "/" + year;
 
-            //SMSNotification notif = new SMSNotification(context, activity);
-            //notif.execute(customer.getDeliveryContact(), deliveryDate, newOrderID, isEnglish);
+          //  SMSNotification notif = new SMSNotification(context, activity);
+          //  notif.execute(customer.getDeliveryContact(), deliveryDate, newOrderID, isEnglish);
 
             Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
             it.putExtra("result","success");
             it.putExtra("totalPayable", tp);
             it.putExtra("customer", customer);
             it.putExtra("orderId", newOrderID);
+            it.putExtra("language",isEnglish);
             context.startActivity(it);
 
             activity.finish();
