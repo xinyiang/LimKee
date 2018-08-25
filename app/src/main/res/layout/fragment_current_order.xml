@@ -19,7 +19,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="订单 ID"
+            android:text="订单号"
             android:textColor="@color/colorPrimary"
             android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="parent"

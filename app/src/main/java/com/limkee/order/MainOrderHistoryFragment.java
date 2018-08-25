@@ -51,10 +51,12 @@ public class MainOrderHistoryFragment extends Fragment {
     }
 
 
+
+
     // Add Fragments to Tabs
     private void setupViewPager(ViewPager viewPager) {
-
-        Adapter adapter = new Adapter(getChildFragmentManager());
+        MainOrderHistoryFragment.Adapter adapter = new MainOrderHistoryFragment.Adapter(getChildFragmentManager());
+     //   Adapter adapter = new Adapter(getChildFragmentManager());
         Fragment pastFragment = new OrderHistoryFragment();
         Fragment cancelledFragment = new CancelledOrderFragment();
 
@@ -144,6 +146,8 @@ public class MainOrderHistoryFragment extends Fragment {
         setupViewPager(viewPager);
         // Set Tabs inside Toolbar
         TabLayout tabs = (TabLayout) view.findViewById(R.id.tabs);
+        //let tab be clickable
+        tabs.bringToFront();
         tabs.setupWithViewPager(viewPager);
 
         return view;
