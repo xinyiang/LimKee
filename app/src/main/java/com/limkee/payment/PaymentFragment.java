@@ -25,6 +25,7 @@ public class PaymentFragment extends Fragment {
     private Context context;
     private String totalPayable;
     private String isEnglish;
+    private String paperBagNeeded;
 
     public PaymentFragment() {
         // Required empty public constructor
@@ -47,6 +48,7 @@ public class PaymentFragment extends Fragment {
         customer = bundle.getParcelable("customer");
         totalPayable = String.valueOf(bundle.getDouble("totalPayable"));
         isEnglish = bundle.getString("language");
+        paperBagNeeded = bundle.getString("paperBagRequired");
 
         if (getActivity() instanceof PaymentActivity) {
             if (isEnglish.equals("Yes")) {

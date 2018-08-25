@@ -33,25 +33,23 @@ public class SMSNotification  extends AsyncTask<String,Void,String> {
             String myURI = "https://api.bulksms.com/v1/messages";
 
             // change these values to match your own account
-            String myUsername = "205F99183B184EBD97EF51D2FEDC6E7F-02-6";
-            String myPassword = "kPcgoQLsgB1_226sU2CCI*2EW0AcX";
+            String myUsername = "843009B3A5A34954B10AC8DBA47473C3-02-E";
+            String myPassword = "V3wMbc89W0GL!8nphs74oaQAxWIhl";
 
-            String recipient = "+65" + contactNumber;
-            String myData = "";
+            String smsMsg = "";
+            String toNumber = "+65" + contactNumber;
 
             if (isEnglish.equals("Yes")){
-                myData = "{to: \"" + "+6597597790\", encoding: \"UNICODE\", body: \"[Lim Kee] Order #" + orderNo
-                        + "\n" + "Your order for delivery on " + deliveryDate + " has been placed!" +  "\"}";
+                smsMsg = "{to: \"" + toNumber + "\", encoding: \"UNICODE\", body: \"[Lim Kee] Order #" + orderNo
+                        + "\n" + "Your order for delivery on " + deliveryDate + " has been placed! If you did not authorize this order, please call +65 6758 5858." +  "\"}";
 
                 // myData = "{to: \"" + "+6597597790\", encoding: \"UNICODE\", body: \"Your Lim Kee order #" + orderNo
                 //       + " for delivery on " + deliveryDate + " has been placed!" +  "\"}";
             } else {
 
-                myData = "{to: \"" + "+6597597790\", encoding: \"UNICODE\", body: \"[林记] 订単号 #" + orderNo
-                        + "\n" + "您的订単送货日期为 " + deliveryDate + " 已成功下単!" + "\"}";
+                smsMsg = "{to: \"" + toNumber + "\", encoding: \"UNICODE\", body: \"[林记] 订単号 #" + orderNo
+                        + "\n" + "您为 " + deliveryDate + " 下的订单已成! 若非您授权的，请拨打+65 6758 5858。" + "\"}";
 
-                //   myData = "{to: \"" + "+6597597790\", encoding: \"UNICODE\", body: \"您的林记订単 #" + orderNo
-                //           + " 送货日期为 " + deliveryDate + " 已成功下単!" +  "\"}";
             }
             // build the request based on the supplied settings
             URL url = new URL(myURI);
@@ -69,7 +67,7 @@ public class SMSNotification  extends AsyncTask<String,Void,String> {
 
             // write the data to the request
             OutputStreamWriter out = new OutputStreamWriter(request.getOutputStream());
-            out.write(myData);
+            out.write(smsMsg);
             out.close();
             System.out.println("test sms is going into try");
             // try ... catch to handle errors nicely

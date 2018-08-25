@@ -45,6 +45,7 @@ public class CurrentOrderDetailFragment extends Fragment {
     private String date;
     private int numItems;
     private String deliveryShift;
+    private int paperBagRequiredNeeded;
 
     public CurrentOrderDetailFragment() {
         // Required empty public constructor
@@ -157,7 +158,7 @@ public class CurrentOrderDetailFragment extends Fragment {
 
         if (isEnglish.equals("Yes")){
             TextView lbl_subtotal_amt, lbl_total_amt, lbl_tax_amt, lbl_orderDetails, lbl_amtDetails, lbl_deliveryDetails;
-            TextView lbl_orderID, lbl_orderDate, lbl_status, lbl_address, lbl_date, lbl_time;
+            TextView lbl_orderID, lbl_orderDate, lbl_status, lbl_address, lbl_date, lbl_time, lbl_paperBagRequired;
             lbl_orderID  = (TextView) view.findViewById(R.id.lbl_orderID);
             lbl_orderDate  = (TextView) view.findViewById(R.id.lbl_orderDate);
             lbl_status  = (TextView) view.findViewById(R.id.lbl_status);
@@ -170,11 +171,13 @@ public class CurrentOrderDetailFragment extends Fragment {
             lbl_orderDetails = (TextView) view.findViewById(R.id.lbl_order_details);
             lbl_deliveryDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
             lbl_amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
+            lbl_paperBagRequired = (TextView) view.findViewById(R.id.lbl_paperBag);
 
             lbl_orderDetails.setText(" Order Details");
             lbl_orderID.setText("Order ID");
             lbl_orderDate.setText("Order Date");
             lbl_status.setText("Status");
+            lbl_paperBagRequired.setText("Paper Bag");
 
             lbl_deliveryDetails.setText(" Delivery Details");
             status.setText("Pending Delivery");
@@ -227,6 +230,26 @@ public class CurrentOrderDetailFragment extends Fragment {
                 mAdapter.update(od);
 
                 //display order details
+                paperBagRequiredNeeded = od.getPaperBagRequired();
+                System.out.println("Paper bag required is " + paperBagRequiredNeeded);
+
+                TextView paperBagRequired;
+                paperBagRequired = (TextView) view.findViewById(R.id.paperBag);
+
+                if (paperBagRequiredNeeded == 1){
+                    if (isEnglish.equals("Yes")){
+                        paperBagRequired.setText("Yes");
+                    } else {
+                        paperBagRequired.setText("有");
+                    }
+                } else {
+                    if (isEnglish.equals("Yes")){
+                        paperBagRequired.setText("No");
+                    } else {
+                        paperBagRequired.setText("无");
+                    }
+                }
+
                 TextView subtotalAmt, tax, totalAmt;
                 DecimalFormat df = new DecimalFormat("#0.00");
                 subtotalAmt = view.findViewById(R.id.subtotalAmt);
