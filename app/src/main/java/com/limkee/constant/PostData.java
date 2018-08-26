@@ -1,11 +1,11 @@
 package com.limkee.constant;
 
 import java.util.ArrayList;
+import java.util.Map;
 import com.limkee.entity.Order;
 import com.limkee.entity.OrderDetails;
 import com.limkee.entity.OrderQuantity;
 import com.limkee.entity.Product;
-
 import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -51,7 +51,7 @@ public interface PostData {
 
         @FormUrlEncoded
         @POST("add-order/salesorder")
-        Observable<String> addSalesOrder(@Field("debtorCode") String debtorCode, @Field("deliveryYearMonth") String deliveryYearMonth, @Field("PaperBagRequired") int PaperBagRequired);
+        Observable<String> addSalesOrder(@Field("debtorCode") String debtorCode, @Field("PaperBagRequired") int PaperBagRequired);
 
         @FormUrlEncoded
         @POST("add-order/salesorderdetails")
@@ -59,6 +59,10 @@ public interface PostData {
 
         @FormUrlEncoded
         @POST("add-order/salesorderquantity")
-        Observable<Integer> addSalesOrderQuantity(@Field("itemQuantity") ArrayList<String> itemQuantity, @Field("orderNo") String orderNo, @Field("deliveryDate") String deliveryDate);
+        Observable<Integer> addSalesOrderQuantity(@Field("itemQuantity") ArrayList<String> itemQuantity, @Field("orderNo") String orderNo);
+
+        @GET("dashboard/gettopproducts")
+        Call<Map<String,Integer>> getTopPurchasedProducts(@Query("companyCode") String companyCode, @Query("month") String month, @Query("language") String language);
 
 }
+

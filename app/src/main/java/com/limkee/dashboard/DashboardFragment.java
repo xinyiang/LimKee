@@ -12,8 +12,8 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.limkee.R;
+import com.limkee.entity.Customer;
 import com.limkee.navigation.NavigationActivity;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,7 @@ public class DashboardFragment extends Fragment {
     static DashboardFragment fragment;
     private View view;
     private String isEnglish;
+    private Customer customer;
     private Bundle myBundle;
 
     public DashboardFragment() {
@@ -42,8 +43,7 @@ public class DashboardFragment extends Fragment {
 
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
-
-
+        customer = bundle.getParcelable("customer");
     }
 
     @Override
@@ -56,26 +56,29 @@ public class DashboardFragment extends Fragment {
         }
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
+        customer = bundle.getParcelable("customer");
+
     }
 
 
     // Add Fragments to Tabs
     private void setupViewPager(ViewPager viewPager) {
         DashboardFragment.Adapter adapter = new DashboardFragment.Adapter(getChildFragmentManager());
-        Fragment pastFragment = new TotalSalesFragment();
-        Fragment cancelledFragment = new TopPurchasedFragment();
+        Fragment salesFragment = new TotalSalesFragment();
+        Fragment topProductFragment = new TopPurchasedFragment();
 
         myBundle = new Bundle();
         myBundle.putString("language", isEnglish);
+        myBundle.putParcelable("customer", customer);
 
-        pastFragment.setArguments(myBundle);
-        cancelledFragment.setArguments(myBundle);
+        salesFragment.setArguments(myBundle);
+        topProductFragment.setArguments(myBundle);
         if (isEnglish.equals("Yes")){
-            adapter.addFragment(pastFragment, "Total sales");
-            adapter.addFragment(cancelledFragment, "Top Purchased Items");
+            adapter.addFragment(salesFragment, "Total sales");
+            adapter.addFragment(topProductFragment, "Top Purchased Items");
         } else {
-            adapter.addFragment(pastFragment, "总销量");
-            adapter.addFragment(cancelledFragment, "最畅销产品");
+            adapter.addFragment(salesFragment, "总销量");
+            adapter.addFragment(topProductFragment, "最畅销产品");
         }
         viewPager.setAdapter(adapter);
     }

@@ -18,7 +18,11 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
@@ -201,10 +205,14 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
 
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
         PostData postData = new Retrofit.Builder()
                 .baseUrl(HttpConstant.BASE_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build().create(PostData.class);
 
@@ -217,7 +225,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
 
         System.out.println("Paper bag required is " + paperBagRequired);
 
-        compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode(), ETADeliveryDate, paperBagRequired)
+        compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode(), paperBagRequired)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderResponse, this::handleError));
@@ -226,15 +234,15 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     private void handleSalesOrderResponse(String orderNo) {
 
         if (orderNo != null) {
-            System.out.println("SALES ORDER CREATED " + orderNo);
             //create Sales Order Details
             newOrderID = orderNo;
             createSalesOrderDetails(newOrderID);
         }
-        System.out.println("SALES ORDER CREATED " + orderNo);
+        System.out.println("SALES ORDER CREATED " + newOrderID);
     }
 
     private void handleError(Throwable error) {
+        System.out.println("Error " + error.getMessage());
 
     }
 
@@ -249,11 +257,12 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build().create(PostData.class);
+
+        System.out.println("SALES ORDER detail id is " + orderNo);
         compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, tp*(100.0/107.0), orderNo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderDetailsResponse, this::handleError));
-
     }
 
     private void handleSalesOrderDetailsResponse(boolean added) {
@@ -282,7 +291,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             itemQuantity.add(p.getItemCode() + "&" + p.getDefaultQty());
         }
 
-        compositeDisposable.add(postData.addSalesOrderQuantity(itemQuantity, newOrderID, ETADeliveryDate)
+        compositeDisposable.add(postData.addSalesOrderQuantity(itemQuantity, newOrderID)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderQuantityResponse, this::handleError));
@@ -293,6 +302,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         System.out.println("SALES ORDER NUMBER OF PRODUCTS " + numProducts + " and order list size is " + orderList.size());
 
         if (numProducts == orderList.size()) {
+
             //concatenate zeros
             if (newOrderID.length() == 1){
                 newOrderID = "00000" + newOrderID;
@@ -312,27 +322,12 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 //remain as original orderNo
             }
 
-            //get the last 2 digit of the year
-            String deliverYear = ETADeliveryDate.substring(2,4);
-            //get the 2 digit of the month
-            String deliverMonth= ETADeliveryDate.substring(6,7);
-            //if delivery month contains "-", single digit month. add 0
-            //else double digit month
-            if (deliverMonth.equals("-")){
-                deliverMonth = "0" + ETADeliveryDate.substring(5,6);
-            } else {
-                deliverMonth = ETADeliveryDate.substring(5,7);
-            }
-            /*
             Date todayDate = new Date();
             SimpleDateFormat formatter = new SimpleDateFormat("yyMM");
             String todayYearMonth = formatter.format(todayDate);
 
             newOrderID = todayYearMonth + "-" + newOrderID;
-            */
-            newOrderID = deliverYear + deliverMonth + "-" + newOrderID;
             System.out.println("SALES ORDER IS " + newOrderID);
-            System.out.println("Langauge is " + isEnglish);
 
             //get the last 2 digit of the year
             String year = ETADeliveryDate.substring(0,4);
@@ -365,7 +360,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             activity.finish();
 
         } else {
-            System.out.println("Background payment failed in line 335");
+            System.out.println("Background payment failed in line 368");
         }
     }
 

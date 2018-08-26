@@ -8,19 +8,27 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.limkee.R;
+import com.limkee.constant.HttpConstant;
+import com.limkee.constant.PostData;
 import com.limkee.entity.Customer;
 import com.limkee.order.CancelledOrderFragment;
-
+import java.util.Iterator;
+import java.util.Map;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TopPurchasedFragment extends Fragment {
     private TopPurchasedFragment.OnFragmentInteractionListener mListener;
     private View view;
-    private Customer customer;
     public static Retrofit retrofit;
-    private  String isEnglish;
+    private String isEnglish;
+    private Customer customer;
+    private String month;
+    private String language;
 
     public TopPurchasedFragment(){}
 
@@ -37,11 +45,23 @@ public class TopPurchasedFragment extends Fragment {
 
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
+        customer = bundle.getParcelable("customer");
+
+        if(isEnglish.equals("Yes")){
+            language = "eng";
+        } else {
+            language = "chi";
+        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_top_purchased, container, false);
+
+        //get month from dropdown list value
+        month = "Aug";
+        doGetTopProducts(customer.getCompanyCode(), month, language);
         return view;
     }
 
@@ -51,6 +71,57 @@ public class TopPurchasedFragment extends Fragment {
         if (isEnglish.equals("Yes")) {
         } else {
         }
+    }
+
+    private void doGetTopProducts(String companyCode, String month, String language) {
+
+        if (retrofit == null) {
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(HttpConstant.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        PostData service = retrofit.create(PostData.class);
+        Call<Map<String,Integer>> call = service.getTopPurchasedProducts(companyCode, month, language);
+        call.enqueue(new Callback<Map<String,Integer>>() {
+
+            @Override
+            public void onResponse(Call<Map<String,Integer>> call, Response<Map<String,Integer>> response) {
+                Map<String,Integer> data = response.body();
+                System.out.println("There are " + data.size() + " products.");
+
+                if (data.size() == 0) {
+                    if (isEnglish.equals("Yes")) {
+                        /*
+                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
+                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
+                        lbl_noOrders.setText("No products");
+                        */
+                    } else {
+                        /*
+                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
+                        lbl_noOrders.setText("没有物品");
+                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
+                        */
+                    }
+                } else {
+                    Iterator entries = data.entrySet().iterator();
+                    while (entries.hasNext()) {
+                        Map.Entry entry = (Map.Entry) entries.next();
+                        String itemName = (String)entry.getKey();
+                        int qty = data.get(itemName);
+                        System.out.println("item name " + itemName + " has qty of " + qty);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String,Integer>> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
+
     }
 
     @Override
