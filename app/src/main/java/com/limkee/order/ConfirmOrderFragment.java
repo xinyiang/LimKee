@@ -118,7 +118,7 @@ public class ConfirmOrderFragment extends Fragment {
             lblTax.setText("7% 税");
             lblFinalTotal.setText("总额");
             lblPaperBagRequired.setText("纸袋");
-            paperBagRequired.setText("有");
+            paperBagRequired.setText("需要？");
         }
 
         recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);

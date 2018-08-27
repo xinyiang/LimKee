@@ -243,13 +243,13 @@ public class OrderHistoryDetailFragment extends Fragment {
                     if (isEnglish.equals("Yes")){
                         paperBagRequired.setText("Yes");
                     } else {
-                        paperBagRequired.setText("有");
+                        paperBagRequired.setText("需要");
                     }
                 } else {
                     if (isEnglish.equals("Yes")){
                         paperBagRequired.setText("No");
                     } else {
-                        paperBagRequired.setText("无");
+                        paperBagRequired.setText("不需要");
                     }
                 }
 

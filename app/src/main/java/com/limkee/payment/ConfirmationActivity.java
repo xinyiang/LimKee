@@ -47,10 +47,10 @@ public class ConfirmationActivity extends BaseActivity {
             description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_successful_description));
             if (language.equals("Yes")){
                 pmtResult.setText("Order ID: #" + orderId + "\n" + getResources().getString(R.string.payment_successful));
-                notifDescription.setText("A SMS will be sent to +65 " + customer.getDeliveryContact() + ". Please contact Lim Kee for hp updates.");
+                notifDescription.setText("A SMS will be sent to +65 " + customer.getDeliveryContact() + ". \n Please contact Lim Kee for mobile updates.");
             } else {
                 pmtResult.setText("订单号: #" + orderId + "\n" + getResources().getString(R.string.payment_successful));
-                notifDescription.setText("确认短信会发至+65 " + customer.getDeliveryContact() + "。 如果电话号码改变，请拨打电话至林记告知。");
+                notifDescription.setText("确认短信会发至 +65 " + customer.getDeliveryContact() + "。 \n 如果电话号码变更，请告知林记包点。");
             }
         }else{
             //pmtResult.setText(getResources().getString(R.string.payment_unsuccessful));
