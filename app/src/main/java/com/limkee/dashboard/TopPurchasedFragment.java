@@ -29,7 +29,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     private View view;
     public static Retrofit retrofit;
     private Customer customer;
-    private String month;
     private String language;
     private  String isEnglish;
     static TopPurchasedFragment fragment;
@@ -37,6 +36,8 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     private static final String[] paths1 = {"3 Items", "5 Items", "10 Items"};
     private Spinner spinner2;
     private static final String[] paths2 = {"Month", "Year"};
+    private String selectedYear; //get year from selected spinner value to pass into api call
+    private String selectedMonth; //get month from selected spinner value to pass into api call
 
     public TopPurchasedFragment(){}
 
@@ -68,8 +69,10 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         view = inflater.inflate(R.layout.fragment_top_purchased, container, false);
 
         //get month from dropdown list value
-        month = "Aug";
-        doGetTopProducts(customer.getCompanyCode(), month, language);
+        selectedMonth = "Aug";
+        selectedYear = "2018"; //remove this when done
+
+        doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
 
         spinner1 = (Spinner)view.findViewById(R.id.spinner1);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, paths1);
@@ -94,7 +97,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         }
     }
 
-    private void doGetTopProducts(String companyCode, String month, String language) {
+    private void doGetTopProducts(String companyCode, String selectedMonth, String selectedYear, String language) {
 
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
@@ -103,7 +106,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<Map<String,Integer>> call = service.getTopPurchasedProducts(companyCode, month, language);
+        Call<Map<String,Integer>> call = service.getTopPurchasedProducts(companyCode, selectedMonth, selectedYear, language);
         call.enqueue(new Callback<Map<String,Integer>>() {
 
             @Override
