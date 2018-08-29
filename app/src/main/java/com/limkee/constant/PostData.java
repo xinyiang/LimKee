@@ -62,7 +62,16 @@ public interface PostData {
         Observable<Integer> addSalesOrderQuantity(@Field("itemQuantity") ArrayList<String> itemQuantity, @Field("orderNo") String orderNo);
 
         @GET("dashboard/gettopproducts")
-        Call<Map<String,Integer>> getTopPurchasedProducts(@Query("companyCode") String companyCode, @Query("month") String month, @Query("language") String language);
+        Call<Map<String,Integer>> getTopPurchasedProducts(@Query("companyCode") String companyCode, @Query("selectedMonth") String selectedMonth, @Query("selectedYear") String selectedYear, @Query("language") String language);
+
+        @GET("dashboard/getcustomersales")
+        Call<Map<Integer,Double>> getFilteredCustomerSales(@Query("companyCode") String companyCode, @Query("selectedYear") String selectedYear);
+
+        @GET("dashboard/getallcustomersales")
+        Call<Map<Integer,Double>> getFilteredAllCustomerSales(@Query("selectedYear") String selectedYear);
+
+        @GET("dashboard/getaveragesales")
+        Call<Map<Integer,Double>> getAverageSales(@Query("selectedYear") String selectedYear);
 
 }
 
