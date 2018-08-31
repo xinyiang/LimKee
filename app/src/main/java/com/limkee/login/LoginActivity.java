@@ -48,6 +48,8 @@ public class LoginActivity extends BaseActivity implements
             //password.setText(loginPreferences.getString("password", ""));
             //saveLoginCheckBox.setChecked(true);
             Intent it = new Intent(this, NavigationActivity.class);
+            loginPrefsEditor.putBoolean("FirstTimeLogin", false);
+            loginPrefsEditor.apply();
             context.startActivity(it);
         }
 
@@ -77,17 +79,6 @@ public class LoginActivity extends BaseActivity implements
 
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(companycode.getWindowToken(), 0);
-
-        if (true) {
-            loginPrefsEditor.putBoolean("saveLogin", true);
-            System.out.println(loginPreferences.getBoolean("saveLogin", false)+"wow");
-            loginPrefsEditor.putString("username", code);
-            loginPrefsEditor.putString("password", pwd);
-            loginPrefsEditor.commit();
-        } else {
-            loginPrefsEditor.clear();
-            loginPrefsEditor.commit();
-        }
 
         //validate fields are not blank
         if (code.equals("") || pwd.equals("")){

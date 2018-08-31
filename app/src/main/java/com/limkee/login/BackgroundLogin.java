@@ -3,11 +3,9 @@ package com.limkee.login;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.CountDownTimer;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -102,7 +100,11 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
     @Override
     protected void onPostExecute(String result) {
         TextView pwdValidate = ((Activity)context).findViewById(R.id.pwdvalidation);
-        if (!result.equals("login unsuccess")){
+
+        loginPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+        loginPrefsEditor = loginPreferences.edit();
+
+        if (result != null && !result.equals("login unsuccess")){
             String[] array = result.split(",");
             final String cutoffTime = array[0];
             final String deliveryShift = array[1];
@@ -127,12 +129,13 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
 
             final Customer customer = new Customer(companyCode, password, debtorCode, companyName, debtorName, deliveryContact, deliveryContact2, invAddr1, invAddr2, invAddr3, invAddr4, deliverAddr1, deliverAddr2, deliverAddr3, deliverAddr4, displayTerm, status, routeNo);
 
-                    loginPreferences = context.getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
-                    loginPrefsEditor = loginPreferences.edit();
                     Intent it = new Intent(context, NavigationActivity.class);
-
                     Gson gson = new Gson();
                     String json = gson.toJson(customer);
+                    loginPrefsEditor.putBoolean("saveLogin", true);
+                    loginPrefsEditor.putString("username", companyCode);
+                    loginPrefsEditor.putString("password", password);
+
                     loginPrefsEditor.putString("cutofftime", cutoffTime);
                     loginPrefsEditor.putString("customer", json);
                     loginPrefsEditor.putString("deliveryShift", deliveryShift);
@@ -140,7 +143,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
                     loginPrefsEditor.putBoolean("isAlertDialogue", true);
                     loginPrefsEditor.putString("language", isEnglish);
                     loginPrefsEditor.apply();
-
+                    loginPrefsEditor.commit();
                     context.startActivity(it);
         } else{
             if(isEnglish.equals("Yes")) {
@@ -148,6 +151,8 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
             } else {
                 pwdValidate.setText("用户名和/或密码错误");
             }
+            loginPrefsEditor.clear();
+            loginPrefsEditor.commit();
 
         }
     }
