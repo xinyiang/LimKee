@@ -59,9 +59,9 @@
         <receiver
             android:name=".notification.AlarmReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true"/>
 
-        <activity android:name=".dashboard.DashboardActivity"></activity>
+        <activity android:name=".dashboard.DashboardActivity"/>
     </application>
 
 </manifest>

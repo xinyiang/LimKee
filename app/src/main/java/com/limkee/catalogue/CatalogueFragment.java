@@ -10,11 +10,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -34,6 +34,7 @@ import com.limkee.constant.PostData;
 import com.limkee.dao.CatalogueDAO;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
+import com.limkee.login.LoginActivity;
 import com.limkee.navigation.NavigationActivity;
 import com.limkee.notification.AlarmReceiver;
 import com.limkee.order.ConfirmOrderActivity;
@@ -48,6 +49,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.app.AlarmManager.INTERVAL_DAY;
+import static android.content.Context.MODE_PRIVATE;
 
 public class CatalogueFragment extends Fragment {
     private CatalogueFragment.OnFragmentInteractionListener mListener;
@@ -68,6 +70,8 @@ public class CatalogueFragment extends Fragment {
     private Customer customer;
     private String deliveryShift;
     private static CatalogueFragment fragment;
+    private AlarmManager alarmManager;
+    private Calendar calendar;
     String invalidDesc;
     String invalidDesc2;
     int qtyMultiples;
@@ -98,7 +102,7 @@ public class CatalogueFragment extends Fragment {
         }
 
         builder= new AlertDialog.Builder(getContext());
-        loginPreferences = getContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+        loginPreferences = getContext().getSharedPreferences("loginPrefs", MODE_PRIVATE);
         loginPrefsEditor = loginPreferences.edit();
         cutoffTime = loginPreferences.getString("cutofftime", "");
         loginPrefsEditor.commit();
@@ -150,46 +154,36 @@ public class CatalogueFragment extends Fragment {
             ad.show();
         }
 
-        scheduleNotification(getContext(), 1000*60*24, 0, notif);
+        scheduleNotification(getContext(), notif);
     }
 
-    public void scheduleNotification(Context context, long interval, int notificationId, String content) {
-        final String id = "my_channel_id_01";
-        CharSequence name = "channel_name";
-        String description = "channel_description";
-        int importance = NotificationManager.IMPORTANCE_LOW;
+    public void scheduleNotification(Context context, String content) {
         String time = cutoffTime.substring(0,cutoffTime.length()-3);
         String hour = time.substring(0,2);
         String mins = time.substring(3,5);
+        int notificationId = Integer.parseInt(new SimpleDateFormat("ddHHmmss").format(new Date()));
 
-        Calendar calendar = Calendar.getInstance();
+        calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour) - 1);
         calendar.set(Calendar.MINUTE, Integer.parseInt(mins));
 
-        NotificationChannel mChannel = new NotificationChannel(id, name,importance);
-        mChannel.setDescription(description);
-        NotificationManager mNotificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.createNotificationChannel(mChannel);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "my_channel_id_01")
-                .setContentTitle("Gentle reminder")
-                .setContentText(content)
-                .setSmallIcon(R.drawable.logo)
-                .setAutoCancel(true);
-        Intent intent = new Intent(context, CatalogueFragment.class);
-        PendingIntent activity = PendingIntent.getActivity(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        builder.setContentIntent(activity);
-        Notification notification = builder.build();
         Intent notificationIntent = new Intent(context, AlarmReceiver.class);
-        notificationIntent.putExtra(AlarmReceiver.NOTIFICATION_ID, notificationId);
-        notificationIntent.putExtra(AlarmReceiver.NOTIFICATION, notification);
+        notificationIntent.putExtra("notif_content", content);
+        notificationIntent.putExtra("notif_id", notificationId);
+        notificationIntent.putExtra("hour", hour);
+        notificationIntent.putExtra("mins", mins);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), INTERVAL_DAY , pendingIntent);
-        System.out.println(calendar.getTime()+" from 1970");
-    }
+        loginPreferences = getActivity().getSharedPreferences("loginPrefs", MODE_PRIVATE);
+        if (loginPreferences.getBoolean("FirstTimeLogin", true)) {
+            alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            loginPrefsEditor.putBoolean("FirstTimeLogin", false);
+            loginPrefsEditor.apply();
+        }
 
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
