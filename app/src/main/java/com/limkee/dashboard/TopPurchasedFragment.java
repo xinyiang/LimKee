@@ -1,6 +1,7 @@
 package com.limkee.dashboard;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,8 +13,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
-
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
@@ -23,13 +22,11 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
 import com.limkee.entity.Customer;
 import com.limkee.order.CancelledOrderFragment;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -56,6 +53,8 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     private String selectedYear = ""; //get year from selected spinner value to pass into api call
     private String selectedMonth = ""; //get month from selected spinner value to pass into api call
     private String selectedItem = "";
+    private ArrayList<String> itemNames = new ArrayList<>();
+    private ArrayList<Float> amounts = new ArrayList<>();
 
     public TopPurchasedFragment(){}
 
@@ -85,8 +84,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_top_purchased, container, false);
 
-        doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
-
         spinner1 = (Spinner)view.findViewById(R.id.spinner1);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, months);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -96,6 +93,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
           @Override
           public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
               selectedMonth = arg0.getItemAtPosition(position).toString();
+              doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
           }
            @Override
            public void onNothingSelected(AdapterView<?> adapterView) {
@@ -111,6 +109,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                 selectedYear = arg0.getItemAtPosition(position).toString();
+                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -126,47 +125,75 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                 selectedItem = arg0.getItemAtPosition(position).toString();
+                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
 
-        HorizontalBarChart chart = (HorizontalBarChart) view.findViewById(R.id.chart);
-        BarDataSet set1;
-        set1 = new BarDataSet(getDataSet(), "The year 2017");
-        set1.setColors(Color.parseColor("#F78B5D"), Color.parseColor("#FCB232"), Color.parseColor("#FDD930"), Color.parseColor("#ADD137"), Color.parseColor("#A0C25A"));
-
-        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-        dataSets.add(set1);
-
-        BarData data = new BarData(dataSets);
-        // hide Y-axis
-        YAxis left = chart.getAxisLeft();
-        left.setDrawLabels(false);
-
-        // custom X-axis labels
-        String[] values = new String[] { "1 star", "2 stars", "3 stars", "4 stars", "5 stars"};
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
-
-        chart.setData(data);
-
-        // custom description
-        Description description = new Description();
-        description.setText("Rating");
-        chart.setDescription(description);
-
-        // hide legend
-        chart.getLegend().setEnabled(false);
-        chart.animateY(1000);
-        chart.invalidate();
-
         return view;
     }
 
-    public class MyXAxisValueFormatter implements IAxisValueFormatter {
+    public void showChart(ArrayList<String> itemNames, ArrayList<Float> amounts){
+        HorizontalBarChart chart = view.findViewById(R.id.chart);
+        chart.setFitBars(true);
+        BarDataSet set1 = new BarDataSet(getDataSet(amounts), "Total amount of each item sold");
+        set1.setColors(Color.parseColor("#F78B5D"));
 
+        //set1.setValueFormatter(new ValueFormatter());
+
+        //ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+        //dataSets.add(set1);
+
+        BarData data = new BarData(set1);
+
+        data.setValueFormatter(new ValueFormatter());
+        IAxisValueFormatter axisFormatter = new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return "" + ((int) value);
+            }
+        };
+
+        YAxis left = chart.getAxisLeft();
+        left.setValueFormatter(axisFormatter);
+        left.setGranularity(1f);
+        //left.setSpaceBottom(0f);
+        left.setTextSize(15f);
+        left.setAxisMinimum(0f);
+
+        YAxis right = chart.getAxisRight();
+        right.setDrawLabels(false);
+        right.setDrawGridLines(false);
+
+        // X-axis labels
+        String[] values = itemNames.toArray(new String[itemNames.size()]);
+        System.out.println("Items are " + values[0]);
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
+        xAxis.setGranularity(1f);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setTextSize(15f);
+
+        chart.setData(data);
+
+        Description description = new Description();
+        description.setText("");
+        description.setTextSize(15);
+        chart.setDescription(description);
+
+        chart.getLegend().setEnabled(true);
+        chart.getLegend().setTextSize(15f);
+        chart.animateY(1000);
+        chart.invalidate();
+
+        chart.setVisibleYRangeMaximum(100,YAxis.AxisDependency.LEFT);
+        chart.setVisibleXRangeMaximum(5);
+    }
+
+    public class MyXAxisValueFormatter implements IAxisValueFormatter {
         private String[] mValues;
 
         public MyXAxisValueFormatter(String[] values) {
@@ -175,23 +202,28 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return mValues[(int) value];
+            if (mValues.length == 0){
+                return "";
+            }else{
+                System.out.println((int)value + "checking");
+                return mValues[(int)value];
+            }
         }
 
     }
 
-    private ArrayList<BarEntry> getDataSet() {
+    private ArrayList<BarEntry> getDataSet(ArrayList<Float> floats) {
         ArrayList<BarEntry> valueSet1 = new ArrayList<>();
-        BarEntry v1e2 = new BarEntry(1, 4341f);
+        BarEntry v1e1 = new BarEntry(0f, 10f);
+        valueSet1.add(v1e1);
+        BarEntry v1e2 = new BarEntry(1f, 20f);
         valueSet1.add(v1e2);
-        BarEntry v1e3 = new BarEntry(2, 3121f);
+        BarEntry v1e3 = new BarEntry(2f, 30f);
         valueSet1.add(v1e3);
-        BarEntry v1e4 = new BarEntry(3, 5521f);
+        BarEntry v1e4 = new BarEntry(3f, 40f);
         valueSet1.add(v1e4);
-        BarEntry v1e5 = new BarEntry(4, 10421f);
+        BarEntry v1e5 = new BarEntry(4f, 50f);
         valueSet1.add(v1e5);
-        BarEntry v1e6 = new BarEntry(5, 27934f);
-        valueSet1.add(v1e6);
 
         return valueSet1;
     }
@@ -201,7 +233,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         super.onActivityCreated(savedInstanceState);
     }
 
-    private void doGetTopProducts(String companyCode, String selectedMonth, String selectedYear, String language) {
+    private void doGetTopProducts(String companyCode, String selectedMonth, String selectedYear, String language, String selectedItem) {
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(HttpConstant.BASE_URL)
@@ -211,35 +243,21 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         PostData service = retrofit.create(PostData.class);
         Call<Map<String,Integer>> call = service.getTopPurchasedProducts(companyCode, selectedMonth, selectedYear, language);
         call.enqueue(new Callback<Map<String,Integer>>() {
-
             @Override
             public void onResponse(Call<Map<String,Integer>> call, Response<Map<String,Integer>> response) {
                 Map<String,Integer> data = response.body();
                 System.out.println("There are " + data.size() + " products.");
 
-                if (data.size() == 0) {
-                    if (isEnglish.equals("Yes")) {
-                        /*
-                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
-                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
-                        lbl_noOrders.setText("No products");
-                        */
-                    } else {
-                        /*
-                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
-                        lbl_noOrders.setText("没有物品");
-                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
-                        */
-                    }
-                } else {
-                    Iterator entries = data.entrySet().iterator();
-                    while (entries.hasNext()) {
-                        Map.Entry entry = (Map.Entry) entries.next();
-                        String itemName = (String)entry.getKey();
-                        int qty = data.get(itemName);
-                        System.out.println("item name " + itemName + " has qty of " + qty);
-                    }
+                Iterator entries = data.entrySet().iterator();
+                while (entries.hasNext()) {
+                    Map.Entry entry = (Map.Entry) entries.next();
+                    String itemName = (String)entry.getKey();
+                    itemNames.add(itemName);
+                    int qty = data.get(itemName);
+                    amounts.add((float) qty);
+                    System.out.println("item name " + itemName + " has qty of " + qty);
 
+                    showChart(itemNames,amounts);
                 }
             }
 
@@ -248,7 +266,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 System.out.println(t.getMessage());
             }
         });
-
     }
 
     @Override
