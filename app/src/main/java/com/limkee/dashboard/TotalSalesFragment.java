@@ -1,6 +1,7 @@
 package com.limkee.dashboard;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +19,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.HorizontalBarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
@@ -46,7 +57,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
     private  String isEnglish;
     private Spinner spinner;
     static TotalSalesFragment fragment;
-    private static final String[] paths = {"3 months", "6 months", "12 months"};
+    private static final String[] years = {"Year","2016","2017","2018"};
     private String selectedYear;
 
     public TotalSalesFragment(){}
@@ -71,14 +82,20 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_total_sales, container, false);
         spinner = (Spinner)view.findViewById(R.id.spinner1);
-        ArrayAdapter<String>adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, paths );
+        ArrayAdapter<String>adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years );
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(fragment);
-
-        //get month from dropdown list value
-        selectedYear = "2018"; //remove this when done
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
+                selectedYear = arg0.getItemAtPosition(position).toString();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
 
         doGetCustomerSales(customer.getCompanyCode(), selectedYear);
 
@@ -86,7 +103,67 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
 
         //doGetAverageSales(selectedYear);
 
+        HorizontalBarChart chart = (HorizontalBarChart) view.findViewById(R.id.chart);
+        BarDataSet set1;
+        set1 = new BarDataSet(getDataSet(), "The year 2017");
+        set1.setColors(Color.parseColor("#F78B5D"), Color.parseColor("#FCB232"), Color.parseColor("#FDD930"), Color.parseColor("#ADD137"), Color.parseColor("#A0C25A"));
+
+        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+        dataSets.add(set1);
+
+        BarData data = new BarData(dataSets);
+        // hide Y-axis
+        YAxis left = chart.getAxisLeft();
+        left.setDrawLabels(false);
+
+        // custom X-axis labels
+        String[] values = new String[] { "1 star", "2 stars", "3 stars", "4 stars", "5 stars"};
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
+
+        chart.setData(data);
+
+        // custom description
+        Description description = new Description();
+        description.setText("Rating");
+        chart.setDescription(description);
+
+        // hide legend
+        chart.getLegend().setEnabled(false);
+        chart.animateY(1000);
+        chart.invalidate();
         return view;
+    }
+
+    public class MyXAxisValueFormatter implements IAxisValueFormatter {
+
+        private String[] mValues;
+
+        public MyXAxisValueFormatter(String[] values) {
+            this.mValues = values;
+        }
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            return mValues[(int) value];
+        }
+
+    }
+
+    private ArrayList<BarEntry> getDataSet() {
+        ArrayList<BarEntry> valueSet1 = new ArrayList<>();
+        BarEntry v1e2 = new BarEntry(1, 4341f);
+        valueSet1.add(v1e2);
+        BarEntry v1e3 = new BarEntry(2, 3121f);
+        valueSet1.add(v1e3);
+        BarEntry v1e4 = new BarEntry(3, 5521f);
+        valueSet1.add(v1e4);
+        BarEntry v1e5 = new BarEntry(4, 10421f);
+        valueSet1.add(v1e5);
+        BarEntry v1e6 = new BarEntry(5, 27934f);
+        valueSet1.add(v1e6);
+
+        return valueSet1;
     }
 
     @Override
