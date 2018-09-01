@@ -1,7 +1,6 @@
 package com.limkee.dashboard;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,7 +27,11 @@ import com.limkee.constant.PostData;
 import com.limkee.entity.Customer;
 import com.limkee.order.CancelledOrderFragment;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,21 +45,22 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     public static Retrofit retrofit;
     private Customer customer;
     private String language;
-    private  String isEnglish;
+    private String isEnglish;
     static TopPurchasedFragment fragment;
     private Spinner spinner1;
-    private static final String[] months = {"Month","Jan", "Feb", "Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+    private static final String[] months = {"Month", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     private Spinner spinner2;
-    private static final String[] years = {"Year","2016","2017","2018"};
+    private static final String[] years = {"Year", "2016", "2017", "2018"};
     private Spinner spinner3;
-    private static final String[] items = {"Item","5 items", "All"};
+    private static final String[] items = {"Item", "5 items", "All"};
     private String selectedYear = ""; //get year from selected spinner value to pass into api call
     private String selectedMonth = ""; //get month from selected spinner value to pass into api call
     private String selectedItem = "";
     private ArrayList<String> itemNames = new ArrayList<>();
     private ArrayList<Float> amounts = new ArrayList<>();
 
-    public TopPurchasedFragment(){}
+    public TopPurchasedFragment() {
+    }
 
     public static TopPurchasedFragment newInstance() {
         fragment = new TopPurchasedFragment();
@@ -73,7 +77,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
 
-        if(isEnglish.equals("Yes")){
+        if (isEnglish.equals("Yes")) {
             language = "eng";
         } else {
             language = "chi";
@@ -84,23 +88,24 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_top_purchased, container, false);
 
-        spinner1 = (Spinner)view.findViewById(R.id.spinner1);
+        spinner1 = (Spinner) view.findViewById(R.id.spinner1);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, months);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner1.setAdapter(adapter);
         spinner1.setOnItemSelectedListener(fragment);
         spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-          @Override
-          public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
-              selectedMonth = arg0.getItemAtPosition(position).toString();
-              doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
-          }
-           @Override
-           public void onNothingSelected(AdapterView<?> adapterView) {
-           }
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
+                selectedMonth = arg0.getItemAtPosition(position).toString();
+                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
-        spinner2 = (Spinner)view.findViewById(R.id.spinner2);
+        spinner2 = (Spinner) view.findViewById(R.id.spinner2);
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner2.setAdapter(adapter2);
@@ -111,12 +116,13 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 selectedYear = arg0.getItemAtPosition(position).toString();
                 doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
 
-        spinner3 = (Spinner)view.findViewById(R.id.spinner3);
+        spinner3 = (Spinner) view.findViewById(R.id.spinner3);
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, items);
         adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner3.setAdapter(adapter3);
@@ -127,6 +133,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 selectedItem = arg0.getItemAtPosition(position).toString();
                 doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
@@ -135,19 +142,18 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         return view;
     }
 
-    public void showChart(ArrayList<String> itemNames, ArrayList<Float> amounts){
+    public void showChart(ArrayList<String> itemNames, ArrayList<Float> amounts) {
         HorizontalBarChart chart = view.findViewById(R.id.chart);
         chart.setFitBars(true);
         BarDataSet set1 = new BarDataSet(getDataSet(amounts), "Total amount of each item sold");
         set1.setColors(Color.parseColor("#F78B5D"));
+        set1.setValueTextSize(12f);
 
         //set1.setValueFormatter(new ValueFormatter());
-
         //ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
         //dataSets.add(set1);
 
         BarData data = new BarData(set1);
-
         data.setValueFormatter(new ValueFormatter());
         IAxisValueFormatter axisFormatter = new IAxisValueFormatter() {
             @Override
@@ -176,6 +182,8 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setTextSize(15f);
+        xAxis.setAxisMaximum(amounts.size() - 0.5f);
+        xAxis.setAxisMinimum(0.5f);
 
         chart.setData(data);
 
@@ -189,8 +197,9 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         chart.animateY(1000);
         chart.invalidate();
 
-        chart.setVisibleYRangeMaximum(100,YAxis.AxisDependency.LEFT);
+        chart.setVisibleYRangeMaximum(300, YAxis.AxisDependency.LEFT);
         chart.setVisibleXRangeMaximum(5);
+        chart.moveViewTo(amounts.size() - 1,0, YAxis.AxisDependency.LEFT);
     }
 
     public class MyXAxisValueFormatter implements IAxisValueFormatter {
@@ -202,11 +211,14 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            if (mValues.length == 0){
+            if (mValues.length == 0) {
                 return "";
-            }else{
-                System.out.println((int)value + "checking");
-                return mValues[(int)value];
+            } else {
+                System.out.println((int) value + "checking");
+                if ((int) value < mValues.length) {
+                    return mValues[(int) value];
+                }
+                return "";
             }
         }
 
@@ -214,16 +226,10 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
 
     private ArrayList<BarEntry> getDataSet(ArrayList<Float> floats) {
         ArrayList<BarEntry> valueSet1 = new ArrayList<>();
-        BarEntry v1e1 = new BarEntry(0f, 10f);
-        valueSet1.add(v1e1);
-        BarEntry v1e2 = new BarEntry(1f, 20f);
-        valueSet1.add(v1e2);
-        BarEntry v1e3 = new BarEntry(2f, 30f);
-        valueSet1.add(v1e3);
-        BarEntry v1e4 = new BarEntry(3f, 40f);
-        valueSet1.add(v1e4);
-        BarEntry v1e5 = new BarEntry(4f, 50f);
-        valueSet1.add(v1e5);
+        for (int i = 0; i < floats.size(); i++) {
+            BarEntry v1e1 = new BarEntry(i, floats.get(i));
+            valueSet1.add(v1e1);
+        }
 
         return valueSet1;
     }
