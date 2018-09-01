@@ -28,6 +28,7 @@ import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
+import com.limkee.notification.SMSNotification;
 import com.stripe.android.model.Card;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -346,7 +347,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             }
             String deliveryDate = day + "/" + month + "/" + year;
 
-          //  SMSNotification notif = new SMSNotification(context, activity);
+           // SMSNotification notif = new SMSNotification(context, activity);
           //  notif.execute(customer.getDeliveryContact(), deliveryDate, newOrderID, isEnglish);
 
             Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);

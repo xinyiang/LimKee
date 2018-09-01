@@ -1,4 +1,4 @@
-package com.limkee.payment;
+package com.limkee.notification;
 
 
 import android.app.Activity;
@@ -16,7 +16,7 @@ public class SMSNotification  extends AsyncTask<String,Void,String> {
     private Context context;
     private Activity activity;
 
-    SMSNotification(Context ctx, Activity act) {
+    public SMSNotification(Context ctx, Activity act) {
         context = ctx;
         activity = act;
     }
@@ -42,14 +42,9 @@ public class SMSNotification  extends AsyncTask<String,Void,String> {
             if (isEnglish.equals("Yes")){
                 smsMsg = "{to: \"" + toNumber + "\", encoding: \"UNICODE\", body: \"[Lim Kee] Order #" + orderNo
                         + "\n" + "Your order for delivery on " + deliveryDate + " has been placed! If you did not authorize this order, please call +65 6758 5858." +  "\"}";
-
-                // myData = "{to: \"" + "+6597597790\", encoding: \"UNICODE\", body: \"Your Lim Kee order #" + orderNo
-                //       + " for delivery on " + deliveryDate + " has been placed!" +  "\"}";
             } else {
-
                 smsMsg = "{to: \"" + toNumber + "\", encoding: \"UNICODE\", body: \"[林记] 订単号 #" + orderNo
-                        + "\n" + "您为 " + deliveryDate + " 下的订单已成! 若非您授权的，请拨打+65 6758 5858。" + "\"}";
-
+                        + "\n" + "您于 " + deliveryDate + " 下的订单已完成！若非本人亲自操作，请拨打 +65 6758 5858。" + "\"}";
             }
             // build the request based on the supplied settings
             URL url = new URL(myURI);
