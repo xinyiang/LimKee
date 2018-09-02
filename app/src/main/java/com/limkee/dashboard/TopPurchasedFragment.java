@@ -27,6 +27,7 @@ import com.limkee.constant.PostData;
 import com.limkee.entity.Customer;
 import com.limkee.order.CancelledOrderFragment;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,9 +53,9 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     private Spinner spinner2;
     private static final String[] years = {"Year", "2016", "2017", "2018"};
     private Spinner spinner3;
-    private static final String[] items = {"Item", "5 items", "All"};
-    private String selectedYear = ""; //get year from selected spinner value to pass into api call
-    private String selectedMonth = ""; //get month from selected spinner value to pass into api call
+    private static final String[] items = {"Item","5 items", "All"};
+    private String selectedYear = "2018"; //get year from selected spinner value to pass into api call
+    private String selectedMonth = "Aug"; //get month from selected spinner value to pass into api call
     private String selectedItem = "";
     private ArrayList<String> itemNames = new ArrayList<>();
     private ArrayList<Float> amounts = new ArrayList<>();
@@ -88,7 +89,10 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_top_purchased, container, false);
 
-        spinner1 = (Spinner) view.findViewById(R.id.spinner1);
+        doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
+        
+        spinner1 = (Spinner)view.findViewById(R.id.spinner1);
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, months);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner1.setAdapter(adapter);
@@ -123,6 +127,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         });
 
         spinner3 = (Spinner) view.findViewById(R.id.spinner3);
+
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, items);
         adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner3.setAdapter(adapter3);
@@ -254,17 +259,41 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 Map<String,Integer> data = response.body();
                 System.out.println("There are " + data.size() + " products.");
 
-                Iterator entries = data.entrySet().iterator();
-                while (entries.hasNext()) {
-                    Map.Entry entry = (Map.Entry) entries.next();
-                    String itemName = (String)entry.getKey();
-                    itemNames.add(itemName);
-                    int qty = data.get(itemName);
-                    amounts.add((float) qty);
-                    System.out.println("item name " + itemName + " has qty of " + qty);
+                if (data.size() == 0) {
+                    if (isEnglish.equals("Yes")) {
+                        /*
+                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
+                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
+                        lbl_noOrders.setText("No products");
+                        */
+                    } else {
+                        /*
+                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
+                        lbl_noOrders.setText("没有物品");
+                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
+                        */
+                    }
+                } else {
+                    int i = 0;
+                    String[][] results = new String[data.size()][2];
+                    Iterator entries = data.entrySet().iterator();
+                    while (entries.hasNext()) {
+                      Map.Entry entry = (Map.Entry) entries.next();
+                      String itemName = (String)entry.getKey();
+                      itemNames.add(itemName);
+                      int qty = data.get(itemName);
+                      amounts.add((float) qty);
+                      System.out.println("item name " + itemName + " has qty of " + qty);
 
-                    showChart(itemNames,amounts);
-                }
+                     //need to sort 2D array before inserting
+                     results[i][0] = Integer.toString(qty);
+                     results[i][1] = itemName;
+                     i++;
+
+                     showChart(itemNames,amounts);
+
+                    }
+                System.out.println("DATA PRINTED IS " + Arrays.deepToString(results));
             }
 
             @Override
