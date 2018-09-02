@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
-
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
@@ -23,16 +21,18 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
 import com.limkee.entity.Customer;
 import com.limkee.order.CancelledOrderFragment;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,19 +46,22 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     public static Retrofit retrofit;
     private Customer customer;
     private String language;
-    private  String isEnglish;
+    private String isEnglish;
     static TopPurchasedFragment fragment;
     private Spinner spinner1;
-    private static final String[] months = {"Month","Jan", "Feb", "Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+    private static final String[] months = {"Month", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     private Spinner spinner2;
-    private static final String[] years = {"Year","2016","2017","2018"};
+    private static final String[] years = {"Year", "2016", "2017", "2018"};
     private Spinner spinner3;
     private static final String[] items = {"Item","5 items", "All"};
     private String selectedYear = "2018"; //get year from selected spinner value to pass into api call
     private String selectedMonth = "Aug"; //get month from selected spinner value to pass into api call
     private String selectedItem = "";
+    private ArrayList<String> itemNames = new ArrayList<>();
+    private ArrayList<Float> amounts = new ArrayList<>();
 
-    public TopPurchasedFragment(){}
+    public TopPurchasedFragment() {
+    }
 
     public static TopPurchasedFragment newInstance() {
         fragment = new TopPurchasedFragment();
@@ -75,7 +78,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
 
-        if(isEnglish.equals("Yes")){
+        if (isEnglish.equals("Yes")) {
             language = "eng";
         } else {
             language = "chi";
@@ -89,21 +92,24 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
         
         spinner1 = (Spinner)view.findViewById(R.id.spinner1);
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, months);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner1.setAdapter(adapter);
         spinner1.setOnItemSelectedListener(fragment);
         spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-          @Override
-          public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
-              selectedMonth = arg0.getItemAtPosition(position).toString();
-          }
-           @Override
-           public void onNothingSelected(AdapterView<?> adapterView) {
-           }
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
+                selectedMonth = arg0.getItemAtPosition(position).toString();
+                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
-        spinner2 = (Spinner)view.findViewById(R.id.spinner2);
+        spinner2 = (Spinner) view.findViewById(R.id.spinner2);
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner2.setAdapter(adapter2);
@@ -112,14 +118,16 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                 selectedYear = arg0.getItemAtPosition(position).toString();
+                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
 
+        spinner3 = (Spinner) view.findViewById(R.id.spinner3);
 
-        spinner3 = (Spinner)view.findViewById(R.id.spinner3);
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, items);
         adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner3.setAdapter(adapter3);
@@ -128,47 +136,78 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                 selectedItem = arg0.getItemAtPosition(position).toString();
+                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
 
-        HorizontalBarChart chart = (HorizontalBarChart) view.findViewById(R.id.chart);
-        BarDataSet set1;
-        set1 = new BarDataSet(getDataSet(), "The year 2017");
-        set1.setColors(Color.parseColor("#F78B5D"), Color.parseColor("#FCB232"), Color.parseColor("#FDD930"), Color.parseColor("#ADD137"), Color.parseColor("#A0C25A"));
-
-        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-        dataSets.add(set1);
-
-        BarData data = new BarData(dataSets);
-        // hide Y-axis
-        YAxis left = chart.getAxisLeft();
-        left.setDrawLabels(false);
-
-        // custom X-axis labels
-        String[] values = new String[] { "1 star", "2 stars", "3 stars", "4 stars", "5 stars"};
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
-
-        chart.setData(data);
-
-        // custom description
-        Description description = new Description();
-        description.setText("Rating");
-        chart.setDescription(description);
-
-        // hide legend
-        chart.getLegend().setEnabled(false);
-        chart.animateY(1000);
-        chart.invalidate();
-
         return view;
     }
 
-    public class MyXAxisValueFormatter implements IAxisValueFormatter {
+    public void showChart(ArrayList<String> itemNames, ArrayList<Float> amounts) {
+        HorizontalBarChart chart = view.findViewById(R.id.chart);
+        chart.setFitBars(true);
+        BarDataSet set1 = new BarDataSet(getDataSet(amounts), "Total amount of each item sold");
+        set1.setColors(Color.parseColor("#F78B5D"));
+        set1.setValueTextSize(12f);
 
+        //set1.setValueFormatter(new ValueFormatter());
+        //ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+        //dataSets.add(set1);
+
+        BarData data = new BarData(set1);
+        data.setValueFormatter(new ValueFormatter());
+        IAxisValueFormatter axisFormatter = new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return "" + ((int) value);
+            }
+        };
+
+        YAxis left = chart.getAxisLeft();
+        left.setValueFormatter(axisFormatter);
+        left.setGranularity(1f);
+        //left.setSpaceBottom(0f);
+        left.setTextSize(15f);
+        left.setAxisMinimum(0f);
+
+        YAxis right = chart.getAxisRight();
+        right.setDrawLabels(false);
+        right.setDrawGridLines(false);
+
+        // X-axis labels
+        String[] values = itemNames.toArray(new String[itemNames.size()]);
+        System.out.println("Items are " + values[0]);
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
+        xAxis.setGranularity(1f);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setTextSize(15f);
+        xAxis.setAxisMaximum(amounts.size() - 0.5f);
+        xAxis.setAxisMinimum(0.5f);
+
+        chart.setData(data);
+
+        Description description = new Description();
+        description.setText("");
+        description.setTextSize(15);
+        chart.setDescription(description);
+
+        chart.getLegend().setEnabled(true);
+        chart.getLegend().setTextSize(15f);
+        chart.animateY(1000);
+        chart.invalidate();
+
+        chart.setVisibleYRangeMaximum(300, YAxis.AxisDependency.LEFT);
+        chart.setVisibleXRangeMaximum(5);
+        chart.moveViewTo(amounts.size() - 1,0, YAxis.AxisDependency.LEFT);
+    }
+
+    public class MyXAxisValueFormatter implements IAxisValueFormatter {
         private String[] mValues;
 
         public MyXAxisValueFormatter(String[] values) {
@@ -177,23 +216,25 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return mValues[(int) value];
+            if (mValues.length == 0) {
+                return "";
+            } else {
+                System.out.println((int) value + "checking");
+                if ((int) value < mValues.length) {
+                    return mValues[(int) value];
+                }
+                return "";
+            }
         }
 
     }
 
-    private ArrayList<BarEntry> getDataSet() {
+    private ArrayList<BarEntry> getDataSet(ArrayList<Float> floats) {
         ArrayList<BarEntry> valueSet1 = new ArrayList<>();
-        BarEntry v1e2 = new BarEntry(1, 4341f);
-        valueSet1.add(v1e2);
-        BarEntry v1e3 = new BarEntry(2, 3121f);
-        valueSet1.add(v1e3);
-        BarEntry v1e4 = new BarEntry(3, 5521f);
-        valueSet1.add(v1e4);
-        BarEntry v1e5 = new BarEntry(4, 10421f);
-        valueSet1.add(v1e5);
-        BarEntry v1e6 = new BarEntry(5, 27934f);
-        valueSet1.add(v1e6);
+        for (int i = 0; i < floats.size(); i++) {
+            BarEntry v1e1 = new BarEntry(i, floats.get(i));
+            valueSet1.add(v1e1);
+        }
 
         return valueSet1;
     }
@@ -203,7 +244,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         super.onActivityCreated(savedInstanceState);
     }
 
-    private void doGetTopProducts(String companyCode, String selectedMonth, String selectedYear, String language) {
+    private void doGetTopProducts(String companyCode, String selectedMonth, String selectedYear, String language, String selectedItem) {
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(HttpConstant.BASE_URL)
@@ -213,7 +254,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         PostData service = retrofit.create(PostData.class);
         Call<Map<String,Integer>> call = service.getTopPurchasedProducts(companyCode, selectedMonth, selectedYear, language);
         call.enqueue(new Callback<Map<String,Integer>>() {
-
             @Override
             public void onResponse(Call<Map<String,Integer>> call, Response<Map<String,Integer>> response) {
                 Map<String,Integer> data = response.body();
@@ -238,19 +278,22 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                     String[][] results = new String[data.size()][2];
                     Iterator entries = data.entrySet().iterator();
                     while (entries.hasNext()) {
-                        Map.Entry entry = (Map.Entry) entries.next();
-                        String itemName = (String)entry.getKey();
-                        int qty = data.get(itemName);
-                       // System.out.println("item name " + itemName + " has qty of " + qty);
+                      Map.Entry entry = (Map.Entry) entries.next();
+                      String itemName = (String)entry.getKey();
+                      itemNames.add(itemName);
+                      int qty = data.get(itemName);
+                      amounts.add((float) qty);
+                      System.out.println("item name " + itemName + " has qty of " + qty);
 
-                        //need to sort 2D array
-                        results[i][0] = Integer.toString(qty);
-                        results[i][1] = itemName;
-                        i++;
+                     //need to sort 2D array before inserting
+                     results[i][0] = Integer.toString(qty);
+                     results[i][1] = itemName;
+                     i++;
+
+                     showChart(itemNames,amounts);
+
                     }
-
-                    System.out.println("DATA PRINTED IS " + Arrays.deepToString(results));
-                }
+                System.out.println("DATA PRINTED IS " + Arrays.deepToString(results));
             }
 
             @Override
