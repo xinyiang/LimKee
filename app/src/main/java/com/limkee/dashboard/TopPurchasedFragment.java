@@ -31,6 +31,7 @@ import com.limkee.entity.Customer;
 import com.limkee.order.CancelledOrderFragment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import retrofit2.Call;
@@ -53,8 +54,8 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     private static final String[] years = {"Year","2016","2017","2018"};
     private Spinner spinner3;
     private static final String[] items = {"Item","5 items", "All"};
-    private String selectedYear = ""; //get year from selected spinner value to pass into api call
-    private String selectedMonth = ""; //get month from selected spinner value to pass into api call
+    private String selectedYear = "2018"; //get year from selected spinner value to pass into api call
+    private String selectedMonth = "Aug"; //get month from selected spinner value to pass into api call
     private String selectedItem = "";
 
     public TopPurchasedFragment(){}
@@ -86,7 +87,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         view = inflater.inflate(R.layout.fragment_top_purchased, container, false);
 
         doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
-
+        
         spinner1 = (Spinner)view.findViewById(R.id.spinner1);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, months);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -116,6 +117,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+
 
         spinner3 = (Spinner)view.findViewById(R.id.spinner3);
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, items);
@@ -232,14 +234,22 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                         */
                     }
                 } else {
+                    int i = 0;
+                    String[][] results = new String[data.size()][2];
                     Iterator entries = data.entrySet().iterator();
                     while (entries.hasNext()) {
                         Map.Entry entry = (Map.Entry) entries.next();
                         String itemName = (String)entry.getKey();
                         int qty = data.get(itemName);
-                        System.out.println("item name " + itemName + " has qty of " + qty);
+                       // System.out.println("item name " + itemName + " has qty of " + qty);
+
+                        //need to sort 2D array
+                        results[i][0] = Integer.toString(qty);
+                        results[i][1] = itemName;
+                        i++;
                     }
 
+                    System.out.println("DATA PRINTED IS " + Arrays.deepToString(results));
                 }
             }
 
@@ -248,7 +258,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 System.out.println(t.getMessage());
             }
         });
-
     }
 
     @Override
