@@ -67,9 +67,6 @@ public interface PostData {
         @GET("dashboard/getcustomersales")
         Call<Map<Integer,Double>> getFilteredCustomerSales(@Query("companyCode") String companyCode, @Query("selectedYear") String selectedYear);
 
-        @GET("dashboard/getallcustomersales")
-        Call<Map<Integer,Double>> getFilteredAllCustomerSales(@Query("selectedYear") String selectedYear);
-
         @GET("dashboard/getaveragesales")
         Call<Map<Integer,Double>> getAverageSales(@Query("selectedYear") String selectedYear);
 
