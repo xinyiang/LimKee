@@ -89,7 +89,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_top_purchased, container, false);
 
-        doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
+        doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
         
         spinner1 = (Spinner)view.findViewById(R.id.spinner1);
 
@@ -256,7 +256,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         call.enqueue(new Callback<Map<String,Integer>>() {
             @Override
             public void onResponse(Call<Map<String,Integer>> call, Response<Map<String,Integer>> response) {
-                Map<String,Integer> data = response.body();
+                Map<String, Integer> data = response.body();
                 System.out.println("There are " + data.size() + " products.");
 
                 if (data.size() == 0) {
@@ -278,22 +278,24 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                     String[][] results = new String[data.size()][2];
                     Iterator entries = data.entrySet().iterator();
                     while (entries.hasNext()) {
-                      Map.Entry entry = (Map.Entry) entries.next();
-                      String itemName = (String)entry.getKey();
-                      itemNames.add(itemName);
-                      int qty = data.get(itemName);
-                      amounts.add((float) qty);
-                      System.out.println("item name " + itemName + " has qty of " + qty);
+                        Map.Entry entry = (Map.Entry) entries.next();
+                        String itemName = (String) entry.getKey();
+                        itemNames.add(itemName);
+                        int qty = data.get(itemName);
+                        amounts.add((float) qty);
+                        System.out.println("item name " + itemName + " has qty of " + qty);
 
-                     //need to sort 2D array before inserting
-                     results[i][0] = Integer.toString(qty);
-                     results[i][1] = itemName;
-                     i++;
+                        //need to sort 2D array before inserting
+                        results[i][0] = Integer.toString(qty);
+                        results[i][1] = itemName;
+                        i++;
 
-                     showChart(itemNames,amounts);
+                        showChart(itemNames, amounts);
 
                     }
-                System.out.println("DATA PRINTED IS " + Arrays.deepToString(results));
+
+                    System.out.println("DATA PRINTED IS " + Arrays.deepToString(results));
+                }
             }
 
             @Override
