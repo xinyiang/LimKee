@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
@@ -58,7 +59,12 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
     private Spinner spinner;
     static TotalSalesFragment fragment;
     private static final String[] years = {"Year","2016","2017","2018"};
-    private String selectedYear;
+    private String selectedYear = "2018";
+    private ArrayList<String> custmonth = new ArrayList<>();
+    private ArrayList<String> othermonth = new ArrayList<>();
+    private ArrayList<Float> amounts = new ArrayList<>();
+    private ArrayList<Float> avgSales = new ArrayList<>();
+
 
     public TotalSalesFragment(){}
 
@@ -99,13 +105,12 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
 
         doGetCustomerSales(customer.getCompanyCode(), selectedYear);
 
-        doGetAllSales(selectedYear);
+        doGetAverageSales(selectedYear);
 
-        //doGetAverageSales(selectedYear);
-
+        /*
         HorizontalBarChart chart = (HorizontalBarChart) view.findViewById(R.id.chart);
         BarDataSet set1;
-        set1 = new BarDataSet(getDataSet(), "The year 2017");
+        set1 = new BarDataSet(getDataSets(), "The year 2017");
         set1.setColors(Color.parseColor("#F78B5D"), Color.parseColor("#FCB232"), Color.parseColor("#FDD930"), Color.parseColor("#ADD137"), Color.parseColor("#A0C25A"));
 
         ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
@@ -132,11 +137,73 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         chart.getLegend().setEnabled(false);
         chart.animateY(1000);
         chart.invalidate();
+*/
         return view;
+    }
+    public void showChart(ArrayList<String> month, ArrayList<Float> amounts) {
+        HorizontalBarChart chart = view.findViewById(R.id.chart);
+        chart.setFitBars(true);
+
+        ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
+        for (int i = 0; i< amounts.size () ; i++){
+            float amt = amounts.get(i);
+            entries.add(new BarEntry(amt,i));
+        }
+
+        BarDataSet set1 = new BarDataSet(getDataSet(amounts), "Average sales");
+        set1.setColors(Color.parseColor("#F78B5D"));
+        set1.setValueTextSize(12f);
+
+        BarData data = new BarData(set1);
+        data.setValueFormatter(new ValueFormatter());
+        IAxisValueFormatter axisFormatter = new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return "" + ((int) value);
+            }
+        };
+
+        YAxis left = chart.getAxisLeft();
+        left.setValueFormatter(axisFormatter);
+        left.setGranularity(1f);
+        //left.setSpaceBottom(0f);
+        left.setTextSize(15f);
+        left.setAxisMinimum(0f);
+
+        YAxis right = chart.getAxisRight();
+        right.setDrawLabels(false);
+        right.setDrawGridLines(false);
+
+        // X-axis labels
+        String[] values = month.toArray(new String[month.size()]);
+        System.out.println("Items are " + values[0]);
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
+        xAxis.setGranularity(1f);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setTextSize(15f);
+        xAxis.setAxisMaximum(amounts.size() - 0.5f);
+        xAxis.setAxisMinimum(0.5f);
+
+        chart.setData(data);
+
+        Description description = new Description();
+        description.setText("");
+        description.setTextSize(15);
+        chart.setDescription(description);
+
+        chart.getLegend().setEnabled(true);
+        chart.getLegend().setTextSize(15f);
+        chart.animateY(1000);
+        chart.invalidate();
+
+        chart.setVisibleYRangeMaximum(300, YAxis.AxisDependency.LEFT);
+        chart.setVisibleXRangeMaximum(5);
+        chart.moveViewTo(amounts.size() - 1,0, YAxis.AxisDependency.LEFT);
     }
 
     public class MyXAxisValueFormatter implements IAxisValueFormatter {
-
         private String[] mValues;
 
         public MyXAxisValueFormatter(String[] values) {
@@ -145,12 +212,29 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return mValues[(int) value];
+            if (mValues.length == 0) {
+                return "";
+            } else {
+                System.out.println((int) value + "checking");
+                if ((int) value < mValues.length) {
+                    return mValues[(int) value];
+                }
+                return "";
+            }
+        }
+    }
+    private ArrayList<BarEntry> getDataSet(ArrayList<Float> floats) {
+        ArrayList<BarEntry> valueSet1 = new ArrayList<>();
+        for (int i = 0; i < floats.size(); i++) {
+            BarEntry v1e1 = new BarEntry(i, floats.get(i));
+            valueSet1.add(v1e1);
         }
 
+        return valueSet1;
     }
 
-    private ArrayList<BarEntry> getDataSet() {
+    /*
+    private ArrayList<BarEntry> getDataSets() {
         ArrayList<BarEntry> valueSet1 = new ArrayList<>();
         BarEntry v1e2 = new BarEntry(1, 4341f);
         valueSet1.add(v1e2);
@@ -164,7 +248,9 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         valueSet1.add(v1e6);
 
         return valueSet1;
+
     }
+    */
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -211,70 +297,22 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                         int mth = (Integer)entry.getKey();
                         double amt = data.get(mth);
                         System.out.println("month " + mth + " for customer have sales amt of $ " + amt);
+                        custmonth.add(Integer.toString(mth));
+                        amounts.add((float) amt);
                     }
-
+                    showChart(custmonth,amounts);
                 }
             }
 
             @Override
             public void onFailure(Call<Map<Integer,Double>> call, Throwable t) {
-                System.out.println(t.getMessage());
+                System.out.println("error " + t.getMessage());
             }
         });
 
-    }
-
-    private void doGetAllSales(String selectedYear) {
-
-        if (retrofit == null) {
-            retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(HttpConstant.BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-        }
-        PostData service = retrofit.create(PostData.class);
-        Call<Map<Integer, Double>> call = service.getFilteredAllCustomerSales(selectedYear);
-        call.enqueue(new Callback<Map<Integer, Double>>() {
-
-            @Override
-            public void onResponse(Call<Map<Integer, Double>> call, Response<Map<Integer, Double>> response) {
-                Map<Integer, Double> data = response.body();
-
-                if (data.size() == 0) {
-                    if (isEnglish.equals("Yes")) {
-                        /*
-                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
-                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
-                        lbl_noOrders.setText("No Sales");
-                        */
-                    } else {
-                        /*
-                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
-                        lbl_noOrders.setText("没有");
-                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
-                        */
-                    }
-                } else {
-                    Iterator entries = data.entrySet().iterator();
-                    while (entries.hasNext()) {
-                        Map.Entry entry = (Map.Entry) entries.next();
-                        int mth = (Integer) entry.getKey();
-                        double amt = data.get(mth);
-                        System.out.println("month " + mth + " total sales amt is $ " + amt);
-                    }
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Map<Integer, Double>> call, Throwable t) {
-                System.out.println(t.getMessage());
-            }
-        });
     }
 
     private void doGetAverageSales(String selectedYear) {
-
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(HttpConstant.BASE_URL)
@@ -302,6 +340,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                         lbl_noOrders.setText("没有");
                         view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
                         */
+
                     }
                 } else {
                     Iterator entries = data.entrySet().iterator();
@@ -310,17 +349,23 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                         int mth = (Integer) entry.getKey();
                         double amt = data.get(mth);
                         System.out.println("month " + mth + " average sales amt is $ " + amt);
+                        othermonth.add(Integer.toString(mth));
+                        avgSales.add((float) amt);
                     }
 
+                    //showChart(othermonth,avgSales);
                 }
             }
 
             @Override
             public void onFailure(Call<Map<Integer, Double>> call, Throwable t) {
-                System.out.println(t.getMessage());
+                System.out.println("error : " + t.getMessage());
             }
         });
     }
+
+
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
