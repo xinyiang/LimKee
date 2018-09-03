@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
+
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
@@ -28,11 +30,8 @@ import com.limkee.entity.Customer;
 import com.limkee.order.CancelledOrderFragment;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,11 +53,12 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     private static final String[] years = {"Year", "2016", "2017", "2018"};
     private Spinner spinner3;
     private static final String[] items = {"Item","5 items", "All"};
-    private String selectedYear = "2018"; //get year from selected spinner value to pass into api call
-    private String selectedMonth = "Aug"; //get month from selected spinner value to pass into api call
+    private String selectedYear = ""; //get year from selected spinner value to pass into api call
+    private String selectedMonth = ""; //get month from selected spinner value to pass into api call
     private String selectedItem = "";
     private ArrayList<String> itemNames = new ArrayList<>();
     private ArrayList<Float> amounts = new ArrayList<>();
+    private TextView lbl_noOrders;
 
     public TopPurchasedFragment() {
     }
@@ -92,7 +92,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
         
         spinner1 = (Spinner)view.findViewById(R.id.spinner1);
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, months);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner1.setAdapter(adapter);
@@ -127,7 +126,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         });
 
         spinner3 = (Spinner) view.findViewById(R.id.spinner3);
-
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, items);
         adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner3.setAdapter(adapter3);
@@ -147,64 +145,69 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         return view;
     }
 
-    public void showChart(ArrayList<String> itemNames, ArrayList<Float> amounts) {
+    public void showChart(ArrayList<String> itemNames, ArrayList<Float> amounts, String selectedItem) {
         HorizontalBarChart chart = view.findViewById(R.id.chart);
-        chart.setFitBars(true);
-        BarDataSet set1 = new BarDataSet(getDataSet(amounts), "Total amount of each item sold");
-        set1.setColors(Color.parseColor("#F78B5D"));
-        set1.setValueTextSize(12f);
+        try {
+            //chart.setScaleEnabled(false);
+            chart.setDoubleTapToZoomEnabled(false);
+            //chart.setFitBars(false);
+            BarDataSet set1 = new BarDataSet(getDataSet(amounts), "Total amount of each item sold");
+            set1.setColors(Color.parseColor("#F78B5D"));
+            set1.setValueTextSize(15f);
 
-        //set1.setValueFormatter(new ValueFormatter());
-        //ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-        //dataSets.add(set1);
+            BarData data = new BarData(set1);
+            data.setValueFormatter(new ValueFormatter());
+            IAxisValueFormatter axisFormatter = new IAxisValueFormatter() {
+                @Override
+                public String getFormattedValue(float value, AxisBase axis) {
+                    return "" + ((int) value);
+                }
+            };
+            data.setBarWidth(0.5f);
 
-        BarData data = new BarData(set1);
-        data.setValueFormatter(new ValueFormatter());
-        IAxisValueFormatter axisFormatter = new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return "" + ((int) value);
-            }
-        };
+            YAxis left = chart.getAxisLeft();
+            left.setValueFormatter(axisFormatter);
+            left.setGranularity(1f);
+            left.setTextSize(15f);
+            left.setAxisMinimum(0f);
 
-        YAxis left = chart.getAxisLeft();
-        left.setValueFormatter(axisFormatter);
-        left.setGranularity(1f);
-        //left.setSpaceBottom(0f);
-        left.setTextSize(15f);
-        left.setAxisMinimum(0f);
+            YAxis right = chart.getAxisRight();
+            right.setDrawLabels(false);
+            right.setDrawGridLines(false);
 
-        YAxis right = chart.getAxisRight();
-        right.setDrawLabels(false);
-        right.setDrawGridLines(false);
+            // X-axis labels
+            String[] values = itemNames.toArray(new String[itemNames.size()]);
+            System.out.println("Items are " + values[0]);
+            XAxis xAxis = chart.getXAxis();
+            xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
+            xAxis.setGranularity(1f);
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setDrawGridLines(false);
+            xAxis.setTextSize(15f);
+            xAxis.setAxisMaximum(amounts.size() - 0.5f);
+            xAxis.setAxisMinimum(0.5f);
+            xAxis.setLabelRotationAngle(-15);
 
-        // X-axis labels
-        String[] values = itemNames.toArray(new String[itemNames.size()]);
-        System.out.println("Items are " + values[0]);
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
-        xAxis.setGranularity(1f);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawGridLines(false);
-        xAxis.setTextSize(15f);
-        xAxis.setAxisMaximum(amounts.size() - 0.5f);
-        xAxis.setAxisMinimum(0.5f);
+            chart.setData(data);
 
-        chart.setData(data);
+            Description description = new Description();
+            description.setText("");
+            description.setTextSize(15);
+            chart.setDescription(description);
 
-        Description description = new Description();
-        description.setText("");
-        description.setTextSize(15);
-        chart.setDescription(description);
+            chart.getLegend().setEnabled(true);
+            chart.getLegend().setTextSize(15f);
+            chart.animateY(1000);
+            chart.invalidate();
 
-        chart.getLegend().setEnabled(true);
-        chart.getLegend().setTextSize(15f);
-        chart.animateY(1000);
-        chart.invalidate();
-
-        chart.setVisibleYRangeMaximum(300, YAxis.AxisDependency.LEFT);
-        chart.setVisibleXRangeMaximum(5);
-        chart.moveViewTo(amounts.size() - 1,0, YAxis.AxisDependency.LEFT);
+            //chart.setVisibleYRangeMaximum(300, YAxis.AxisDependency.LEFT);
+            chart.setVisibleXRangeMaximum(5);
+            chart.setVisibleXRangeMinimum(5);
+            chart.moveViewTo(amounts.size() - 1, 0, YAxis.AxisDependency.LEFT);
+        }catch (Exception e){
+            chart.setData(null);
+            chart.invalidate();
+        }
     }
 
     public class MyXAxisValueFormatter implements IAxisValueFormatter {
@@ -219,14 +222,12 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             if (mValues.length == 0) {
                 return "";
             } else {
-                System.out.println((int) value + "checking");
                 if ((int) value < mValues.length) {
                     return mValues[(int) value];
                 }
                 return "";
             }
         }
-
     }
 
     private ArrayList<BarEntry> getDataSet(ArrayList<Float> floats) {
@@ -235,7 +236,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             BarEntry v1e1 = new BarEntry(i, floats.get(i));
             valueSet1.add(v1e1);
         }
-
         return valueSet1;
     }
 
@@ -259,23 +259,14 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 Map<String, Integer> data = response.body();
                 System.out.println("There are " + data.size() + " products.");
 
+                ArrayList<String> sortedItemNames = new ArrayList<>();
+                ArrayList<Float> sortedAmounts = new ArrayList<>();
+
                 if (data.size() == 0) {
-                    if (isEnglish.equals("Yes")) {
-                        /*
-                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
-                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
-                        lbl_noOrders.setText("No products");
-                        */
-                    } else {
-                        /*
-                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
-                        lbl_noOrders.setText("没有物品");
-                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
-                        */
-                    }
+                    showChart(sortedItemNames, sortedAmounts, selectedItem);
                 } else {
                     int i = 0;
-                    String[][] results = new String[data.size()][2];
+                    Object[][] results = new Object[data.size()][2];
                     Iterator entries = data.entrySet().iterator();
                     while (entries.hasNext()) {
                         Map.Entry entry = (Map.Entry) entries.next();
@@ -285,14 +276,32 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                         amounts.add((float) qty);
                         System.out.println("item name " + itemName + " has qty of " + qty);
 
-                        //need to sort 2D array before inserting
-                        results[i][0] = Integer.toString(qty);
+                        results[i][0] = qty;
                         results[i][1] = itemName;
                         i++;
-
-                        showChart(itemNames, amounts);
-
                     }
+
+                    Arrays.sort(results, new Comparator<Object[]>() {
+                        public int compare(Object[] o1, Object[] o2) {
+                            Integer i1 = (Integer) (o1[0]);
+                            Integer i2 = (Integer) (o2[0]);
+                            if (i1 != null && i2 != null) {
+                                return i1.compareTo(i2);
+                            }else{
+                                return 0;
+                            }
+                        }
+                    });
+
+                    try {
+                        for (int j = 0; j < results.length; j++) {
+                            float quantity = Float.valueOf(results[j][0] + "");
+                            String sortedNames = "" + results[j][1];
+                            sortedItemNames.add(sortedNames);
+                            sortedAmounts.add(quantity);
+                            showChart(sortedItemNames, sortedAmounts, selectedItem);
+                        }
+                    }catch (Exception e){}
 
                     System.out.println("DATA PRINTED IS " + Arrays.deepToString(results));
                 }
