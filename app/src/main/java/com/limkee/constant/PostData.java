@@ -1,6 +1,7 @@
 package com.limkee.constant;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import com.limkee.entity.Order;
 import com.limkee.entity.OrderDetails;
@@ -65,10 +66,10 @@ public interface PostData {
         Call<Map<String,Integer>> getTopPurchasedProducts(@Query("companyCode") String companyCode, @Query("selectedMonth") String selectedMonth, @Query("selectedYear") String selectedYear, @Query("language") String language);
 
         @GET("dashboard/getcustomersales")
-        Call<Map<Integer,Double>> getFilteredCustomerSales(@Query("companyCode") String companyCode, @Query("selectedYear") String selectedYear);
+        Call<LinkedHashMap<String,Double>> getFilteredCustomerSales(@Query("companyCode") String companyCode, @Query("selectedYear") String selectedYear);
 
         @GET("dashboard/getaveragesales")
-        Call<Map<Integer,Double>> getAverageSales(@Query("selectedYear") String selectedYear);
+        Call<LinkedHashMap<String,Double>> getAverageSales(@Query("selectedYear") String selectedYear);
 
 }
 
