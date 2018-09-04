@@ -41,6 +41,7 @@ import com.limkee.order.CancelledOrderFragment;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -145,8 +146,9 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         chart.setFitBars(true);
 
         ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
-        for (int i = 0; i< amounts.size () ; i++){
+        for (int i = 0; i< amounts.size() ; i++){
             float amt = amounts.get(i);
+            System.out.println("Float amount is $" + amt);
             entries.add(new BarEntry(amt,i));
         }
 
@@ -215,7 +217,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
             if (mValues.length == 0) {
                 return "";
             } else {
-                System.out.println((int) value + "checking");
+                System.out.println((int) value + " checking");
                 if ((int) value < mValues.length) {
                     return mValues[(int) value];
                 }
@@ -269,12 +271,12 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<Map<Integer,Double>> call = service.getFilteredCustomerSales(companyCode, selectedYear);
-        call.enqueue(new Callback<Map<Integer,Double>>() {
+        Call<LinkedHashMap<String,Double>> call = service.getFilteredCustomerSales(companyCode, selectedYear);
+        call.enqueue(new Callback<LinkedHashMap<String,Double>>() {
 
             @Override
-            public void onResponse(Call<Map<Integer,Double>> call, Response<Map<Integer,Double>> response) {
-                Map<Integer,Double> data = response.body();
+            public void onResponse(Call<LinkedHashMap<String,Double>> call, Response<LinkedHashMap<String,Double>> response) {
+                LinkedHashMap<String,Double> data = response.body();
 
                 if (data.size() == 0) {
                     if (isEnglish.equals("Yes")) {
@@ -294,18 +296,18 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                     Iterator entries = data.entrySet().iterator();
                     while (entries.hasNext()) {
                         Map.Entry entry = (Map.Entry) entries.next();
-                        int mth = (Integer)entry.getKey();
+                        String mth = (String)entry.getKey();
                         double amt = data.get(mth);
                         System.out.println("month " + mth + " for customer have sales amt of $ " + amt);
-                        custmonth.add(Integer.toString(mth));
+                        custmonth.add(mth);
                         amounts.add((float) amt);
                     }
-                    showChart(custmonth,amounts);
+                   // showChart(custmonth, amounts);
                 }
             }
 
             @Override
-            public void onFailure(Call<Map<Integer,Double>> call, Throwable t) {
+            public void onFailure(Call<LinkedHashMap<String,Double>> call, Throwable t) {
                 System.out.println("error " + t.getMessage());
             }
         });
@@ -320,12 +322,12 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<Map<Integer, Double>> call = service.getAverageSales(selectedYear);
-        call.enqueue(new Callback<Map<Integer, Double>>() {
+        Call<LinkedHashMap<String, Double>> call = service.getAverageSales(selectedYear);
+        call.enqueue(new Callback<LinkedHashMap<String, Double>>() {
 
             @Override
-            public void onResponse(Call<Map<Integer, Double>> call, Response<Map<Integer, Double>> response) {
-                Map<Integer, Double> data = response.body();
+            public void onResponse(Call<LinkedHashMap<String, Double>> call, Response<LinkedHashMap<String, Double>> response) {
+                LinkedHashMap<String, Double> data = response.body();
 
                 if (data.size() == 0) {
                     if (isEnglish.equals("Yes")) {
@@ -346,19 +348,19 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                     Iterator entries = data.entrySet().iterator();
                     while (entries.hasNext()) {
                         Map.Entry entry = (Map.Entry) entries.next();
-                        int mth = (Integer) entry.getKey();
+                        String mth = (String) entry.getKey();
                         double amt = data.get(mth);
                         System.out.println("month " + mth + " average sales amt is $ " + amt);
-                        othermonth.add(Integer.toString(mth));
+                        othermonth.add(mth);
                         avgSales.add((float) amt);
                     }
 
-                    //showChart(othermonth,avgSales);
+                    showChart(othermonth,avgSales);
                 }
             }
 
             @Override
-            public void onFailure(Call<Map<Integer, Double>> call, Throwable t) {
+            public void onFailure(Call<LinkedHashMap<String, Double>> call, Throwable t) {
                 System.out.println("error : " + t.getMessage());
             }
         });
