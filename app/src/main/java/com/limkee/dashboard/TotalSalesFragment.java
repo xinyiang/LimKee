@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -27,6 +28,9 @@ import com.limkee.constant.PostData;
 import com.limkee.entity.Customer;
 import com.limkee.order.CancelledOrderFragment;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -51,6 +55,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
     private ArrayList<String> othermonth = new ArrayList<>();
     private ArrayList<Float> amounts = new ArrayList<>();
     private ArrayList<Float> avgSales = new ArrayList<>();
+    private HashMap<String, Integer> monthConvert = new HashMap<>();
 
     public TotalSalesFragment(){}
 
@@ -68,14 +73,29 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
+
+        monthConvert.put("Dec",12);
+        monthConvert.put("Nov",11);
+        monthConvert.put("Oct",10);
+        monthConvert.put("Sep",9);
+        monthConvert.put("Aug",8);
+        monthConvert.put("Jul",7);
+        monthConvert.put("Jun",6);
+        monthConvert.put("May",5);
+        monthConvert.put("Apr",4);
+        monthConvert.put("Mar",3);
+        monthConvert.put("Feb",2);
+        monthConvert.put("Jan",1);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_total_sales, container, false);
         spinner = (Spinner)view.findViewById(R.id.spinner1);
-        ArrayAdapter<String>adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years );
 
+        boolean isChecked = ((CheckBox) view.findViewById(R.id.checkBox2)).isChecked();
+        ArrayAdapter<String>adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(fragment);
@@ -83,8 +103,10 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                 selectedYear = arg0.getItemAtPosition(position).toString();
+                if (!isChecked) {
+                    doGetAverageSales(selectedYear);
+                }
                 doGetCustomerSales(customer.getCompanyCode(), selectedYear);
-                doGetAverageSales(selectedYear);
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -134,7 +156,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
             xAxis.setDrawGridLines(false);
             xAxis.setTextSize(15f);
             xAxis.setAxisMaximum(amounts.size() - 0.5f);
-            xAxis.setAxisMinimum(0.5f);
+            xAxis.setAxisMinimum(-0.5f);
             xAxis.setLabelRotationAngle(-15);
 
             chart.setData(data);
@@ -215,9 +237,14 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                 custmonth = new ArrayList<>();
                 amounts = new ArrayList<>();
 
+                ArrayList<String> sortedMonths = new ArrayList<>();
+                ArrayList<Float> sortedAmounts = new ArrayList<>();
+
                 if (data.size() == 0) {
                     showChart(custmonth, amounts, "#F78B5D");
                 } else {
+                    int i = 0;
+                    Object[][] results = new Object[data.size()][2];
                     Iterator entries = data.entrySet().iterator();
                     while (entries.hasNext()) {
                         Map.Entry entry = (Map.Entry) entries.next();
@@ -226,10 +253,39 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                         System.out.println("month " + mth + " for customer have sales amt of $ " + amt);
                         custmonth.add(mth);
                         amounts.add((float) amt);
+
+                        results[i][0] = mth;
+                        results[i][1] = amt;
+                        i++;
                     }
 
-                    showChart(custmonth,amounts, "#F78B5D");
+                    Arrays.sort(results, new Comparator<Object[]>() {
+                        public int compare(Object[] o1, Object[] o2) {
+                            Integer i1 = (Integer) (monthConvert.get(o1[0]));
+                            Integer i2 = (Integer) (monthConvert.get(o2[0]));
+                            if (i1 != null && i2 != null) {
+                                if (i2 > i1) {
+                                    return -1;
+                                }else{
+                                    return 1;
+                                }
+                            }else{
+                                return 0;
+                            }
+                        }
+                    });
+
+                    try {
+                        for (int j = 0; j < results.length; j++) {
+                            float quantity = Float.valueOf(results[j][0] + "");
+                            String sortedNames = "" + results[j][1];
+                            sortedMonths.add(sortedNames);
+                            sortedAmounts.add(quantity);
+                            showChart(sortedMonths,sortedAmounts, "#F78B5D");
+                        }
+                    }catch (Exception e){}
                 }
+
             }
 
             @Override
@@ -257,9 +313,14 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                 othermonth = new ArrayList<>();
                 avgSales = new ArrayList<>();
 
+                ArrayList<String> sortedMonths = new ArrayList<>();
+                ArrayList<Float> sortedAmounts = new ArrayList<>();
+
                 if (data.size() == 0) {
                     showChart(othermonth, avgSales, "#A0C25A");
                 } else {
+                    int i = 0;
+                    Object[][] results = new Object[data.size()][2];
                     Iterator entries = data.entrySet().iterator();
                     while (entries.hasNext()) {
                         Map.Entry entry = (Map.Entry) entries.next();
@@ -268,9 +329,36 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                         System.out.println("month " + mth + " average sales amt is $ " + amt);
                         othermonth.add(mth);
                         avgSales.add((float) amt);
+                        results[i][0] = mth;
+                        results[i][1] = amt;
+                        i++;
                     }
-                  
-                    showChart(othermonth,avgSales, "#A0C25A");
+
+                    Arrays.sort(results, new Comparator<Object[]>() {
+                        public int compare(Object[] o1, Object[] o2) {
+                            Integer i1 = (Integer) (monthConvert.get(o1[0]));
+                            Integer i2 = (Integer) (monthConvert.get(o2[0]));
+                            if (i1 != null && i2 != null) {
+                                if (i2 > i1) {
+                                    return -1;
+                                }else{
+                                    return 1;
+                                }
+                            }else{
+                                return 0;
+                            }
+                        }
+                    });
+
+                    try {
+                        for (int j = 0; j < results.length; j++) {
+                            float quantity = Float.valueOf(results[j][0] + "");
+                            String sortedNames = "" + results[j][1];
+                            sortedMonths.add(sortedNames);
+                            sortedAmounts.add(quantity);
+                            showChart(sortedMonths,sortedAmounts, "#F78B5D");
+                        }
+                    }catch (Exception e){}
 
                 }
             }

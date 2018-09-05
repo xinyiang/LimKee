@@ -19,7 +19,6 @@ import java.util.Date;
 
 
 public class AlarmReceiver extends BroadcastReceiver {
-    private static final String TAG = "Boot Receiver:::";
 
     @Override
     public void onReceive(final Context context, Intent intent) {
@@ -34,6 +33,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         String mins = intent.getStringExtra("mins");
 
         Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour));
         calendar.set(Calendar.MINUTE, Integer.parseInt(mins));
         //calendar.add(Calendar.DATE,1);
