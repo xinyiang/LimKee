@@ -148,7 +148,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     public void showChart(ArrayList<String> itemNames, ArrayList<Float> amounts, String selectedItem) {
         HorizontalBarChart chart = view.findViewById(R.id.chart);
         try {
-            //chart.setScaleEnabled(false);
             chart.setDoubleTapToZoomEnabled(false);
             //chart.setFitBars(false);
             BarDataSet set1 = new BarDataSet(getDataSet(amounts), "Total amount of each item sold");
@@ -185,7 +184,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             xAxis.setDrawGridLines(false);
             xAxis.setTextSize(15f);
             xAxis.setAxisMaximum(amounts.size() - 0.5f);
-            xAxis.setAxisMinimum(0.5f);
+            xAxis.setAxisMinimum(-0.5f);
             xAxis.setLabelRotationAngle(-15);
 
             chart.setData(data);
@@ -200,7 +199,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             chart.animateY(1000);
             chart.invalidate();
 
-            //chart.setVisibleYRangeMaximum(300, YAxis.AxisDependency.LEFT);
             chart.setVisibleXRangeMaximum(5);
             chart.setVisibleXRangeMinimum(5);
             chart.moveViewTo(amounts.size() - 1, 0, YAxis.AxisDependency.LEFT);
