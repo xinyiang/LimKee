@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -260,7 +261,11 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 .build().create(PostData.class);
 
         System.out.println("SALES ORDER detail id is " + orderNo);
-        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, tp*(100.0/107.0), orderNo)
+        DecimalFormat df = new DecimalFormat("#0.00");
+        double totalAmt = tp*(100.0/107.0);
+        totalAmt = Double.parseDouble(df.format(totalAmt));
+        System.out.println("Double total is " + totalAmt);
+        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, totalAmt, orderNo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderDetailsResponse, this::handleError));
