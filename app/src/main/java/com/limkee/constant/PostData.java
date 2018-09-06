@@ -71,5 +71,8 @@ public interface PostData {
         @GET("dashboard/getaveragesales")
         Call<LinkedHashMap<String,Double>> getAverageSales(@Query("selectedYear") String selectedYear);
 
+        @GET("dashboard/getearliestyear")
+        Call<Integer> getEarliestYear(@Query("companyCode") String companyCode);
+
 }
 

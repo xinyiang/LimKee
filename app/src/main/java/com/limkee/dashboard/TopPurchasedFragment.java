@@ -13,7 +13,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
@@ -28,9 +27,11 @@ import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
 import com.limkee.entity.Customer;
 import com.limkee.order.CancelledOrderFragment;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import retrofit2.Call;
@@ -47,18 +48,20 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     private String language;
     private String isEnglish;
     static TopPurchasedFragment fragment;
-    private Spinner spinner1;
-    private static final String[] months = {"Month", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-    private Spinner spinner2;
-    private static final String[] years = {"Year", "2016", "2017", "2018"};
-    private Spinner spinner3;
-    private static final String[] items = {"Item","5 items", "All"};
-    private String selectedYear = ""; //get year from selected spinner value to pass into api call
-    private String selectedMonth = ""; //get month from selected spinner value to pass into api call
-    private String selectedItem = "";
+    private Spinner ddlYear;
+    private static String[] months;
+    private Spinner ddlMonth;
+    private static String[] years;
+    private String selectedYear = "";
+    private String selectedMonth = "";
     private ArrayList<String> itemNames = new ArrayList<>();
     private ArrayList<Float> amounts = new ArrayList<>();
     private TextView lbl_noOrders;
+    private String systemYear;
+    private String systemMonth;
+    private String systemMonthInChinese;
+    private int earliestYear;
+    private int length;
 
     public TopPurchasedFragment() {
     }
@@ -78,46 +81,77 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
 
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/M/dd hh:mm:ss");
+            String today = sdf.format(new Date());
+            systemYear = today.substring(0, 4);
+            int numMonth = Integer.parseInt(today.substring(5, 6));
+            systemMonth = getMonth(numMonth);
+            systemMonthInChinese = getChineseMonth(systemMonth);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //call api to get customer's earliest year of orders
+       // getEarliestYear(customer.getDebtorCode()); //assign earliestYear variable
+        earliestYear = 2017;
+
+        if (earliestYear == 0 || earliestYear == Integer.parseInt(systemYear)){
+            earliestYear = Integer.parseInt(systemYear);
+            length = 0;
+        } else {
+            length = Integer.parseInt(systemYear) - earliestYear;
+        }
+
+        years = new String[length+2];
+
         if (isEnglish.equals("Yes")) {
             language = "eng";
+            months = new String[]{"Month", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+            //years = new String[]{"Year", "2016", "2017", "2018"};
+            years[0] = "Year";
+
         } else {
             language = "chi";
+            months = new String[]{"月", "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"};
+            //years = new String[]{"年", "2016", "2017", "2018"};
+            years[0] = "年";
         }
+
+        //loop to create years
+        int size = 1;
+        for (int i = earliestYear; i<= Integer.parseInt(systemYear);i++){
+            years[size] = Integer.toString(i);
+            size ++;
+        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_top_purchased, container, false);
 
-        doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
-        
-        spinner1 = (Spinner)view.findViewById(R.id.spinner1);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, months);
+        doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
+
+        ddlYear = (Spinner)view.findViewById(R.id.ddl_year);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner1.setAdapter(adapter);
-        spinner1.setOnItemSelectedListener(fragment);
-        spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
-                selectedMonth = arg0.getItemAtPosition(position).toString();
-                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
-            }
+        ddlYear.setAdapter(adapter);
+        ddlYear.setOnItemSelectedListener(fragment);
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+        for (int i = 1; i < years.length; i++) {
+            if (ddlYear.getItemAtPosition(i).equals(systemYear)) {
+                ddlYear.setSelection(i);
+                break;
             }
-        });
+        }
 
-        spinner2 = (Spinner) view.findViewById(R.id.spinner2);
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner2.setAdapter(adapter2);
-        spinner2.setOnItemSelectedListener(fragment);
-        spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        ddlYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                 selectedYear = arg0.getItemAtPosition(position).toString();
-                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
+                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
             }
 
             @Override
@@ -125,16 +159,54 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             }
         });
 
-        spinner3 = (Spinner) view.findViewById(R.id.spinner3);
-        ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, items);
-        adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner3.setAdapter(adapter3);
-        spinner3.setOnItemSelectedListener(fragment);
-        spinner3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        ddlMonth = (Spinner) view.findViewById(R.id.ddl_month);
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, months);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ddlMonth.setAdapter(adapter2);
+        ddlMonth.setOnItemSelectedListener(fragment);
+
+        for (int i = 1; i < 12; i++) {
+            if (ddlMonth.getItemAtPosition(i).equals(systemMonth) || ddlMonth.getItemAtPosition(i).equals(systemMonthInChinese)) {
+                ddlMonth.setSelection(i);
+                break;
+            }
+        }
+
+        ddlMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
-                selectedItem = arg0.getItemAtPosition(position).toString();
-                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language, selectedItem);
+                selectedMonth = arg0.getItemAtPosition(position).toString();
+
+                if (selectedMonth.equals("一月")){
+                    selectedMonth = "Jan";
+                } else if (selectedMonth.equals("二月")){
+                    selectedMonth = "Feb";
+                } else if (selectedMonth.equals("三月")){
+                    selectedMonth = "Mar";
+                } else if (selectedMonth.equals("四月")){
+                    selectedMonth = "Apr";
+                } else if (selectedMonth.equals("五月")){
+                    selectedMonth = "May";
+                } else if (selectedMonth.equals("六月")){
+                    selectedMonth = "Jun";
+                } else if (selectedMonth.equals("七月")){
+                    selectedMonth = "Jul";
+                } else if (selectedMonth.equals("八月")){
+                    selectedMonth = "Aug";
+                } else if (selectedMonth.equals("九月")){
+                    selectedMonth = "Sep";
+                } else if (selectedMonth.equals("十月")){
+                    selectedMonth = "Oct";
+                } else if (selectedMonth.equals("十一月")){
+                    selectedMonth = "Nov";
+                } else if (selectedMonth.equals("十二月")) {
+                    selectedMonth = "Dec";
+                } else {
+                    selectedMonth = arg0.getItemAtPosition(position).toString();
+                }
+                System.out.println("selected month is " + selectedMonth);
+                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
+
             }
 
             @Override
@@ -145,7 +217,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         return view;
     }
 
-    public void showChart(ArrayList<String> itemNames, ArrayList<Float> amounts, String selectedItem) {
+    public void showChart(ArrayList<String> itemNames, ArrayList<Float> amounts) {
         HorizontalBarChart chart = view.findViewById(R.id.chart);
         try {
             //chart.setScaleEnabled(false);
@@ -244,7 +316,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         super.onActivityCreated(savedInstanceState);
     }
 
-    private void doGetTopProducts(String companyCode, String selectedMonth, String selectedYear, String language, String selectedItem) {
+    private void doGetTopProducts(String companyCode, String selectedMonth, String selectedYear, String language) {
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(HttpConstant.BASE_URL)
@@ -263,7 +335,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 ArrayList<Float> sortedAmounts = new ArrayList<>();
 
                 if (data.size() == 0) {
-                    showChart(sortedItemNames, sortedAmounts, selectedItem);
+                    showChart(sortedItemNames, sortedAmounts);
                 } else {
                     int i = 0;
                     Object[][] results = new Object[data.size()][2];
@@ -299,7 +371,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                             String sortedNames = "" + results[j][1];
                             sortedItemNames.add(sortedNames);
                             sortedAmounts.add(quantity);
-                            showChart(sortedItemNames, sortedAmounts, selectedItem);
+                            showChart(sortedItemNames, sortedAmounts);
                         }
                     }catch (Exception e){}
 
@@ -314,6 +386,101 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         });
     }
 
+   private void getEarliestYear(String companyCode) {
+
+        if (retrofit == null) {
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(HttpConstant.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        PostData service = retrofit.create(PostData.class);
+        Call<Integer> call = service.getEarliestYear(companyCode);
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                int data = response.body();
+                System.out.println("Year is " + data + ".");
+                earliestYear = data;
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
+
+    }
+
+    private String getChineseMonth(String engMonth){
+
+        String chineseMth = "";
+
+        if (engMonth.equals("Jan")){
+            chineseMth = "一月";
+        } else if (engMonth.equals("Feb")){
+            chineseMth = "二月";
+        } else if (engMonth.equals("Mar")){
+            chineseMth = "三月";
+        } else if (engMonth.equals("Apr")){
+            chineseMth = "四月";
+        } else if (engMonth.equals("May")){
+            chineseMth = "五月";
+        } else if (engMonth.equals("Jun")){
+            chineseMth = "六月";
+        } else if (engMonth.equals("Jul")){
+            chineseMth = "七月";
+        } else if (engMonth.equals("Aug")){
+            chineseMth = "八月";
+        } else if (engMonth.equals("Sep")){
+            chineseMth = "九月";
+        } else if (engMonth.equals("Oct")){
+            chineseMth = "十月";
+        } else if (engMonth.equals("Nov")){
+            chineseMth = "十一月";
+        } else if (engMonth.equals("Dec")){
+            chineseMth = "十二月";
+        } else {
+            //nothing
+        }
+
+        return  chineseMth;
+    }
+
+    private String getMonth(int numMonth){
+        String engMonth = "";
+
+        if (numMonth == 1) {
+            engMonth = "Jan";
+        } else if (numMonth == 2) {
+            engMonth = "Feb";
+        } else if (numMonth == 3) {
+            engMonth = "Mar";
+        } else if (numMonth == 4) {
+            engMonth = "Apr";
+        } else if (numMonth == 5) {
+            engMonth = "May";
+        } else if (numMonth == 6) {
+            engMonth = "Jun";
+        } else if (numMonth == 7) {
+            engMonth = "Jul";
+        } else if (numMonth == 8) {
+            engMonth = "Aug";
+        } else if (numMonth == 9) {
+            engMonth = "Sep";
+        } else if (numMonth == 10) {
+            engMonth = "Oct";
+        } else if (numMonth == 11) {
+            engMonth = "Nov";
+        }  else if (numMonth == 12) {
+            engMonth = "Dec";
+        } else{
+            //nothing
+        }
+
+
+        return engMonth;
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
