@@ -2,6 +2,7 @@ package com.limkee.dashboard;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -62,6 +63,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     private String systemMonthInChinese;
     private int earliestYear;
     private int length;
+    private Chart chart;
 
     public TopPurchasedFragment() {
     }
@@ -125,12 +127,12 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             years[size] = Integer.toString(i);
             size ++;
         }
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_top_purchased, container, false);
+        chart = new Chart((HorizontalBarChart)view.findViewById(R.id.chart));
 
         doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
 
@@ -140,6 +142,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         ddlYear.setAdapter(adapter);
         ddlYear.setOnItemSelectedListener(fragment);
 
+        //set selected year
         for (int i = 1; i < years.length; i++) {
             if (ddlYear.getItemAtPosition(i).equals(systemYear)) {
                 ddlYear.setSelection(i);
@@ -151,7 +154,11 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                 selectedYear = arg0.getItemAtPosition(position).toString();
-                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
+                if (selectedYear.equals("Year") || selectedYear.equals("年")){
+                    chart.hide(isEnglish);
+                } else {
+                    doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
+                }
             }
 
             @Override
@@ -165,7 +172,8 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         ddlMonth.setAdapter(adapter2);
         ddlMonth.setOnItemSelectedListener(fragment);
 
-        for (int i = 1; i < 12; i++) {
+        //set selected month
+        for (int i = 1; i <= 12; i++) {
             if (ddlMonth.getItemAtPosition(i).equals(systemMonth) || ddlMonth.getItemAtPosition(i).equals(systemMonthInChinese)) {
                 ddlMonth.setSelection(i);
                 break;
@@ -204,9 +212,12 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 } else {
                     selectedMonth = arg0.getItemAtPosition(position).toString();
                 }
-               // System.out.println("selected month is " + selectedMonth);
-                doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
 
+                if (selectedMonth.equals("Month") || selectedMonth.equals("月")){
+                    chart.hide(isEnglish);
+                } else {
+                    doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
+                }
             }
 
             @Override
@@ -274,9 +285,18 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             chart.setVisibleXRangeMaximum(5);
             chart.setVisibleXRangeMinimum(5);
             chart.moveViewTo(amounts.size() - 1, 0, YAxis.AxisDependency.LEFT);
+
         }catch (Exception e){
             chart.setData(null);
             chart.invalidate();
+            Paint p = chart.getPaint(com.github.mikephil.charting.charts.Chart.PAINT_INFO);
+            p.setTextSize(60);
+            chart.setNoDataTextColor(R.color.colorAccent);
+            if (language.equals("eng")) {
+                chart.setNoDataText("No data");
+            } else {
+                chart.setNoDataText("没有资料");
+            }
         }
     }
 
@@ -327,8 +347,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             @Override
             public void onResponse(Call<Map<String,Integer>> call, Response<Map<String,Integer>> response) {
                 Map<String, Integer> data = response.body();
-                System.out.println("There are " + data.size() + " products.");
-
                 ArrayList<String> sortedItemNames = new ArrayList<>();
                 ArrayList<Float> sortedAmounts = new ArrayList<>();
 
@@ -344,8 +362,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                         itemNames.add(itemName);
                         int qty = data.get(itemName);
                         amounts.add((float) qty);
-                        System.out.println("item name " + itemName + " has qty of " + qty);
-
                         results[i][0] = qty;
                         results[i][1] = itemName;
                         i++;
@@ -371,9 +387,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                             sortedAmounts.add(quantity);
                             showChart(sortedItemNames, sortedAmounts);
                         }
-                    }catch (Exception e){}
-
-                    System.out.println("DATA PRINTED IS " + Arrays.deepToString(results));
+                    } catch (Exception e){}
                 }
             }
 
@@ -475,10 +489,10 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         } else{
             //nothing
         }
-
-
         return engMonth;
     }
+
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

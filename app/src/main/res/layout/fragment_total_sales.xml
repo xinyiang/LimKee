@@ -33,7 +33,7 @@
         app:layout_constraintTop_toBottomOf="@+id/ddl_year" />
 
     <CheckBox
-        android:id="@+id/checkBox2"
+        android:id="@+id/cb_onlyMe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
