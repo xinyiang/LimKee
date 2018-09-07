@@ -45,10 +45,8 @@ public class Chart {
                 }
                 month = chineseMth;
             }
-
             customerAmount.setColors(Color.parseColor("#A0C25A"));
-            customerAmount.setValueTextSize(15f);
-
+            month = mth;
         } else {
             if (language.equals(("Yes"))) {
                 averageAmount = new BarDataSet(getDataSet(dataSet), "Average spendings");
@@ -85,6 +83,7 @@ public class Chart {
                     data = new BarData(customerAmount);
                 }
 
+                data.setValueTextSize(10f);
                 data.setValueFormatter(new IValueFormatter(){
                     @Override
                     public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
@@ -127,16 +126,16 @@ public class Chart {
                 chart.setDescription(description);
 
                 chart.getLegend().setEnabled(true);
-                chart.getLegend().setTextSize(15f);
+                chart.getLegend().setTextSize(10f);
+                //chart.getLegend().setWordWrapEnabled(true);
                 chart.animateY(1000);
                 chart.invalidate();
 
                 //chart.setVisibleYRangeMaximum(300, YAxis.AxisDependency.LEFT);
                 chart.setVisibleXRangeMaximum(5);
                 chart.setVisibleXRangeMinimum(5);
-                //chart.setViewPortOffsets(1f, 1f, 1f, 1f);
-                chart.moveViewTo(month.size() - 1, 0, YAxis.AxisDependency.LEFT);
 
+                chart.moveViewTo(month.size() - 1, 0, YAxis.AxisDependency.LEFT);
             } else {
                 chart.setData(null);
                 chart.invalidate();
