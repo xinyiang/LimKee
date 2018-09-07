@@ -1,7 +1,6 @@
 package com.limkee.dashboard;
 
 import android.graphics.Color;
-
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
@@ -32,12 +31,10 @@ public class Chart {
         if (type.equals("customer")){
             customerAmount = new BarDataSet(getDataSet(dataSet), "Total sales of current customer");
             customerAmount.setColors(Color.parseColor("#A0C25A"));
-            customerAmount.setValueTextSize(15f);
             month = mth;
         }else{
             averageAmount = new BarDataSet(getDataSet(dataSet), "Total sales of all customers");
             averageAmount.setColors(Color.parseColor("#F78B5D"));
-            averageAmount.setValueTextSize(15f);
             month = mth;
         }
     }
@@ -58,6 +55,7 @@ public class Chart {
                     data = new BarData(customerAmount);
                 }
 
+                data.setValueTextSize(10f);
                 data.setValueFormatter(new IValueFormatter(){
                     @Override
                     public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
@@ -100,23 +98,20 @@ public class Chart {
                 chart.setDescription(description);
 
                 chart.getLegend().setEnabled(true);
-                chart.getLegend().setTextSize(15f);
+                chart.getLegend().setTextSize(10f);
+                //chart.getLegend().setWordWrapEnabled(true);
                 chart.animateY(1000);
                 chart.invalidate();
 
                 //chart.setVisibleYRangeMaximum(300, YAxis.AxisDependency.LEFT);
                 chart.setVisibleXRangeMaximum(5);
                 chart.setVisibleXRangeMinimum(5);
-                //chart.setViewPortOffsets(1f, 1f, 1f, 1f);
-                chart.moveViewTo(month.size() - 1, 0, YAxis.AxisDependency.LEFT);
 
+                chart.moveViewTo(month.size() - 1, 0, YAxis.AxisDependency.LEFT);
             }else {
                 chart.setData(null);
                 chart.invalidate();
             }
-            //System.out.println("isChecked: "+isChecked);
-            //System.out.println("avgAmount: "+ averageAmount.getLabel());
-            //System.out.println("custAmount: "+ customerAmount.getLabel());
         } catch (Exception e){
             chart.setData(null);
             chart.invalidate();
