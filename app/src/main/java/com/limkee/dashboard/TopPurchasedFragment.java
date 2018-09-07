@@ -204,7 +204,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 } else {
                     selectedMonth = arg0.getItemAtPosition(position).toString();
                 }
-                System.out.println("selected month is " + selectedMonth);
+               // System.out.println("selected month is " + selectedMonth);
                 doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
 
             }
@@ -223,7 +223,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             //chart.setScaleEnabled(false);
             chart.setDoubleTapToZoomEnabled(false);
             //chart.setFitBars(false);
-            BarDataSet set1 = new BarDataSet(getDataSet(amounts), "Total amount of each item sold");
+            BarDataSet set1 = new BarDataSet(getDataSet(amounts), "Quantity");
             set1.setColors(Color.parseColor("#F78B5D"));
             set1.setValueTextSize(15f);
 
