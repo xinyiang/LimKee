@@ -1,7 +1,6 @@
 package com.limkee.dashboard;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,9 +19,11 @@ import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
 import com.limkee.entity.Customer;
 import com.limkee.order.CancelledOrderFragment;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -39,16 +40,13 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
     private View view;
     private Customer customer;
     public static Retrofit retrofit;
-    private  String isEnglish;
-    private Spinner spinner;
+    private String isEnglish;
+    private Spinner ddlYear;
     static TotalSalesFragment fragment;
-    private static final String[] years = {"Year","2016","2017","2018"};
+    private static String[] years;
     private String selectedYear = "";
-    private ArrayList<String> custmonth = new ArrayList<>();
-    private ArrayList<String> othermonth = new ArrayList<>();
-    private ArrayList<Float> amounts = new ArrayList<>();
-    private ArrayList<Float> avgSales = new ArrayList<>();
     private HashMap<String, Integer> monthConvert = new HashMap<>();
+    private String systemYear;
     private CheckBox checkBox;
     private Chart chart;
     private boolean checkBoxStatus;
@@ -70,6 +68,19 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
 
+        if (isEnglish.equals("Yes")){
+            years = new String[]{"Year","2016","2017","2018"};
+        } else {
+            years = new String []{"年","2016","2017","2018"};
+        }
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/M/dd hh:mm:ss");
+            String today = sdf.format(new Date());
+            systemYear = today.substring(0, 4);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         monthConvert.put("Dec",12);
         monthConvert.put("Nov",11);
         monthConvert.put("Oct",10);
@@ -82,27 +93,55 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         monthConvert.put("Mar",3);
         monthConvert.put("Feb",2);
         monthConvert.put("Jan",1);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_total_sales, container, false);
-        spinner = (Spinner)view.findViewById(R.id.spinner1);
+      
+        ddlYear = (Spinner)view.findViewById(R.id.ddl_year);
+        boolean isChecked = ((CheckBox) view.findViewById(R.id.cb_onlyMe)).isChecked();
         chart = new Chart((HorizontalBarChart)view.findViewById(R.id.chart));
+        checkBox = ((CheckBox) view.findViewById(R.id.cb_onlyMe));
 
-        checkBox = ((CheckBox) view.findViewById(R.id.checkBox2));
+        //when it is loading, show nothing by removing default no data text
+        chart.loading();
+
+        if (isEnglish.equals("Yes")){
+            checkBox.setText("Show only me");
+        } else {
+            checkBox.setText("只是我");
+        }
+
         checkBoxStatus = checkBox.isChecked();
-        ArrayAdapter<String>adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years );
+        ArrayAdapter<String>adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(fragment);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        ddlYear.setAdapter(adapter);
+        ddlYear.setOnItemSelectedListener(fragment);
+
+        //set selected year
+        for (int i = 1; i < years.length; i++) {
+            if (ddlYear.getItemAtPosition(i).equals(systemYear)) {
+                ddlYear.setSelection(i);
+                break;
+            }
+        }
+
+        //when it is loading, show nothing by removing default no data text
+        chart.loading();
+
+        ddlYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                 selectedYear = arg0.getItemAtPosition(position).toString();
-                doGetCustomerSales(customer.getCompanyCode(), selectedYear);
-                doGetAverageSales(selectedYear);
+                if (selectedYear.equals("Year") || selectedYear.equals("年")){
+                    chart.hide(isEnglish);
+                } else {
+                    if (!isChecked) {
+                        doGetAverageSales(selectedYear);
+                    }
+                    doGetCustomerSales(customer.getCompanyCode(), selectedYear);
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -113,23 +152,27 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 checkBoxStatus = isChecked;
-                if (isChecked) {
-                    chart.showChart(isChecked);
+                if (selectedYear.equals("Year") || selectedYear.equals("年")){
+                    chart.hide(isEnglish);
                 } else {
-                    chart.showChart(isChecked);
+                    if (isChecked) {
+                        doGetCustomerSales(customer.getCompanyCode(), selectedYear);
+                        //  chart.showChart(isChecked);
+                    } else {
+                        doGetCustomerSales(customer.getCompanyCode(), selectedYear);
+                        doGetAverageSales(selectedYear);
+                        // chart.showChart(isChecked);
+                    }
                 }
             }
         });
+
         return view;
     }
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (isEnglish.equals("Yes")) {
-        } else {
-        }
     }
 
     private void doGetCustomerSales(String companyCode, String selectedYear) {
@@ -143,19 +186,17 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
 
         Call<LinkedHashMap<String,Double>> call = service.getFilteredCustomerSales(companyCode, selectedYear);
         call.enqueue(new Callback<LinkedHashMap<String,Double>>() {
-          
+
             @Override
             public void onResponse(Call<LinkedHashMap<String,Double>> call, Response<LinkedHashMap<String,Double>> response) {
                 LinkedHashMap<String,Double> data = response.body();
-
-                custmonth = new ArrayList<>();
-                amounts = new ArrayList<>();
+                System.out.println("data is " + data + " and size is " + data.size());
 
                 ArrayList<String> sortedMonths = new ArrayList<>();
                 ArrayList<Float> sortedAmounts = new ArrayList<>();
 
-                if (data == null) {
-                    //showChart(custmonth, amounts, "#F78B5D");
+                if (data == null || data.size() == 0) {
+                    chart.hide(isEnglish);
                 } else {
                     int i = 0;
                     Object[][] results = new Object[data.size()][2];
@@ -164,10 +205,6 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                         Map.Entry entry = (Map.Entry) entries.next();
                         String mth = (String)entry.getKey();
                         double amt = data.get(mth);
-                        System.out.println("month " + mth + " for customer have sales amt of $ " + amt);
-                        custmonth.add(mth);
-                        amounts.add((float) amt);
-
                         results[i][0] = mth;
                         results[i][1] = amt;
                         i++;
@@ -179,7 +216,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                             Integer i2 = (Integer) (monthConvert.get(o2[0]));
                             if (i1 != null && i2 != null) {
                                 return i2.compareTo(i1);
-                            }else{
+                            } else{
                                 return 0;
                             }
                         }
@@ -192,8 +229,8 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                         sortedAmounts.add(quantity);
                     }
                     //System.out.println("customer: " + sortedAmounts.toString());
-                    chart.updateDataSet("customer", sortedMonths, sortedAmounts);
-                    chart.showChart(checkBoxStatus);
+                    chart.updateDataSet("customer", sortedMonths, sortedAmounts, isEnglish);
+                    chart.showChart(checkBoxStatus, isEnglish);
                 }
 
             }
@@ -215,18 +252,15 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         PostData service = retrofit.create(PostData.class);
         Call<LinkedHashMap<String, Double>> call = service.getAverageSales(selectedYear);
         call.enqueue(new Callback<LinkedHashMap<String, Double>>() {
-          
+
             @Override
             public void onResponse(Call<LinkedHashMap<String, Double>> call, Response<LinkedHashMap<String, Double>> response) {
                 LinkedHashMap<String, Double> data = response.body();
-
-                othermonth = new ArrayList<>();
-                avgSales = new ArrayList<>();
                 ArrayList<String> sortedMonths = new ArrayList<>();
                 ArrayList<Float> sortedAmounts = new ArrayList<>();
 
-                if (data == null) {
-                    //showChart(othermonth, avgSales, "#A0C25A");
+                if (data == null || data.size() == 0) {
+                    chart.hide(isEnglish);
                 } else {
                     int i = 0;
                     Object[][] results = new Object[data.size()][2];
@@ -235,10 +269,6 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                         Map.Entry entry = (Map.Entry) entries.next();
                         String mth = (String) entry.getKey();
                         double amt = data.get(mth);
-                        System.out.println("month " + mth + " average sales amt is $ " + amt);
-                        othermonth.add(mth);
-                        avgSales.add((float) amt);
-
                         results[i][0] = mth;
                         results[i][1] = amt;
                         i++;
@@ -249,7 +279,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                             Integer i2 = (Integer) (monthConvert.get(o2[0]));
                             if (i1 != null && i2 != null) {
                                 return i2.compareTo(i1);
-                            }else{
+                            } else{
                                 return 0;
                             }
                         }
@@ -261,8 +291,8 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                         sortedMonths.add(sortedNames);
                         sortedAmounts.add(quantity);
                     }
-                    chart.updateDataSet("average", sortedMonths, sortedAmounts);
-                    chart.showChart(checkBoxStatus);
+                    chart.updateDataSet("average", sortedMonths, sortedAmounts, isEnglish);
+                    chart.showChart(checkBoxStatus, isEnglish);
                 }
             }
             @Override

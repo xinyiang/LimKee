@@ -1,6 +1,7 @@
 package com.limkee.dashboard;
 
 import android.graphics.Color;
+import android.graphics.Paint;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
@@ -13,6 +14,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.limkee.R;
 
 import java.util.ArrayList;
 
@@ -21,25 +23,51 @@ public class Chart {
     private BarDataSet customerAmount;
     private BarDataSet averageAmount;
     private ArrayList<String> month;
+    private ArrayList<String> chineseMth;
 
     public Chart(HorizontalBarChart chart){
         this.chart = chart;
         this.chart.setDoubleTapToZoomEnabled(false);
     }
 
-    public void updateDataSet(String type, ArrayList<String> mth, ArrayList<Float> dataSet){
-        if (type.equals("customer")){
-            customerAmount = new BarDataSet(getDataSet(dataSet), "Total sales of current customer");
+    public void updateDataSet(String type, ArrayList<String> mth, ArrayList<Float> dataSet, String language){
+
+        if (type.equals("customer")) {
+            if (language.equals("Yes")) {
+                customerAmount = new BarDataSet(getDataSet(dataSet), "My spendings");
+                month = mth;
+            } else {
+                customerAmount = new BarDataSet(getDataSet(dataSet), "我的花费");
+                chineseMth = new ArrayList<>();
+                for (String engMth : mth) {
+                    String chineseMonth = getChineseMonth(engMth);
+                    chineseMth.add(chineseMonth);
+                }
+                month = chineseMth;
+            }
             customerAmount.setColors(Color.parseColor("#A0C25A"));
             month = mth;
-        }else{
-            averageAmount = new BarDataSet(getDataSet(dataSet), "Total sales of all customers");
+        } else {
+            if (language.equals(("Yes"))) {
+                averageAmount = new BarDataSet(getDataSet(dataSet), "Average spendings");
+                month = mth;
+            } else {
+                averageAmount = new BarDataSet(getDataSet(dataSet), "平均花费");
+                chineseMth = new ArrayList<>();
+                for (String engMth : mth) {
+                    String chineseMonth = getChineseMonth(engMth);
+                    chineseMth.add(chineseMonth);
+                }
+                month = chineseMth;
+            }
+
             averageAmount.setColors(Color.parseColor("#F78B5D"));
-            month = mth;
+            averageAmount.setValueTextSize(15f);
         }
     }
 
-    public void showChart(boolean isChecked) {
+    public void showChart(boolean isChecked, String language) {
+        System.out.println("customer " + customerAmount);
         try {
             if (customerAmount != null && averageAmount != null) {
                 IAxisValueFormatter axisFormatter = new IAxisValueFormatter() {
@@ -108,16 +136,34 @@ public class Chart {
                 chart.setVisibleXRangeMinimum(5);
 
                 chart.moveViewTo(month.size() - 1, 0, YAxis.AxisDependency.LEFT);
-            }else {
+            } else {
                 chart.setData(null);
                 chart.invalidate();
+                chart.setNoDataTextColor(R.color.colorAccent);
+                Paint p = chart.getPaint(com.github.mikephil.charting.charts.Chart.PAINT_INFO);
+                p.setTextSize(60);
+                if (language.equals("Yes")) {
+                    chart.setNoDataText("No data");
+
+                } else {
+                    chart.setNoDataText("没有资料");
+                }
             }
         } catch (Exception e){
             chart.setData(null);
             chart.invalidate();
+            chart.setNoDataTextColor(R.color.colorAccent);
+            Paint p = chart.getPaint(com.github.mikephil.charting.charts.Chart.PAINT_INFO);
+            p.setTextSize(60);
+            if (language.equals("Yes")) {
+                chart.setNoDataText("No data");
+            } else {
+                chart.setNoDataText("没有资料");
+            }
             e.printStackTrace();
         }
     }
+
     private ArrayList<BarEntry> getDataSet(ArrayList<Float> floats) {
         ArrayList<BarEntry> valueSet1 = new ArrayList<>();
         for (int i = 0; i < floats.size(); i++) {
@@ -125,6 +171,25 @@ public class Chart {
             valueSet1.add(v1e1);
         }
         return valueSet1;
+    }
+
+    public void hide(String language){
+        chart.setData(null);
+        chart.invalidate();
+        chart.setNoDataTextColor(R.color.colorAccent);
+        Paint p = chart.getPaint(com.github.mikephil.charting.charts.Chart.PAINT_INFO);
+        p.setTextSize(60);
+        if (language.equals("Yes")) {
+            chart.setNoDataText("No data");
+        } else {
+            chart.setNoDataText("没有资料");
+        }
+    }
+
+    public void loading(){
+        chart.setData(null);
+        chart.invalidate();
+        chart.setNoDataText("");
     }
 
     public class MyXAxisValueFormatter implements IAxisValueFormatter {
@@ -147,4 +212,37 @@ public class Chart {
         }
     }
 
+    private String getChineseMonth(String engMonth) {
+
+        String chineseMth = "";
+
+        if (engMonth.equals("Jan")) {
+            chineseMth = "一月";
+        } else if (engMonth.equals("Feb")) {
+            chineseMth = "二月";
+        } else if (engMonth.equals("Mar")) {
+            chineseMth = "三月";
+        } else if (engMonth.equals("Apr")) {
+            chineseMth = "四月";
+        } else if (engMonth.equals("May")) {
+            chineseMth = "五月";
+        } else if (engMonth.equals("Jun")) {
+            chineseMth = "六月";
+        } else if (engMonth.equals("Jul")) {
+            chineseMth = "七月";
+        } else if (engMonth.equals("Aug")) {
+            chineseMth = "八月";
+        } else if (engMonth.equals("Sep")) {
+            chineseMth = "九月";
+        } else if (engMonth.equals("Oct")) {
+            chineseMth = "十月";
+        } else if (engMonth.equals("Nov")) {
+            chineseMth = "十一月";
+        } else if (engMonth.equals("Dec")) {
+            chineseMth = "十二月";
+        } else {
+            //nothing
+        }
+        return chineseMth;
+    }
 }
