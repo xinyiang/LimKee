@@ -20,9 +20,12 @@ import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
 import com.limkee.entity.Customer;
 import com.limkee.order.CancelledOrderFragment;
+import com.stripe.android.model.Source;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -40,15 +43,16 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
     private Customer customer;
     public static Retrofit retrofit;
     private  String isEnglish;
-    private Spinner spinner;
+    private Spinner ddlYear;
     static TotalSalesFragment fragment;
-    private static final String[] years = {"Year","2016","2017","2018"};
+    private static String[] years;
     private String selectedYear = "";
     private ArrayList<String> custmonth = new ArrayList<>();
     private ArrayList<String> othermonth = new ArrayList<>();
     private ArrayList<Float> amounts = new ArrayList<>();
     private ArrayList<Float> avgSales = new ArrayList<>();
     private HashMap<String, Integer> monthConvert = new HashMap<>();
+    private String systemYear;
     private CheckBox checkBox;
     private Chart chart;
     private boolean checkBoxStatus;
@@ -70,6 +74,19 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
 
+        if (isEnglish.equals("Yes")){
+            years = new String[]{"Year","2016","2017","2018"};
+        } else {
+            years = new String []{"年","2016","2017","2018"};
+        }
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/M/dd hh:mm:ss");
+            String today = sdf.format(new Date());
+            systemYear = today.substring(0, 4);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         monthConvert.put("Dec",12);
         monthConvert.put("Nov",11);
         monthConvert.put("Oct",10);
@@ -82,33 +99,128 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         monthConvert.put("Mar",3);
         monthConvert.put("Feb",2);
         monthConvert.put("Jan",1);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_total_sales, container, false);
-        spinner = (Spinner)view.findViewById(R.id.spinner1);
+      
+        ddlYear = (Spinner)view.findViewById(R.id.ddl_year);
+        boolean isChecked = ((CheckBox) view.findViewById(R.id.checkBox2)).isChecked();
         chart = new Chart((HorizontalBarChart)view.findViewById(R.id.chart));
-
         checkBox = ((CheckBox) view.findViewById(R.id.checkBox2));
         checkBoxStatus = checkBox.isChecked();
         ArrayAdapter<String>adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(fragment);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        ddlYear.setAdapter(adapter);
+        ddlYear.setOnItemSelectedListener(fragment);
+
+        for (int i = 1; i < years.length; i++) {
+            if (ddlYear.getItemAtPosition(i).equals(systemYear)) {
+                ddlYear.setSelection(i);
+                selectedYear =  ddlYear.getItemAtPosition(i).toString();
+                break;
+            }
+        }
+      
+        doGetCustomerSales(customer.getCompanyCode(), selectedYear);
+        System.out.println("selected year is for sales " + selectedYear);
+        ddlYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                 selectedYear = arg0.getItemAtPosition(position).toString();
+                if (!isChecked) {
+                    doGetAverageSales(selectedYear);
+                }
                 doGetCustomerSales(customer.getCompanyCode(), selectedYear);
-                doGetAverageSales(selectedYear);
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
 
+        return view;
+    }
+
+    public void showChart(ArrayList<String> custmonth, ArrayList<Float> amounts, String color) {
+        HorizontalBarChart chart = view.findViewById(R.id.chart);
+        try {
+            //chart.setScaleEnabled(false);
+            chart.setDoubleTapToZoomEnabled(false);
+            //chart.setFitBars(false);
+            BarDataSet set1 = new BarDataSet(getDataSet(amounts), "Total amount spent");
+            set1.setColors(Color.parseColor(color));
+            set1.setValueTextSize(15f);
+
+            BarData data = new BarData(set1);
+            data.setValueFormatter(new ValueFormatter());
+            IAxisValueFormatter axisFormatter = new IAxisValueFormatter() {
+                @Override
+                public String getFormattedValue(float value, AxisBase axis) {
+                    return "" + ((int) value);
+                }
+            };
+            data.setBarWidth(0.5f);
+
+            YAxis left = chart.getAxisLeft();
+            left.setValueFormatter(axisFormatter);
+            left.setGranularity(1f);
+            left.setTextSize(15f);
+            left.setAxisMinimum(0f);
+
+            YAxis right = chart.getAxisRight();
+            right.setDrawLabels(false);
+            right.setDrawGridLines(false);
+
+            // X-axis labels
+            String[] values = custmonth.toArray(new String[custmonth.size()]);
+            System.out.println("Items are " + values[0]);
+            XAxis xAxis = chart.getXAxis();
+            xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
+            xAxis.setGranularity(1f);
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setDrawGridLines(false);
+            xAxis.setTextSize(15f);
+            xAxis.setAxisMaximum(amounts.size() - 0.5f);
+            xAxis.setAxisMinimum(-0.5f);
+            xAxis.setLabelRotationAngle(-15);
+
+            chart.setData(data);
+
+            Description description = new Description();
+            description.setText("");
+            description.setTextSize(15);
+            chart.setDescription(description);
+
+            chart.getLegend().setEnabled(true);
+            chart.getLegend().setTextSize(15f);
+            chart.animateY(1000);
+            chart.invalidate();
+
+            //chart.setVisibleYRangeMaximum(300, YAxis.AxisDependency.LEFT);
+            chart.setVisibleXRangeMaximum(5);
+            chart.setVisibleXRangeMinimum(5);
+            chart.moveViewTo(amounts.size() - 1, 0, YAxis.AxisDependency.LEFT);
+        } catch (Exception e){
+            chart.setData(null);
+            chart.invalidate();
+        }
+    }
+
+    public class MyXAxisValueFormatter implements IAxisValueFormatter {
+        private String[] mValues;
+
+        public MyXAxisValueFormatter(String[] values) {
+            this.mValues = values;
+        }
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            if (mValues.length == 0) {
+                return "";
+            } else {
+                if ((int) value < mValues.length) {
+                    return mValues[(int) value];
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -143,7 +255,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
 
         Call<LinkedHashMap<String,Double>> call = service.getFilteredCustomerSales(companyCode, selectedYear);
         call.enqueue(new Callback<LinkedHashMap<String,Double>>() {
-          
+
             @Override
             public void onResponse(Call<LinkedHashMap<String,Double>> call, Response<LinkedHashMap<String,Double>> response) {
                 LinkedHashMap<String,Double> data = response.body();
@@ -154,7 +266,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                 ArrayList<String> sortedMonths = new ArrayList<>();
                 ArrayList<Float> sortedAmounts = new ArrayList<>();
 
-                if (data == null) {
+                if (data == null || data.size() == 0) {
                     //showChart(custmonth, amounts, "#F78B5D");
                 } else {
                     int i = 0;
@@ -178,8 +290,13 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                             Integer i1 = (Integer) (monthConvert.get(o1[0]));
                             Integer i2 = (Integer) (monthConvert.get(o2[0]));
                             if (i1 != null && i2 != null) {
+                                if (i2 > i1) {
+                                    return -1;
+                                }else{
+                                    return 1;
+                                }
                                 return i2.compareTo(i1);
-                            }else{
+                            } else{
                                 return 0;
                             }
                         }
@@ -215,17 +332,16 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         PostData service = retrofit.create(PostData.class);
         Call<LinkedHashMap<String, Double>> call = service.getAverageSales(selectedYear);
         call.enqueue(new Callback<LinkedHashMap<String, Double>>() {
-          
+
             @Override
             public void onResponse(Call<LinkedHashMap<String, Double>> call, Response<LinkedHashMap<String, Double>> response) {
                 LinkedHashMap<String, Double> data = response.body();
-
                 othermonth = new ArrayList<>();
                 avgSales = new ArrayList<>();
                 ArrayList<String> sortedMonths = new ArrayList<>();
                 ArrayList<Float> sortedAmounts = new ArrayList<>();
 
-                if (data == null) {
+                if (data == null || data.size() == 0) {
                     //showChart(othermonth, avgSales, "#A0C25A");
                 } else {
                     int i = 0;
