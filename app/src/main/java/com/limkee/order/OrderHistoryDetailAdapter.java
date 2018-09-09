@@ -50,26 +50,23 @@ public class OrderHistoryDetailAdapter extends RecyclerView.Adapter<OrderHistory
 
         public void bindContent(OrderQuantity product) {
             DecimalFormat df = new DecimalFormat("#0.00");
-            if (isEnglish.equals("Yes")) {
-                description.setText(product.getDescription());
-                uom = "pcs";
-            } else {
-                description.setText(product.getDescription2());
-                uom = product.getUom();
-            }
 
-            //show deducted qty if there is return qty
-            int returnQty = product.getReturnedQty();
-            if (returnQty != 0){
-                int quantity = product.getQty() - returnQty;
-                qty.setText(Integer.toString(quantity));
-            } else {
+            //only show when qty is not 0
+           // if (product.getQty() != 0) {
+                if (isEnglish.equals("Yes")) {
+                    description.setText(product.getDescription());
+                    uom = "pcs";
+                } else {
+                    description.setText(product.getDescription2());
+                    uom = product.getUom();
+                }
+
                 qty.setText(Integer.toString(product.getQty()));
-            }
 
-            unitOfMetric.setText(uom);
-            double unitSub = product.getQty() * product.getUnitPrice();
-            unitSubtotal.setText("$" + df.format(unitSub));
+                unitOfMetric.setText(uom);
+                double unitSub = product.getQty() * product.getUnitPrice();
+                unitSubtotal.setText("$" + df.format(unitSub));
+           // }
 
         }
     }
