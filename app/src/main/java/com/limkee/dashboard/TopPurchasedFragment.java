@@ -96,8 +96,9 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         }
 
         //call api to get customer's earliest year of orders
-       // getEarliestYear(customer.getDebtorCode()); //assign earliestYear variable
         earliestYear = 2017;
+        getEarliestYear(customer.getDebtorCode()); //assign earliestYear variable
+
 
         if (earliestYear == 0 || earliestYear == Integer.parseInt(systemYear)){
             earliestYear = Integer.parseInt(systemYear);
@@ -295,7 +296,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             if (language.equals("eng")) {
                 chart.setNoDataText("No data");
             } else {
-                chart.setNoDataText("没有资料");
+                chart.setNoDataText("没有数据");
             }
         }
     }

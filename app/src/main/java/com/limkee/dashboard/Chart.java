@@ -146,7 +146,7 @@ public class Chart {
                     chart.setNoDataText("No data");
 
                 } else {
-                    chart.setNoDataText("没有资料");
+                    chart.setNoDataText("没有数据");
                 }
             }
         } catch (Exception e){
@@ -158,7 +158,7 @@ public class Chart {
             if (language.equals("Yes")) {
                 chart.setNoDataText("No data");
             } else {
-                chart.setNoDataText("没有资料");
+                chart.setNoDataText("没有数据");
             }
             e.printStackTrace();
         }
@@ -182,7 +182,7 @@ public class Chart {
         if (language.equals("Yes")) {
             chart.setNoDataText("No data");
         } else {
-            chart.setNoDataText("没有资料");
+            chart.setNoDataText("没有数据");
         }
     }
 

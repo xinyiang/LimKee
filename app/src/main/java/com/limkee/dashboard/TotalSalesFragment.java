@@ -69,9 +69,9 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         customer = bundle.getParcelable("customer");
 
         if (isEnglish.equals("Yes")){
-            years = new String[]{"Year","2016","2017","2018"};
+            years = new String[]{"Year","2017","2018"};
         } else {
-            years = new String []{"年","2016","2017","2018"};
+            years = new String []{"年","2017","2018"};
         }
 
         try {
