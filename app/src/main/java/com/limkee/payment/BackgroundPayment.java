@@ -189,6 +189,17 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         if (result != null && result.equals("success")){
             //insert into database 3 tables
             createSalesOrder();
+        } else{
+            Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
+            it.putExtra("result","unsuccess");
+            it.putExtra("totalPayable", tp);
+            it.putExtra("customer", customer);
+            it.putExtra("language", isEnglish);
+            it.putExtra("paperBagNeeded", paperBagNeeded);
+            it.putParcelableArrayListExtra("orderList", orderList);
+            context.startActivity(it);
+
+            activity.finish();
         }
     }
 
