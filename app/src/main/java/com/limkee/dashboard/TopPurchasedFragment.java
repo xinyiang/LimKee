@@ -287,7 +287,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             chart.setVisibleXRangeMinimum(5);
             chart.moveViewTo(amounts.size() - 1, 0, YAxis.AxisDependency.LEFT);
 
-        }catch (Exception e){
+        } catch (Exception e){
             chart.setData(null);
             chart.invalidate();
             Paint p = chart.getPaint(com.github.mikephil.charting.charts.Chart.PAINT_INFO);
@@ -336,6 +336,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     }
 
     private void doGetTopProducts(String companyCode, String selectedMonth, String selectedYear, String language) {
+        System.out.println("purchase data is entered");
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(HttpConstant.BASE_URL)
@@ -350,10 +351,13 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 Map<String, Integer> data = response.body();
                 ArrayList<String> sortedItemNames = new ArrayList<>();
                 ArrayList<Float> sortedAmounts = new ArrayList<>();
-
-                if (data.size() == 0) {
-                    showChart(sortedItemNames, sortedAmounts);
+                System.out.println("purchase data is returned");
+                if (data == null || data.size() == 0) {
+                    //showChart(sortedItemNames, sortedAmounts);
+                    chart.hide(isEnglish);
+                    System.out.println("purchase data is empty");
                 } else {
+                    System.out.println("purchase is not empty " + data);
                     int i = 0;
                     Object[][] results = new Object[data.size()][2];
                     Iterator entries = data.entrySet().iterator();

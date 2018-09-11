@@ -39,12 +39,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ProductDetailsFragment extends Fragment {
     private ProductDetailsFragment.OnFragmentInteractionListener mListener;
-    private ProductDetailsFragment mAdapter;
-    static ProductDetailsFragment fragment;
     private View view;
     private ProgressBar progressBar;
-    private RecyclerView recyclerView;
-    String orderID;
     private Product product;
     private String isEnglish;
 
@@ -88,7 +84,9 @@ public class ProductDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         view = inflater.inflate(R.layout.fragment_product_details, container, false);
+        /*
         progressBar = view.findViewById(R.id.progressBar);
 
         new CountDownTimer(400, 100) {
@@ -103,6 +101,7 @@ public class ProductDetailsFragment extends Fragment {
             }
         }.start();
 
+         */
 
         //if english, change label to english
         ImageView image;
@@ -115,8 +114,11 @@ public class ProductDetailsFragment extends Fragment {
 
         Picasso.with(getContext()).load(product.getImageUrl())
                 .error(R.mipmap.launchicon)
-                .placeholder(R.mipmap.launchicon)
+                .resize(310,250)
+                .onlyScaleDown()
                 .into(image);
+        //.fit();
+        //.placeholder(R.mipmap.launchicon)
 
         DecimalFormat df = new DecimalFormat("#0.00");
 

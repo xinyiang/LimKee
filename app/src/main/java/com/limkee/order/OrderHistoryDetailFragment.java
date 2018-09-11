@@ -76,7 +76,7 @@ public class OrderHistoryDetailFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (isEnglish.equals("Yes")){
-            ((OrderHistoryDetailActivity) getActivity()).setActionBarTitle("Order Dtails");
+            ((OrderHistoryDetailActivity) getActivity()).setActionBarTitle("Order Details");
         } else {
             ((OrderHistoryDetailActivity) getActivity()).setActionBarTitle("订单详情");
         }
