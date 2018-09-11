@@ -229,14 +229,11 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 .client(client)
                 .build().create(PostData.class);
 
-        System.out.println("Paper bag needed is " + paperBagNeeded);
         if (paperBagNeeded.equals("yes")) {
             paperBagRequired = 1;
         } else {
             paperBagRequired = 0;
         }
-
-        System.out.println("Paper bag required is " + paperBagRequired);
 
         compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode(), paperBagRequired)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -246,17 +243,19 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
 
     private void handleSalesOrderResponse(String orderNo) {
 
-        if (orderNo != null) {
+        if (orderNo != null || orderNo.length() != 0) {
             //create Sales Order Details
+            System.out.println("SALES ORDER CREATED " + newOrderID);
             newOrderID = orderNo;
             createSalesOrderDetails(newOrderID);
+        } else {
+            System.out.println("Background payment failed in line 244. SALES ORDER NOT CREATED " + orderNo);
+            //show error msg
         }
-        System.out.println("SALES ORDER CREATED " + newOrderID);
     }
 
     private void handleError(Throwable error) {
         System.out.println("Error " + error.getMessage());
-
     }
 
     private void createSalesOrderDetails(String orderNo) {
@@ -271,11 +270,9 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 .client(client)
                 .build().create(PostData.class);
 
-        System.out.println("SALES ORDER detail id is " + orderNo);
         DecimalFormat df = new DecimalFormat("#0.00");
         double totalAmt = tp*(100.0/107.0);
         totalAmt = Double.parseDouble(df.format(totalAmt));
-        System.out.println("Double total is " + totalAmt);
         compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, totalAmt, orderNo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -283,10 +280,12 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     }
 
     private void handleSalesOrderDetailsResponse(boolean added) {
-        System.out.println("SALES ORDER ADDED " + added);
         if (added) {
             //create Sales Order Quantity
             createSalesOrderQuantity();
+        } else {
+            //show error msg
+            //delete sales order record
         }
     }
 
@@ -321,7 +320,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         if (numProducts == orderList.size()) {
 
             //concatenate zeros
-            if (newOrderID.length() == 1){
+            if (newOrderID.length() == 1) {
                 newOrderID = "00000" + newOrderID;
             } else if (newOrderID.length() == 2) {
                 newOrderID = "0000" + newOrderID;
@@ -335,8 +334,10 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             } else if (newOrderID.length() == 5) {
                 newOrderID = "0" + newOrderID;
 
+            } else if (newOrderID.length() == 6) {
+                //remain as original
             } else {
-                //remain as original orderNo
+                newOrderID = "";
             }
 
             Date todayDate = new Date();
@@ -344,41 +345,43 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             String todayYearMonth = formatter.format(todayDate);
 
             newOrderID = todayYearMonth + "-" + newOrderID;
-            System.out.println("SALES ORDER IS " + newOrderID);
 
             //get the last 2 digit of the year
-            String year = ETADeliveryDate.substring(0,4);
+            String year = ETADeliveryDate.substring(0, 4);
             //get the 2 digit of the month
-            String month = ETADeliveryDate.substring(6,7);
+            String month = ETADeliveryDate.substring(6, 7);
             //if delivery month contains "-", single digit month. add 0
             //else double digit month
-            if (month.equals("-")){
-                month = "0" + ETADeliveryDate.substring(5,6);
+            if (month.equals("-")) {
+                month = "0" + ETADeliveryDate.substring(5, 6);
             } else {
-                month = ETADeliveryDate.substring(5,7);
+                month = ETADeliveryDate.substring(5, 7);
             }
             String day = ETADeliveryDate.substring(8);
-            if (day.length() == 1){
-                 day = "0" + day;
+            if (day.length() == 1) {
+                day = "0" + day;
             }
             String deliveryDate = day + "/" + month + "/" + year;
 
-           // SMSNotification notif = new SMSNotification(context, activity);
-          //  notif.execute(customer.getDeliveryContact(), deliveryDate, newOrderID, isEnglish);
+            //SMSNotification notif = new SMSNotification(context, activity);
+            //notif.execute(customer.getDeliveryContact(), deliveryDate, newOrderID, isEnglish);
 
             Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
-            it.putExtra("result","success");
+            it.putExtra("result", "success");
             it.putExtra("totalPayable", tp);
             it.putExtra("customer", customer);
             it.putExtra("orderId", newOrderID);
-            it.putExtra("language",isEnglish);
+            it.putExtra("language", isEnglish);
             context.startActivity(it);
 
             activity.finish();
 
         } else {
-            System.out.println("Background payment failed in line 368");
+            System.out.println("Background payment failed in line 376");
+            //show error msg
+            //delete sales order and sales order detail record
         }
+
     }
 
 }
