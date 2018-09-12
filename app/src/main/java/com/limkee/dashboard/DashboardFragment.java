@@ -74,11 +74,11 @@ public class DashboardFragment extends Fragment {
         salesFragment.setArguments(myBundle);
         topProductFragment.setArguments(myBundle);
         if (isEnglish.equals("Yes")){
-            adapter.addFragment(salesFragment, "Total sales");
-            adapter.addFragment(topProductFragment, "Top Purchased Items");
+            adapter.addFragment(salesFragment, "Spendings");
+            adapter.addFragment(topProductFragment, "Products");
         } else {
-            adapter.addFragment(salesFragment, "总销量");
-            adapter.addFragment(topProductFragment, "最畅销产品");
+            adapter.addFragment(salesFragment, "总花费");
+            adapter.addFragment(topProductFragment, "频繁采购");
         }
         viewPager.setAdapter(adapter);
     }

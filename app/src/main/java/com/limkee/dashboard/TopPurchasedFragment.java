@@ -234,7 +234,13 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         try {
             chart.setDoubleTapToZoomEnabled(false);
             //chart.setFitBars(false);
-            BarDataSet set1 = new BarDataSet(getDataSet(amounts), "Quantity");
+            BarDataSet set1;
+            if (isEnglish.equals("Yes")){
+                 set1 = new BarDataSet(getDataSet(amounts), "Quantity");
+            } else {
+                set1 = new BarDataSet(getDataSet(amounts), "数量");
+            }
+
             set1.setColors(Color.parseColor("#F78B5D"));
             set1.setValueTextSize(15f);
 
