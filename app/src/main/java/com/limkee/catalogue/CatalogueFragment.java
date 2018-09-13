@@ -93,6 +93,7 @@ public class CatalogueFragment extends Fragment {
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
+        cutoffTime = bundle.getString("cutofftime");
         deliveryShift = bundle.getString("deliveryShift");
 
         if (isEnglish.equals("Yes")){
@@ -104,7 +105,6 @@ public class CatalogueFragment extends Fragment {
         builder= new AlertDialog.Builder(getContext());
         loginPreferences = getContext().getSharedPreferences("loginPrefs", MODE_PRIVATE);
         loginPrefsEditor = loginPreferences.edit();
-        cutoffTime = loginPreferences.getString("cutofftime", "");
         loginPrefsEditor.commit();
 
         //alert dialogue show is for today/tmr's time based on current timestamp
@@ -182,7 +182,6 @@ public class CatalogueFragment extends Fragment {
             loginPrefsEditor.putBoolean("FirstTimeLogin", false);
             loginPrefsEditor.apply();
         }
-
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -190,7 +189,6 @@ public class CatalogueFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_catalogue, container, false);
 
         doGetCatalogue();
-
 
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
@@ -216,7 +214,6 @@ public class CatalogueFragment extends Fragment {
         new CountDownTimer(400, 100) {
 
             public void onTick(long millisUntilFinished) {
-
             }
 
             public void onFinish() {
@@ -224,7 +221,6 @@ public class CatalogueFragment extends Fragment {
                 recyclerView.setVisibility(View.VISIBLE);
             }
         }.start();
-
 
         return view;
     }
@@ -266,7 +262,6 @@ public class CatalogueFragment extends Fragment {
                         }
                     }
                 }
-
 
             //check if subtotal hits minimum requirements
                 if (calculateSubtotal(orderList) < 30) {
@@ -365,8 +360,16 @@ public class CatalogueFragment extends Fragment {
             chineseHour = "九";
         } else if (time.equals("10")) {
             chineseHour = "十";
-        } else {
-            chineseHour = "";
+        } else if (time.equals("11")) {
+            chineseHour = "十一";
+        } else if (time.equals("12")) {
+            chineseHour = "十二";
+        }else if (time.equals("01")) {
+            chineseHour = "一";
+        }else if (time.equals("02")) {
+            chineseHour = "二";
+        }else if (time.equals("03")) {
+            chineseHour = "三";
         }
 
         //check if got mins
