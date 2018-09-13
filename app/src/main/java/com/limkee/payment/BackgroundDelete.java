@@ -1,6 +1,5 @@
 package com.limkee.payment;
 
-
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 

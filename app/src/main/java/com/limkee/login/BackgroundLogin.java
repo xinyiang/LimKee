@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.widget.TextView;
-
 import com.google.gson.Gson;
 import com.limkee.R;
 import com.limkee.entity.Customer;
@@ -25,14 +24,6 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -129,22 +120,22 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
 
             final Customer customer = new Customer(companyCode, password, debtorCode, companyName, debtorName, deliveryContact, deliveryContact2, invAddr1, invAddr2, invAddr3, invAddr4, deliverAddr1, deliverAddr2, deliverAddr3, deliverAddr4, displayTerm, status, routeNo);
 
-                    Intent it = new Intent(context, NavigationActivity.class);
-                    Gson gson = new Gson();
-                    String json = gson.toJson(customer);
-                    loginPrefsEditor.putBoolean("saveLogin", true);
-                    loginPrefsEditor.putString("username", companyCode);
-                    loginPrefsEditor.putString("password", password);
+            Intent it = new Intent(context, NavigationActivity.class);
+            Gson gson = new Gson();
+            String json = gson.toJson(customer);
+            loginPrefsEditor.putBoolean("saveLogin", true);
+            loginPrefsEditor.putString("username", companyCode);
+            loginPrefsEditor.putString("password", password);
 
-                    loginPrefsEditor.putString("cutofftime", cutoffTime);
-                    loginPrefsEditor.putString("customer", json);
-                    loginPrefsEditor.putString("deliveryShift", deliveryShift);
-                    loginPrefsEditor.putBoolean("isLogin", true);
-                    loginPrefsEditor.putBoolean("isAlertDialogue", true);
-                    loginPrefsEditor.putString("language", isEnglish);
-                    loginPrefsEditor.apply();
-                    loginPrefsEditor.commit();
-                    context.startActivity(it);
+            loginPrefsEditor.putString("cutofftime", cutoffTime);
+            loginPrefsEditor.putString("customer", json);
+            loginPrefsEditor.putString("deliveryShift", deliveryShift);
+            loginPrefsEditor.putBoolean("isLogin", true);
+            loginPrefsEditor.putBoolean("isAlertDialogue", true);
+            loginPrefsEditor.putString("language", isEnglish);
+            loginPrefsEditor.apply();
+            loginPrefsEditor.commit();
+            context.startActivity(it);
         } else{
             if(isEnglish.equals("Yes")) {
                 pwdValidate.setText("Invalid Username and/or Password");
