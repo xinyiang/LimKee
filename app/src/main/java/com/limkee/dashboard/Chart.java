@@ -5,6 +5,7 @@ import android.graphics.Paint;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -17,6 +18,10 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.limkee.R;
 
 import java.util.ArrayList;
+
+import static com.github.mikephil.charting.components.Legend.LegendPosition.BELOW_CHART_CENTER;
+import static com.github.mikephil.charting.components.Legend.LegendPosition.BELOW_CHART_LEFT;
+import static java.lang.Boolean.TRUE;
 
 public class Chart {
     private HorizontalBarChart chart;
@@ -113,7 +118,7 @@ public class Chart {
                 xAxis.setTextSize(15f);
                 xAxis.setAxisMaximum(month.size() - 0.5f);
                 xAxis.setAxisMinimum(-0.5f);
-                xAxis.setLabelRotationAngle(-15);
+                //xAxis.setLabelRotationAngle(-15);
 
                 chart.setData(data);
                 if (!isChecked) {
@@ -122,12 +127,16 @@ public class Chart {
 
                 Description description = new Description();
                 description.setText("");
-                description.setTextSize(15);
                 chart.setDescription(description);
 
-                chart.getLegend().setEnabled(true);
-                chart.getLegend().setTextSize(10f);
-                //chart.getLegend().setWordWrapEnabled(true);
+                Legend l = chart.getLegend();
+                l.setFormSize(9f);
+                l.setForm(Legend.LegendForm.CIRCLE);
+                l.setTextSize(9f);
+                l.setStackSpace(0.5F);
+                l.setTextColor(Color.BLACK);
+                l.setWordWrapEnabled(true);
+
                 chart.animateY(1000);
                 chart.invalidate();
 
