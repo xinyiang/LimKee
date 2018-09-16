@@ -1,6 +1,7 @@
 package com.limkee.dashboard;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
@@ -14,6 +15,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
@@ -23,6 +26,11 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.renderer.XAxisRendererHorizontalBarChart;
+import com.github.mikephil.charting.utils.MPPointF;
+import com.github.mikephil.charting.utils.Transformer;
+import com.github.mikephil.charting.utils.Utils;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.limkee.R;
 import com.limkee.constant.HttpConstant;
 import com.limkee.constant.PostData;
@@ -231,6 +239,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
 
     public void showChart(ArrayList<String> itemNames, ArrayList<Float> amounts) {
         HorizontalBarChart chart = view.findViewById(R.id.chart);
+        chart.fitScreen();
         try {
             chart.setDoubleTapToZoomEnabled(false);
             //chart.setFitBars(false);
@@ -243,6 +252,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
 
             set1.setColors(Color.parseColor("#F78B5D"));
             set1.setValueTextSize(15f);
+            set1.setAxisDependency(YAxis.AxisDependency.LEFT);
 
             BarData data = new BarData(set1);
             data.setValueFormatter(new ValueFormatter());
@@ -275,24 +285,24 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             xAxis.setTextSize(15f);
             xAxis.setAxisMaximum(amounts.size() - 0.5f);
             xAxis.setAxisMinimum(-0.5f);
-            xAxis.setLabelRotationAngle(-15);
+            //xAxis.setLabelRotationAngle(-15);
 
             chart.setData(data);
 
             Description description = new Description();
             description.setText("");
-            description.setTextSize(15);
             chart.setDescription(description);
+            chart.setXAxisRenderer(new MyXAxisRenderer(chart.getViewPortHandler(), xAxis, chart.getTransformer(YAxis.AxisDependency.LEFT), chart));
 
             chart.getLegend().setEnabled(true);
             chart.getLegend().setTextSize(15f);
+
             chart.animateY(1000);
             chart.invalidate();
 
             chart.setVisibleXRangeMaximum(5);
             chart.setVisibleXRangeMinimum(5);
             chart.moveViewTo(amounts.size() - 1, 0, YAxis.AxisDependency.LEFT);
-
         } catch (Exception e){
             chart.setData(null);
             chart.invalidate();
@@ -310,7 +320,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     public class MyXAxisValueFormatter implements IAxisValueFormatter {
         private String[] mValues;
 
-        public MyXAxisValueFormatter(String[] values) {
+        MyXAxisValueFormatter(String[] values) {
             this.mValues = values;
         }
 
@@ -320,12 +330,42 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 return "";
             } else {
                 if ((int) value < mValues.length) {
-                    return mValues[(int) value];
+                    switch(mValues[(int) value]){
+                        default: return mValues[(int) value];
+                        case "咖喱鸡肉包": return "咖喱\n鸡肉包";
+                        case "Lian Yong Pau": return "Lian Yong\nPau";
+                        case "Stewed Pork Pau": return "Stewed Pork\nPau";
+                        case "Curry Chicken Pau": return "Curry Chicken\nPau";
+                        case "Char Siew Pau": return "Char Siew\nPau";
+                        case "Tau Sar Pau": return "Tau Sar\nPau";
+                        case "Pork Siew Mai": return "Pork\nSiew Mai";
+                        case "Vegetable Pau": return "Vegetable\nPau";
+                    }
+
                 }
-                return "";
             }
+                return "";
         }
     }
+
+    public class MyXAxisRenderer extends XAxisRendererHorizontalBarChart {
+        MyXAxisRenderer(ViewPortHandler viewPortHandler, XAxis xAxis, Transformer trans, BarChart chart) {
+            super(viewPortHandler, xAxis, trans, chart);
+        }
+
+        @Override
+        protected void drawLabel(Canvas c, String formattedLabel, float x, float y, MPPointF anchor, float angleDegrees) {
+            String line[] = formattedLabel.split("\n");
+            if(formattedLabel.contains("\n")){
+                Utils.drawXAxisValue(c, line[0], x, y, mAxisLabelPaint, anchor, angleDegrees);
+                Utils.drawXAxisValue(c, line[1], x, y + mAxisLabelPaint.getTextSize(), mAxisLabelPaint, anchor, angleDegrees);
+            }else{
+                Utils.drawXAxisValue(c, formattedLabel, x, y, mAxisLabelPaint, anchor, angleDegrees);
+            }
+
+        }
+    }
+
 
     private ArrayList<BarEntry> getDataSet(ArrayList<Float> floats) {
         ArrayList<BarEntry> valueSet1 = new ArrayList<>();
@@ -391,13 +431,21 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                     });
 
                     try {
+                        if (results.length < 5){
+                            for (int j = 0; j < 5 - results.length; j++){
+                                float quantity = 0;
+                                String sortedNames = "";
+                                sortedItemNames.add(sortedNames);
+                                sortedAmounts.add(quantity);
+                            }
+                        }
                         for (int j = 0; j < results.length; j++) {
                             float quantity = Float.valueOf(results[j][0] + "");
                             String sortedNames = "" + results[j][1];
                             sortedItemNames.add(sortedNames);
                             sortedAmounts.add(quantity);
-                            showChart(sortedItemNames, sortedAmounts);
                         }
+                        showChart(sortedItemNames, sortedAmounts);
                     } catch (Exception e){}
                 }
             }
@@ -409,8 +457,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         });
     }
 
-   private void getEarliestYear(String companyCode) {
-
+    private void getEarliestYear(String companyCode) {
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(HttpConstant.BASE_URL)
@@ -436,7 +483,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     }
 
     private String getChineseMonth(String engMonth){
-
         String chineseMth = "";
 
         if (engMonth.equals("Jan")){
@@ -463,10 +509,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             chineseMth = "十一月";
         } else if (engMonth.equals("Dec")){
             chineseMth = "十二月";
-        } else {
-            //nothing
         }
-
         return  chineseMth;
     }
 
@@ -497,12 +540,9 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             engMonth = "Nov";
         }  else if (numMonth == 12) {
             engMonth = "Dec";
-        } else{
-            //nothing
         }
         return engMonth;
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -536,7 +576,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-
     }
 
     public interface OnFragmentInteractionListener {
