@@ -157,11 +157,11 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                 } else {
                     if (isChecked) {
                         doGetCustomerSales(customer.getCompanyCode(), selectedYear);
-                        //  chart.showChart(isChecked);
+                         // chart.showChart(checkBoxStatus, isEnglish);
                     } else {
                         doGetCustomerSales(customer.getCompanyCode(), selectedYear);
                         doGetAverageSales(selectedYear);
-                        // chart.showChart(isChecked);
+                         // chart.showChart(checkBoxStatus, isEnglish);
                     }
                 }
             }
@@ -228,8 +228,8 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                         sortedMonths.add(sortedNames);
                         sortedAmounts.add(quantity);
                     }
-                    //System.out.println("customer: " + sortedAmounts.toString());
                     chart.updateDataSet("customer", sortedMonths, sortedAmounts, isEnglish);
+                    chart.showChart(checkBoxStatus, isEnglish);
                     chart.showChart(checkBoxStatus, isEnglish);
                 }
 
@@ -292,6 +292,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                         sortedAmounts.add(quantity);
                     }
                     chart.updateDataSet("average", sortedMonths, sortedAmounts, isEnglish);
+                    chart.showChart(checkBoxStatus, isEnglish);
                     chart.showChart(checkBoxStatus, isEnglish);
                 }
             }
