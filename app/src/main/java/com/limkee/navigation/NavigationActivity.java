@@ -1,6 +1,8 @@
 package com.limkee.navigation;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -33,6 +35,7 @@ import com.limkee.login.LoginActivity;
 import com.limkee.login.LogoutActivity;
 import com.limkee.order.CurrentOrderFragment;
 import com.limkee.order.OrderHistoryFragment;
+import com.limkee.payment.AsyncResponse;
 import com.limkee.payment.PaymentFragment;
 import com.limkee.userProfile.UserProfileFragment;
 
@@ -45,12 +48,17 @@ public class NavigationActivity extends BaseActivity implements
         DashboardFragment.OnFragmentInteractionListener, TotalSalesFragment.OnFragmentInteractionListener,
         TopPurchasedFragment.OnFragmentInteractionListener{
 
-    Customer customer;
-    Bundle bundle;
-    String isEnglish;
-    String deliveryShift;
-    SharedPreferences loginPreferences;
-    SharedPreferences.Editor loginPrefsEditor;
+    private Customer customer;
+    private Bundle bundle;
+    private String isEnglish;
+    private String deliveryShift;
+    private SharedPreferences loginPreferences;
+    private SharedPreferences.Editor loginPrefsEditor;
+    private String username;
+    private String password;
+    private String cutofftime;
+    private AlertDialog.Builder builder;
+    private CatalogueFragment cf = new CatalogueFragment();
 
     @Override
     public void onResume() {
@@ -81,53 +89,51 @@ public class NavigationActivity extends BaseActivity implements
         isEnglish = loginPreferences.getString("language","");
         deliveryShift = loginPreferences.getString("deliveryShift","");
 
-        if(isLogin) {
-            Gson gson = new Gson();
-            String json = loginPreferences.getString("customer", "");
-            customer = gson.fromJson(json, Customer.class);
-            bundle = new Bundle();
-            bundle.putParcelable("customer", customer);
-            bundle.putString("language", isEnglish);
-            bundle.putString("deliveryShift", deliveryShift);
-            loadFragment(CatalogueFragment.class);
-        } else {
-            Intent it = new Intent(this, LoginActivity.class);
-            startActivity(it);
+        username = loginPreferences.getString("username","");
+        password = loginPreferences.getString("password","");
+        builder= new AlertDialog.Builder(this);
+        BackgroundCutoffTime ct = (BackgroundCutoffTime) new BackgroundCutoffTime(new AsyncResponse() {
+            @Override
+            public void processFinish(String output) {
+                if (output != null && !output.equals("login unsuccess")){
+                    String[] array = output.split(",");
+                    cutofftime = array[0];
+                    System.out.println("newly get cutoffNavi " + cutofftime);
+                    if(isLogin) {
+                        Gson gson = new Gson();
+                        String json = loginPreferences.getString("customer", "");
+                        customer = gson.fromJson(json, Customer.class);
+                        bundle = new Bundle();
+                        bundle.putParcelable("customer", customer);
+                        bundle.putString("language", isEnglish);
+                        bundle.putString("deliveryShift", deliveryShift);
+                        bundle.putString("cutofftime", cutofftime);
+                        loadFragment(CatalogueFragment.class);
+                    } else {
+                        Intent it = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivity(it);
+                    }
+                }else{
+                    builder.setMessage("Fail to get cutoff time");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+                    final AlertDialog ad = builder.create();
+                    ad.show();
+                }
+            }
         }
+        ).execute(username,password);
     }
 
     @Override
     public void onBackPressed() {
         //fragment back button
-
         if(getFragmentManager().getBackStackEntryCount() > 0){
             getFragmentManager().popBackStack();
         } else{
-            /*
-            if (isEnglish.equals("Yes")){
-                new AlertDialog.Builder(this)
-                        .setMessage("Are you sure you want to exit?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                finish();
-                            }
-                        })
-                        .setNegativeButton("No", null)
-                        .show();
-            } else {
-                new AlertDialog.Builder(this)
-                        .setMessage("您确定要退出？")
-                        .setPositiveButton("是", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //NavigationActivity.super.onBackPressed();
-                                finish();
-                            }
-                        })
-                        .setNegativeButton("否", null)
-                        .show();
-            }*/
             moveTaskToBack(true);
         }
     }
