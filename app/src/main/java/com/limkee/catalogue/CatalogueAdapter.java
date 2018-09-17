@@ -18,15 +18,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
 import com.limkee.order.QuickReorderFragment;
 import com.squareup.picasso.Picasso;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import com.limkee.R;
-
+import com.limkee.constant.HttpConstant;
+import com.limkee.constant.PostData;
+import io.reactivex.disposables.CompositeDisposable;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.Retrofit;
 
 public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.ViewHolder>  {
     private ArrayList<Product> catalogueList;
@@ -40,6 +46,11 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
     private String uom ="";
     private EditText quantity;
     private String itemCode;
+    private Customer customer;
+    public static Retrofit retrofit;
+    private String selectedProductName;
+    private String selectedProductUOM;
+    private boolean shown = false;
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -47,19 +58,20 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         mRecyclerView = recyclerView;
     }
 
-    public CatalogueAdapter(CatalogueFragment fragment, String isEnglish) {
+    public CatalogueAdapter(CatalogueFragment fragment, String isEnglish, Customer customer) {
         this.fragment = fragment;
         this.isEnglish = isEnglish;
-
+        this.customer = customer;
     }
 
 
-    public CatalogueAdapter(CatalogueFragment fragment, ArrayList<Product> catalogueList, String[] qtyDataSet, ArrayList<Product> tempOrderList, String isEnglish) {
+    public CatalogueAdapter(CatalogueFragment fragment, ArrayList<Product> catalogueList, String[] qtyDataSet, ArrayList<Product> tempOrderList, String isEnglish, Customer customer) {
         this.fragment = fragment;
         this.catalogueList = catalogueList;
         this.qtyDataSet = qtyDataSet;
         this.orderList = tempOrderList;
         this.isEnglish = isEnglish;
+        this.customer = customer;
     }
 
     @Override
@@ -140,15 +152,39 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-                    if(actionId== EditorInfo.IME_ACTION_DONE){
+                    if(actionId== EditorInfo.IME_ACTION_DONE) {
+
                         //Clear focus here from edittext.
                         qty.clearFocus();
-                        InputMethodManager imm = (InputMethodManager)itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        InputMethodManager imm = (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(qty.getWindowToken(), 0);
                         CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
                         CatalogueFragment.lbl_subtotal.setVisibility(View.VISIBLE);
 
+                        /*
+                        //check for recommended quantity
+                        if (!shown) {
+                            if (isEnglish.equals("Yes")) {
+
+                                if (selectedProductUOM.equals("CS")) {
+                                    selectedProductUOM = "btl";
+                                } else {
+                                    selectedProductUOM = "pcs";
+                                }
+
+                            } else {
+                                selectedProductName = product.getDescription2();
+                                selectedProductUOM = product.getUom();
+                            }
+
+                            getSuggestedQuantity(customer.getCompanyCode(), product.getItemCode(), product.getDefaultQty());
+                            shown = true;
+                        }
+                        */
                     }
+
+                    shown = false;
+
                     return false;
                 }
             });
@@ -189,7 +225,6 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //finish();
                                                     //reset quantity to default prefix
-                                                    System.out.println("PRODUCT QTY is " + product.getDefaultQty());
                                                     product.setDefaultQty(product.getDefaultQty());
                                                     qty.setText(Integer.toString(product.getDefaultQty()));
                                                     DecimalFormat df = new DecimalFormat("#0.00");
@@ -206,7 +241,6 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //finish();
                                                     //reset quantity to default prefix
-                                                    System.out.println("PRODUCT QTY is " + product.getDefaultQty());
                                                     product.setDefaultQty(product.getDefaultQty());
                                                     qty.setText(Integer.toString(product.getDefaultQty()));
                                                     DecimalFormat df = new DecimalFormat("#0.00");
@@ -218,6 +252,27 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                 }
 
                             } else {
+                                /*
+                                //check for recommended quantity
+                                if (!shown) {
+
+                                    if (isEnglish.equals("Yes")) {
+                                        selectedProductName = product.getDescription();
+                                        if (product.getItemCode().equals("CS")) {
+                                            selectedProductUOM = "btl";
+                                        } else {
+                                            selectedProductUOM = "pcs";
+                                        }
+
+                                    } else {
+                                        selectedProductName = product.getDescription2();
+                                        selectedProductUOM = product.getUom();
+                                    }
+                                    getSuggestedQuantity(customer.getCompanyCode(), product.getItemCode(), quantity);
+                                    shown = true;
+                                }
+                                */
+
                                 //recalculate unit subtotal and total subtotal
                                 product.setDefaultQty(quantity);
                                 //update subtotal
@@ -232,6 +287,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                     valueChanged = false;
                 }
             });
+
+            shown = false;
 
             //update when on text change instead of clicking tick in keyboard
             qty.clearFocus();
@@ -260,14 +317,11 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                         quantity = 0;
 
                     }
-
-
                 }
 
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-
 
                 }
             });
@@ -336,6 +390,86 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
             return 0;
         }
 
+    }
+
+    private void getSuggestedQuantity(String companyCode, String itemCode, int orderQuantity) {
+        if (retrofit == null) {
+
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(HttpConstant.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        PostData service = retrofit.create(PostData.class);
+
+        Call<Integer> call = service.getRecommendedQuantity(companyCode, itemCode, orderQuantity);
+        call.enqueue(new Callback<Integer>() {
+
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                int quantity = response.body();
+                System.out.println("quantity for item " + itemCode + " order " + orderQuantity + " companyCode " + companyCode);
+                System.out.println("quantityy " + quantity);
+                if (quantity != 1 || quantity != 3) {
+                    if (quantity == 0 && orderQuantity != 0) {
+
+                        if (isEnglish.equals("Yes")) {
+                            new AlertDialog.Builder(itemView.getContext())
+                                    .setMessage("We do not recommend you to buy " + selectedProductName)
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            //finish();
+                                        }
+                                    })
+                                    .show();
+                        } else {
+                            new AlertDialog.Builder(itemView.getContext())
+                                    .setMessage("不建议您需要买" + selectedProductName)
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            //finish();
+                                        }
+                                    })
+                                    .show();
+                        }
+
+                    } else if (quantity == orderQuantity) {
+                        //do nothing
+                    } else if (orderQuantity > quantity && quantity != 1) {
+                        if (isEnglish.equals("Yes")) {
+                            new AlertDialog.Builder(itemView.getContext())
+                                    .setMessage(quantity + " " + selectedProductUOM + " for " + selectedProductName + " is recommended.")
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            //finish();
+                                        }
+                                    })
+                                    .show();
+                        } else {
+                            new AlertDialog.Builder(itemView.getContext())
+                                    .setMessage("建议只需买 " + quantity + selectedProductUOM + " " + selectedProductName)
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            //finish();
+                                        }
+                                    })
+                                    .show();
+                        }
+                    } else {
+                        //do nothing
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
     }
 
     public static ArrayList<Product> getOrderList(){

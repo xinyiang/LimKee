@@ -34,7 +34,6 @@ import com.limkee.constant.PostData;
 import com.limkee.dao.CatalogueDAO;
 import com.limkee.entity.Customer;
 import com.limkee.entity.Product;
-import com.limkee.login.LoginActivity;
 import com.limkee.navigation.NavigationActivity;
 import com.limkee.notification.AlarmReceiver;
 import com.limkee.order.ConfirmOrderActivity;
@@ -47,7 +46,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 import static android.app.AlarmManager.INTERVAL_DAY;
 import static android.content.Context.MODE_PRIVATE;
 
@@ -76,6 +74,10 @@ public class CatalogueFragment extends Fragment {
     String invalidDesc2;
     int qtyMultiples;
     String cutoffTime;
+    private String selectedProductName;
+    private String selectedProductUOM;
+    private String selectedItemCode;
+    private int orderedQty;
 
     public CatalogueFragment(){
     }
@@ -206,7 +208,7 @@ public class CatalogueFragment extends Fragment {
             confirmOrder.setText("下订单");
         }
 
-        mAdapter = new CatalogueAdapter(this, isEnglish);
+        mAdapter = new CatalogueAdapter(this, isEnglish, customer);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -248,6 +250,7 @@ public class CatalogueFragment extends Fragment {
                 invalidDesc2 = "";
                 qtyMultiples = 0;
 
+
                 for (Product p : tempOrderList) {
                     int quantity = p.getDefaultQty();
                     //show error message when products that has wrong quantity
@@ -260,13 +263,15 @@ public class CatalogueFragment extends Fragment {
                                 invalidDesc = p.getDescription();
                                 invalidDesc2 = p.getDescription2();
                                 qtyMultiples = p.getQtyMultiples();
+                                selectedItemCode = p.getItemCode();
+                                selectedProductUOM = p.getUom();
+                                orderedQty = quantity;
                             }
                         } else {
                             orderList.add(p);
                         }
                     }
                 }
-
 
             //check if subtotal hits minimum requirements
                 if (calculateSubtotal(orderList) < 30) {
@@ -321,6 +326,7 @@ public class CatalogueFragment extends Fragment {
                         }
                     }
                         else {
+
                             DecimalFormat df = new DecimalFormat("#0.00");
                             subtotalAmt = view.findViewById(R.id.subtotalAmt);
                             subtotal = calculateSubtotal(orderList);
@@ -351,7 +357,13 @@ public class CatalogueFragment extends Fragment {
 
         time = time.substring(0,2);
         //check hour
-        if (time.equals("04")){
+        if (time.equals("01")){
+            chineseHour = "一";
+        } else if (time.equals("02")){
+            chineseHour = "二";
+        } else if (time.equals("03")){
+            chineseHour = "三";
+        } else if (time.equals("04")){
             chineseHour = "四";
         }  else if (time.equals("05")){
             chineseHour = "五";
@@ -365,6 +377,10 @@ public class CatalogueFragment extends Fragment {
             chineseHour = "九";
         } else if (time.equals("10")) {
             chineseHour = "十";
+        } else if (time.equals("11")) {
+            chineseHour = "十一";
+        } else if (time.equals("12")) {
+            chineseHour = "十二";
         } else {
             chineseHour = "";
         }
