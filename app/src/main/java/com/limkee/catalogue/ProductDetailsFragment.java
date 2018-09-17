@@ -110,13 +110,20 @@ public class ProductDetailsFragment extends Fragment {
         productName = (TextView) view.findViewById(R.id.pname);
         price = (TextView) view.findViewById(R.id.price);
 
-        System.out.println("Product image is " + product.getImageUrl());
+        if (product.getItemCode().equals("CS")){
+            Picasso.with(getContext()).load(product.getImageUrl())
+                    .error(R.mipmap.launchicon)
+                    .resize(300,360)
+                    .onlyScaleDown()
+                    .into(image);
+        } else {
+            Picasso.with(getContext()).load(product.getImageUrl())
+                    .error(R.mipmap.launchicon)
+                    .resize(330,230)
+                    .onlyScaleDown()
+                    .into(image);
+        }
 
-        Picasso.with(getContext()).load(product.getImageUrl())
-                .error(R.mipmap.launchicon)
-                .resize(310,250)
-                .onlyScaleDown()
-                .into(image);
         //.fit();
         //.placeholder(R.mipmap.launchicon)
 

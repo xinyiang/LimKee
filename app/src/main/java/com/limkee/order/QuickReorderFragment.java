@@ -1,6 +1,7 @@
 package com.limkee.order;
 
 import android.app.AlertDialog;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -59,6 +60,10 @@ public class QuickReorderFragment extends Fragment {
     String invalidDesc2;
     int qtyMultiples;
     String cutoffTime;
+    private String selectedProductName;
+    private String selectedProductUOM;
+    private String selectedItemCode;
+    private int orderedQty;
 
     public QuickReorderFragment(){
     }
@@ -160,7 +165,7 @@ public class QuickReorderFragment extends Fragment {
             confirmOrder.setText("下订单");
         }
 
-        mAdapter = new QuickReorderAdapter(this, isEnglish);
+        mAdapter = new QuickReorderAdapter(this, isEnglish, customer);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -217,6 +222,9 @@ public class QuickReorderFragment extends Fragment {
                                 invalidDesc = p.getDescription();
                                 invalidDesc2 = p.getDescription2();
                                 qtyMultiples = p.getQtyMultiples();
+                                selectedItemCode = p.getItemCode();
+                                selectedProductUOM = p.getUom();
+                                orderedQty = p.getDefaultQty();
                             }
                         } else {
                             orderList.add(p);
@@ -248,7 +256,6 @@ public class QuickReorderFragment extends Fragment {
                                 .show();
                     }
                 } else {
-
                     if (invalidItem >= 1) {
                         if (isEnglish.equals("Yes")) {
                             new android.support.v7.app.AlertDialog.Builder(view.getContext())
@@ -277,6 +284,7 @@ public class QuickReorderFragment extends Fragment {
                         }
                     }
                     else{
+
                         DecimalFormat df = new DecimalFormat("#0.00");
                         subtotalAmt = view.findViewById(R.id.subtotalAmt);
                         subtotal = calculateSubtotal(orderList);
@@ -307,7 +315,13 @@ public class QuickReorderFragment extends Fragment {
 
         time = time.substring(0,2);
         //check hour
-        if (time.equals("04")){
+        if (time.equals("01")){
+            chineseHour = "一";
+        } else if (time.equals("02")){
+            chineseHour = "二";
+        } else if (time.equals("03")){
+            chineseHour = "三";
+        } else if (time.equals("04")){
             chineseHour = "四";
         }  else if (time.equals("05")){
             chineseHour = "五";
@@ -429,28 +443,7 @@ public class QuickReorderFragment extends Fragment {
         System.out.println("ORDER LIST SIZE is " + orderList.size());
         for(Product p : orderList) {
             int qty = p.getDefaultQty();
-
-            /*
-            int qtyMultiples = p.getQtyMultiples();
-
-            if (qty % qtyMultiples != 0){
-                subtotal += p.getUnitPrice() * qty;
-
-                final Toast tag = Toast.makeText(view.getContext(), "Wrong qty", Toast.LENGTH_SHORT);
-                new CountDownTimer(2000, 1000) {
-                    public void onTick(long millisUntilFinished) {
-                        tag.show();
-                    }
-
-                    public void onFinish() {
-                        tag.show();
-                    }
-
-                }.start();
-            } else {
-*/
-                subtotal += p.getUnitPrice() * qty;
-           // }
+            subtotal += p.getUnitPrice() * qty;
         }
 
         DecimalFormat df = new DecimalFormat("#0.00");
