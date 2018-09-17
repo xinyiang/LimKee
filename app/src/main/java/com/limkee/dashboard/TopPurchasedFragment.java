@@ -167,6 +167,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                     chart.hide(isEnglish);
                 } else {
                     doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
+                    doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
                 }
             }
 
@@ -225,6 +226,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 if (selectedMonth.equals("Month") || selectedMonth.equals("月")){
                     chart.hide(isEnglish);
                 } else {
+                    doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
                     doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
                 }
             }
@@ -334,7 +336,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                         default: return mValues[(int) value];
                         case "咖喱鸡肉包": return "咖喱\n鸡肉包";
                         case "Lian Yong Pau": return "Lian Yong\nPau";
-                        case "Stewed Pork Pau": return "Stewed Pork\nPau";
+                        case "Stewed Pork Pau": return "Stewed\nPork Pau";
                         case "Curry Chicken Pau": return "Curry Chicken\nPau";
                         case "Char Siew Pau": return "Char Siew\nPau";
                         case "Tau Sar Pau": return "Tau Sar\nPau";
