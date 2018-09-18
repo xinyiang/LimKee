@@ -42,7 +42,7 @@ public class SMSNotification  extends AsyncTask<String,Void,String> {
                 String limkeeNum = "6758 5858";
 
                 if (isEnglish.equals("Yes")) {
-                    smsMsg = "[Lim Kee] Order #" + orderNo + "\n" + "Your order for delivery on "
+                    smsMsg = "(Lim Kee) Order #" + orderNo + "\n" + "Your order for delivery on "
                             + deliveryDate + " has been placed! If you did not authorize this order, please call " + limkeeNum + ".";
 
                     //use long ascii for type whereby it is split into 2 or more multipart due to length of text
@@ -74,7 +74,7 @@ public class SMSNotification  extends AsyncTask<String,Void,String> {
                         num += toUnicode(c);
                     }
 
-                    smsMsg = "005B67978BB0005D00208BA2535553F700200023" + orderID + "000A60A84E8e" + date + "4E0b76848BA253555DF25B8c62100021002082E5975e672c4EBa4EB281Ea64Cd4F5c002C00208BF762E862530020" + num + "002E";
+                    smsMsg = "FF0867978BB0FF0900208BA2535553F700200023" + orderID + "000A60A84E8e" + date + "4E0b76848BA253555DF25B8c62100021002082E5975e672c4EBa4EB281Ea64Cd4F5c002C00208BF762E862530020" + num + "002E";
 
                     //use unicode for type due to chinese characters
                     data += "ID=" + api_key
