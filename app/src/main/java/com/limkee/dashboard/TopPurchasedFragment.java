@@ -15,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -105,7 +104,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
 
         //call api to get customer's earliest year of orders
         earliestYear = 2017;
-        getEarliestYear(customer.getDebtorCode()); //assign earliestYear variable
+        getEarliestYear(customer.getDebtorCode());
 
 
         if (earliestYear == 0 || earliestYear == Integer.parseInt(systemYear)){
@@ -120,13 +119,11 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         if (isEnglish.equals("Yes")) {
             language = "eng";
             months = new String[]{"Month", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-            //years = new String[]{"Year", "2016", "2017", "2018"};
             years[0] = "Year";
 
         } else {
             language = "chi";
             months = new String[]{"月", "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"};
-            //years = new String[]{"年", "2016", "2017", "2018"};
             years[0] = "年";
         }
 
@@ -276,7 +273,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             right.setDrawLabels(false);
             right.setDrawGridLines(false);
 
-            // X-axis labels
             String[] values = itemNames.toArray(new String[itemNames.size()]);
             System.out.println("Items are " + values[0]);
             XAxis xAxis = chart.getXAxis();
@@ -343,7 +339,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                         case "Pork Siew Mai": return "Pork\nSiew Mai";
                         case "Vegetable Pau": return "Vegetable\nPau";
                     }
-
                 }
             }
                 return "";
@@ -364,10 +359,8 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             }else{
                 Utils.drawXAxisValue(c, formattedLabel, x, y, mAxisLabelPaint, anchor, angleDegrees);
             }
-
         }
     }
-
 
     private ArrayList<BarEntry> getDataSet(ArrayList<Float> floats) {
         ArrayList<BarEntry> valueSet1 = new ArrayList<>();
@@ -403,9 +396,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 if (data == null || data.size() == 0) {
                     //showChart(sortedItemNames, sortedAmounts);
                     chart.hide(isEnglish);
-                    System.out.println("purchase data is empty");
                 } else {
-                    System.out.println("purchase is not empty " + data);
                     int i = 0;
                     Object[][] results = new Object[data.size()][2];
                     Iterator entries = data.entrySet().iterator();
@@ -472,7 +463,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 int data = response.body();
-                System.out.println("Year is " + data + ".");
                 earliestYear = data;
             }
 
@@ -572,7 +562,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 break;
             case 2:
                 break;
-
         }
     }
 

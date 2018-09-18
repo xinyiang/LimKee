@@ -71,7 +71,6 @@ public class Chart {
     }
 
     public void showChart(boolean isChecked, String language) {
-        System.out.println("customer " + customerAmount);
         try {
             if (customerAmount != null && averageAmount != null) {
                 IAxisValueFormatter axisFormatter = new IAxisValueFormatter() {
@@ -106,9 +105,7 @@ public class Chart {
                 right.setDrawLabels(false);
                 right.setDrawGridLines(false);
 
-                // X-axis labels
                 String[] values = month.toArray(new String[month.size()]);
-                System.out.println("Items are " + values[0]);
                 XAxis xAxis = chart.getXAxis();
                 xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
                 xAxis.setGranularity(1f);
@@ -117,7 +114,6 @@ public class Chart {
                 xAxis.setTextSize(15f);
                 xAxis.setAxisMaximum(month.size() - 0.5f);
                 xAxis.setAxisMinimum(-0.5f);
-                //xAxis.setLabelRotationAngle(-15);
 
                 chart.setData(data);
                 if (!isChecked) {
