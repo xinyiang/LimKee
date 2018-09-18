@@ -32,14 +32,13 @@ public class Chart {
 
     public Chart(HorizontalBarChart chart){
         this.chart = chart;
-        this.chart.setDoubleTapToZoomEnabled(false);
+        this.chart.setDoubleTapToZoomEnabled(true);
     }
 
     public void updateDataSet(String type, ArrayList<String> mth, ArrayList<Float> dataSet, String language){
-
         if (type.equals("customer")) {
             if (language.equals("Yes")) {
-                customerAmount = new BarDataSet(getDataSet(dataSet), "My spendings");
+                customerAmount = new BarDataSet(getDataSet(dataSet), "My spendings  ");
                 month = mth;
             } else {
                 customerAmount = new BarDataSet(getDataSet(dataSet), "我的花费");
@@ -54,7 +53,7 @@ public class Chart {
             month = mth;
         } else {
             if (language.equals(("Yes"))) {
-                averageAmount = new BarDataSet(getDataSet(dataSet), "Average spendings");
+                averageAmount = new BarDataSet(getDataSet(dataSet), "Average spendings  ");
                 month = mth;
             } else {
                 averageAmount = new BarDataSet(getDataSet(dataSet), "平均花费");
@@ -130,17 +129,14 @@ public class Chart {
                 chart.setDescription(description);
 
                 Legend l = chart.getLegend();
-                l.setFormSize(9f);
-                l.setForm(Legend.LegendForm.CIRCLE);
-                l.setTextSize(9f);
+                l.setTextSize(15f);
+                l.setFormLineWidth(6f);
                 l.setStackSpace(0.5F);
-                l.setTextColor(Color.BLACK);
+                l.setYOffset(3f);
                 l.setWordWrapEnabled(true);
 
                 chart.animateY(1000);
                 chart.invalidate();
-
-                //chart.setVisibleYRangeMaximum(300, YAxis.AxisDependency.LEFT);
                 chart.setVisibleXRangeMaximum(5);
                 chart.setVisibleXRangeMinimum(5);
 
