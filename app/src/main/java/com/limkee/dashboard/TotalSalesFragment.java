@@ -104,7 +104,6 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         chart = new Chart((HorizontalBarChart)view.findViewById(R.id.chart));
         checkBox = ((CheckBox) view.findViewById(R.id.cb_onlyMe));
 
-        //when it is loading, show nothing by removing default no data text
         chart.loading();
 
         if (isEnglish.equals("Yes")){
@@ -119,7 +118,6 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         ddlYear.setAdapter(adapter);
         ddlYear.setOnItemSelectedListener(fragment);
 
-        //set selected year
         for (int i = 1; i < years.length; i++) {
             if (ddlYear.getItemAtPosition(i).equals(systemYear)) {
                 ddlYear.setSelection(i);
@@ -127,7 +125,6 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
             }
         }
 
-        //when it is loading, show nothing by removing default no data text
         chart.loading();
 
         ddlYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -157,11 +154,9 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                 } else {
                     if (isChecked) {
                         doGetCustomerSales(customer.getCompanyCode(), selectedYear);
-                         // chart.showChart(checkBoxStatus, isEnglish);
                     } else {
                         doGetCustomerSales(customer.getCompanyCode(), selectedYear);
                         doGetAverageSales(selectedYear);
-                         // chart.showChart(checkBoxStatus, isEnglish);
                     }
                 }
             }
@@ -324,13 +319,10 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         switch (i) {
             case 0:
-                // Whatever you want to happen when the first item gets selected
                 break;
             case 1:
-                // Whatever you want to happen when the second item gets selected
                 break;
             case 2:
-                // Whatever you want to happen when the thrid item gets selected
                 break;
 
         }

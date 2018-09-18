@@ -81,7 +81,7 @@ public class Chart {
                 };
                 BarData data = null;
                 if (!isChecked) {
-                    data = new BarData(customerAmount, averageAmount);
+                    data = new BarData(averageAmount, customerAmount);
                 } else {
                     data = new BarData(customerAmount);
                 }
@@ -117,7 +117,7 @@ public class Chart {
 
                 chart.setData(data);
                 if (!isChecked) {
-                    chart.groupBars(-0.5f, 0.5f, 0f); // available since release v3.0.0
+                    chart.groupBars(-0.5f, 0.5f, 0f);
                 }
 
                 Description description = new Description();
@@ -145,7 +145,6 @@ public class Chart {
                 p.setTextSize(60);
                 if (language.equals("Yes")) {
                     chart.setNoDataText("No data");
-
                 } else {
                     chart.setNoDataText("没有数据");
                 }
@@ -214,7 +213,6 @@ public class Chart {
     }
 
     private String getChineseMonth(String engMonth) {
-
         String chineseMth = "";
 
         if (engMonth.equals("Jan")) {
@@ -241,8 +239,6 @@ public class Chart {
             chineseMth = "十一月";
         } else if (engMonth.equals("Dec")) {
             chineseMth = "十二月";
-        } else {
-            //nothing
         }
         return chineseMth;
     }
