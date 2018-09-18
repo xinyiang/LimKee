@@ -363,7 +363,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             }
             String deliveryDate = day + "/" + month + "/" + year;
 
-            //SMSNotification notif = new SMSNotification(context, activity);
+           // SMSNotification notif = new SMSNotification(context, activity);
             //notif.execute(customer.getDeliveryContact(), deliveryDate, newOrderID, isEnglish);
 
             Intent it = new Intent(context.getApplicationContext(), ConfirmationActivity.class);
