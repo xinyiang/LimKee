@@ -127,7 +127,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             years[0] = "年";
         }
 
-        //loop to create years
         int size = 1;
         for (int i = earliestYear; i<= Integer.parseInt(systemYear);i++){
             years[size] = Integer.toString(i);
@@ -148,7 +147,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         ddlYear.setAdapter(adapter);
         ddlYear.setOnItemSelectedListener(fragment);
 
-        //set selected year
         for (int i = 1; i < years.length; i++) {
             if (ddlYear.getItemAtPosition(i).equals(systemYear)) {
                 ddlYear.setSelection(i);
@@ -179,7 +177,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         ddlMonth.setAdapter(adapter2);
         ddlMonth.setOnItemSelectedListener(fragment);
 
-        //set selected month
         for (int i = 1; i <= 12; i++) {
             if (ddlMonth.getItemAtPosition(i).equals(systemMonth) || ddlMonth.getItemAtPosition(i).equals(systemMonthInChinese)) {
                 ddlMonth.setSelection(i);
@@ -241,7 +238,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         chart.fitScreen();
         try {
             chart.setDoubleTapToZoomEnabled(false);
-            //chart.setFitBars(false);
             BarDataSet set1;
             if (isEnglish.equals("Yes")){
                  set1 = new BarDataSet(getDataSet(amounts), "Quantity");
@@ -283,7 +279,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             xAxis.setTextSize(15f);
             xAxis.setAxisMaximum(amounts.size() - 0.5f);
             xAxis.setAxisMinimum(-0.5f);
-            //xAxis.setLabelRotationAngle(-15);
 
             chart.setData(data);
 
@@ -394,7 +389,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 ArrayList<Float> sortedAmounts = new ArrayList<>();
                 System.out.println("purchase data is returned");
                 if (data == null || data.size() == 0) {
-                    //showChart(sortedItemNames, sortedAmounts);
                     chart.hide(isEnglish);
                 } else {
                     int i = 0;
