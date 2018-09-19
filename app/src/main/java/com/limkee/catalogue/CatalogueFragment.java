@@ -190,7 +190,8 @@ public class CatalogueFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_catalogue, container, false);
 
-        doGetCatalogue();
+        doGetAverageQty(customer.getCompanyCode());
+       // doGetCatalogue();
 
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
@@ -443,6 +444,54 @@ public class CatalogueFragment extends Fragment {
                 recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
 
                 //by default, let order list be the same as catalogue. if there is any change in qty, it will be updated.
+                tempOrderList = CatalogueDAO.catalogue_list;
+                String[] qtyDataSet= new String[tempOrderList.size()];
+                for (int i = 0; i <tempOrderList.size(); i++) {
+                    Product p = tempOrderList.get(i);
+                    qtyDataSet[i] = Integer.toString(p.getDefaultQty());
+                }
+
+                mAdapter.update(qtyDataSet, CatalogueDAO.catalogue_list, tempOrderList);
+                recyclerView.setItemViewCacheSize(qtyDataSet.length);
+
+                DecimalFormat df = new DecimalFormat("#0.00");
+                subtotalAmt.setText("$" + df.format(calculateSubtotal(CatalogueDAO.catalogue_list)));
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Product>> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
+
+    }
+
+    private void doGetAverageQty(String companyCode) {
+        if (retrofit == null) {
+
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(HttpConstant.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        PostData service = retrofit.create(PostData.class);
+        Call<ArrayList<Product>> call = service.getAverageQuantity(companyCode);
+        call.enqueue(new Callback<ArrayList<Product>>() {
+
+            @Override
+            public void onResponse(Call<ArrayList<Product>> call, Response<ArrayList<Product>> response) {
+                ArrayList<Product> data = response.body();
+                CatalogueDAO.catalogue_list = data;
+
+                if (data == null || data.size() == 0){
+                    //show default catalogue
+                    doGetCatalogue();
+                }
+
+                recyclerView.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+                recyclerView = (RecyclerView) view.findViewById(com.limkee.R.id.recyclerView);
+
                 tempOrderList = CatalogueDAO.catalogue_list;
                 String[] qtyDataSet= new String[tempOrderList.size()];
                 for (int i = 0; i <tempOrderList.size(); i++) {
