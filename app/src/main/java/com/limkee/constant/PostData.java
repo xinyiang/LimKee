@@ -20,6 +20,9 @@ public interface PostData {
         @GET("get-catalogue")
         Call<ArrayList<Product>> getCatalogue();
 
+        @GET("dashboard/getaveragequantitycatalogue")
+        Call<ArrayList<Product>> getAverageQuantity(@Query("companyCode") String companyCode);
+
         @GET("get-order/latestorder")
         Call<ArrayList<Product>> getQuickOrderCatalogue(@Query("companyCode") String companyCode);
 

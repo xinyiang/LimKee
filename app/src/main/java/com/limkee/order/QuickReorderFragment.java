@@ -109,7 +109,6 @@ public class QuickReorderFragment extends Fragment {
 
         //compare current time is < cut off time
         if (currentTimestamp.before(cutoffTimestamp)) {
-            System.out.println("current time before cut off");
             if(isEnglish.equals("Yes")) {
                 //format cut off time to remove seconds
                 builder.setMessage("Please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM for today's delivery");
@@ -125,7 +124,6 @@ public class QuickReorderFragment extends Fragment {
             final AlertDialog ad = builder.create();
             ad.show();
         } else {
-            System.out.println("current time after cut off");
             if(isEnglish.equals("Yes")) {
                 builder.setMessage("Please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM for tomorrow's delivery");
             } else {
@@ -396,11 +394,10 @@ public class QuickReorderFragment extends Fragment {
                 ArrayList<Product> data = response.body();
                 CatalogueDAO.quickReorder_list = data;
 
-                if (data.size() == 0){
+                if (data == null || data.size() == 0){
                     //show default catalogue
                     doGetCatalogue();
                 }
-                System.out.println("Quick order " + data.size());
 
                 recyclerView.setVisibility(View.GONE);
                 progressBar.setVisibility(View.VISIBLE);

@@ -23,16 +23,6 @@ public class Product implements Parcelable{
     private  int qtyMultiples;
     private String imageUrl;
 
-    public Product(String itemCode, String description, String description2, double unitPrice, String imageUrl, int defaultQty, int qtyMultiples){
-        this.itemCode = itemCode;
-        this.description = description;
-        this.description2 = description2;
-        this.unitPrice = unitPrice;
-        this.imageUrl = imageUrl;
-        this.defaultQty = defaultQty;
-        this.qtyMultiples = qtyMultiples;
-    }
-
     public Product(String itemCode, String description, String description2, double unitPrice, String uom, String imageUrl, int defaultQty, int qtyMultiples){
         this.itemCode = itemCode;
         this.description = description;
@@ -42,6 +32,11 @@ public class Product implements Parcelable{
         this.imageUrl = imageUrl;
         this.defaultQty = defaultQty;
         this.qtyMultiples = qtyMultiples;
+    }
+
+    public Product(String itemCode, int qty) {
+        this.itemCode = itemCode;
+        this.defaultQty = qty;
     }
 
     public String getItemCode() {
@@ -126,7 +121,6 @@ public class Product implements Parcelable{
         }
 
     };
-
 
     public void readFromParcel(Parcel in) {
         itemCode = in.readString();
