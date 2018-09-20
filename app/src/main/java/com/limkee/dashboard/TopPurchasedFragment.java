@@ -264,13 +264,13 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             left.setGranularity(1f);
             left.setTextSize(15f);
             left.setAxisMinimum(0f);
+            left.setAxisMaximum(amounts.get(amounts.size()-1)+200);
 
             YAxis right = chart.getAxisRight();
             right.setDrawLabels(false);
             right.setDrawGridLines(false);
 
             String[] values = itemNames.toArray(new String[itemNames.size()]);
-            System.out.println("Items are " + values[0]);
             XAxis xAxis = chart.getXAxis();
             xAxis.setValueFormatter(new MyXAxisValueFormatter(values));
             xAxis.setGranularity(1f);
@@ -328,11 +328,12 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                         case "咖喱鸡肉包": return "咖喱\n鸡肉包";
                         case "Lian Yong Pau": return "Lian Yong\nPau";
                         case "Stewed Pork Pau": return "Stewed\nPork Pau";
-                        case "Curry Chicken Pau": return "Curry Chicken\nPau";
+                        case "Curry Chicken Pau": return "Curry\nChicken Pau";
                         case "Char Siew Pau": return "Char Siew\nPau";
                         case "Tau Sar Pau": return "Tau Sar\nPau";
                         case "Pork Siew Mai": return "Pork\nSiew Mai";
                         case "Vegetable Pau": return "Vegetable\nPau";
+                        case "Pumpkin Pau": return "Pumpkin\nPau";
                     }
                 }
             }
