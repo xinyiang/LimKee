@@ -263,8 +263,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             left.setValueFormatter(axisFormatter);
             left.setGranularity(1f);
             left.setTextSize(15f);
-            left.setAxisMinimum(0f);
-            left.setAxisMaximum(amounts.get(amounts.size()-1)+200);
+            left.setAxisMinimum(0);
 
             YAxis right = chart.getAxisRight();
             right.setDrawLabels(false);
@@ -279,6 +278,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             xAxis.setTextSize(15f);
             xAxis.setAxisMaximum(amounts.size() - 0.5f);
             xAxis.setAxisMinimum(-0.5f);
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 
             chart.setData(data);
 
@@ -291,10 +291,12 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             chart.getLegend().setTextSize(15f);
 
             chart.animateY(1000);
+            chart.setViewPortOffsets(280,50,50,100);
             chart.invalidate();
 
             chart.setVisibleXRangeMaximum(5);
             chart.setVisibleXRangeMinimum(5);
+
             chart.moveViewTo(amounts.size() - 1, 0, YAxis.AxisDependency.LEFT);
         } catch (Exception e){
             chart.setData(null);
@@ -334,6 +336,8 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                         case "Pork Siew Mai": return "Pork\nSiew Mai";
                         case "Vegetable Pau": return "Vegetable\nPau";
                         case "Pumpkin Pau": return "Pumpkin\nPau";
+                        case "Chicken Pau": return "Chicken\nPau";
+                        case "Coffee Pau": return "Coffee\nPau";
                     }
                 }
             }
