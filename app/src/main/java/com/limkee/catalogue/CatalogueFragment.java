@@ -173,7 +173,7 @@ public class CatalogueFragment extends Fragment {
         Intent notificationIntent = new Intent(context, AlarmReceiver.class);
         notificationIntent.putExtra("notif_content", content);
         notificationIntent.putExtra("notif_id", notificationId);
-        notificationIntent.putExtra("hour", hour);
+        notificationIntent.putExtra("hour", ""+(Integer.parseInt(hour) - 1));
         notificationIntent.putExtra("mins", mins);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
