@@ -16,53 +16,45 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.limkee.R;
-
 import java.util.ArrayList;
-
-import static com.github.mikephil.charting.components.Legend.LegendPosition.BELOW_CHART_CENTER;
-import static com.github.mikephil.charting.components.Legend.LegendPosition.BELOW_CHART_LEFT;
-import static java.lang.Boolean.TRUE;
 
 public class Chart {
     private HorizontalBarChart chart;
     private BarDataSet customerAmount;
     private BarDataSet averageAmount;
     private ArrayList<String> month;
-    private ArrayList<String> chineseMth;
+    private ArrayList<String> chineseMth = new ArrayList<>();
 
     public Chart(HorizontalBarChart chart){
         this.chart = chart;
         this.chart.setDoubleTapToZoomEnabled(true);
     }
 
-    public void updateDataSet(String type, ArrayList<String> mth, ArrayList<Float> dataSet, String language){
-        if (type.equals("customer")) {
-            if (language.equals("Yes")) {
-                customerAmount = new BarDataSet(getDataSet(dataSet), "My spendings  ");
-                month = mth;
-            } else {
-                customerAmount = new BarDataSet(getDataSet(dataSet), "我的花费");
-                chineseMth = new ArrayList<>();
-                for (String engMth : mth) {
-                    String chineseMonth = getChineseMonth(engMth);
-                    chineseMth.add(chineseMonth);
-                }
-                month = chineseMth;
-            }
-            customerAmount.setColors(Color.parseColor("#A0C25A"));
+    public void updateDataSet(String type, ArrayList<String> mth, ArrayList<Float> dataSet, String isEnglish){
+
+        if (isEnglish.equals("Yes")) {
             month = mth;
         } else {
-            if (language.equals(("Yes"))) {
+            for (String engMth : mth) {
+                String chineseMonth = getChineseMonth(engMth);
+                chineseMth.add(chineseMonth);
+            }
+            month = chineseMth;
+        }
+
+        if (type.equals("customer")) {
+            if (isEnglish.equals("Yes")) {
+                customerAmount = new BarDataSet(getDataSet(dataSet), "My spendings  ");
+
+            } else {
+                customerAmount = new BarDataSet(getDataSet(dataSet), "我的花费");
+            }
+            customerAmount.setColors(Color.parseColor("#A0C25A"));
+        } else {
+            if (isEnglish.equals(("Yes"))) {
                 averageAmount = new BarDataSet(getDataSet(dataSet), "Average spendings  ");
-                month = mth;
             } else {
                 averageAmount = new BarDataSet(getDataSet(dataSet), "平均花费");
-                chineseMth = new ArrayList<>();
-                for (String engMth : mth) {
-                    String chineseMonth = getChineseMonth(engMth);
-                    chineseMth.add(chineseMonth);
-                }
-                month = chineseMth;
             }
 
             averageAmount.setColors(Color.parseColor("#F78B5D"));
