@@ -288,7 +288,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             chart.setXAxisRenderer(new MyXAxisRenderer(chart.getViewPortHandler(), xAxis, chart.getTransformer(YAxis.AxisDependency.LEFT), chart));
 
             chart.getLegend().setEnabled(true);
-            chart.getLegend().setTextSize(15f);
+            chart.getLegend().setTextSize(17f);
 
             chart.animateY(1000);
             chart.setViewPortOffsets(280,50,50,100);

@@ -23,7 +23,7 @@ public class Chart {
     private BarDataSet customerAmount;
     private BarDataSet averageAmount;
     private ArrayList<String> month;
-    private ArrayList<String> chineseMth = new ArrayList<>();
+    private ArrayList<String> chineseMth;
 
     public Chart(HorizontalBarChart chart){
         this.chart = chart;
@@ -32,29 +32,32 @@ public class Chart {
 
     public void updateDataSet(String type, ArrayList<String> mth, ArrayList<Float> dataSet, String isEnglish){
 
-        if (isEnglish.equals("Yes")) {
-            month = mth;
-        } else {
-            for (String engMth : mth) {
-                String chineseMonth = getChineseMonth(engMth);
-                chineseMth.add(chineseMonth);
-            }
-            month = chineseMth;
-        }
-
         if (type.equals("customer")) {
             if (isEnglish.equals("Yes")) {
-                customerAmount = new BarDataSet(getDataSet(dataSet), "My spendings  ");
-
+                customerAmount = new BarDataSet(getDataSet(dataSet), "My spendings");
+                month = mth;
             } else {
                 customerAmount = new BarDataSet(getDataSet(dataSet), "我的花费");
+                chineseMth = new ArrayList<>();
+                for (String engMth : mth) {
+                    String chineseMonth = getChineseMonth(engMth);
+                    chineseMth.add(chineseMonth);
+                }
+                month = chineseMth;
             }
             customerAmount.setColors(Color.parseColor("#A0C25A"));
         } else {
             if (isEnglish.equals(("Yes"))) {
-                averageAmount = new BarDataSet(getDataSet(dataSet), "Average spendings  ");
+                averageAmount = new BarDataSet(getDataSet(dataSet), "Average spendings");
+                month = mth;
             } else {
                 averageAmount = new BarDataSet(getDataSet(dataSet), "平均花费");
+                chineseMth = new ArrayList<>();
+                for (String engMth : mth) {
+                    String chineseMonth = getChineseMonth(engMth);
+                    chineseMth.add(chineseMonth);
+                }
+                month = chineseMth;
             }
 
             averageAmount.setColors(Color.parseColor("#F78B5D"));
@@ -117,7 +120,7 @@ public class Chart {
                 chart.setDescription(description);
 
                 Legend l = chart.getLegend();
-                l.setTextSize(15f);
+                l.setTextSize(17f);
                 l.setFormLineWidth(6f);
                 l.setStackSpace(0.5F);
                 l.setYOffset(3f);
