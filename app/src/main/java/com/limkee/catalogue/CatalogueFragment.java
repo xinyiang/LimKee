@@ -160,7 +160,7 @@ public class CatalogueFragment extends Fragment {
             ad.show();
         }
 
-        scheduleNotification(getContext(), notif);
+        //scheduleNotification(getContext(), notif);
     }
 
     public void scheduleNotification(Context context, String content) {
