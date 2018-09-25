@@ -115,9 +115,13 @@ public class CatalogueFragment extends Fragment {
         String hour = time.substring(0,2);
         String mins = time.substring(3,5);
 
-        Date cutoffTimestamp = new Date();
-        cutoffTimestamp.setHours(Integer.parseInt(hour));
-        cutoffTimestamp.setMinutes(Integer.parseInt(mins));
+        //Date cutoffTimestamp = new Date();
+        //cutoffTimestamp.setHours(Integer.parseInt(hour));
+        //cutoffTimestamp.setMinutes(Integer.parseInt(mins));
+        Calendar cutoffTimeCalendar = Calendar.getInstance();
+        cutoffTimeCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour));
+        cutoffTimeCalendar.set(Calendar.MINUTE, Integer.parseInt(mins));
+        Date cutoffTimestamp = cutoffTimeCalendar.getTime();
 
         String notif = "";
         //compare current time is < cut off time
@@ -173,7 +177,7 @@ public class CatalogueFragment extends Fragment {
         Intent notificationIntent = new Intent(context, AlarmReceiver.class);
         notificationIntent.putExtra("notif_content", content);
         notificationIntent.putExtra("notif_id", notificationId);
-        notificationIntent.putExtra("hour", ""+(Integer.parseInt(hour) - 1));
+        notificationIntent.putExtra("hour", "" + (Integer.parseInt(hour) - 1));
         notificationIntent.putExtra("mins", mins);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 

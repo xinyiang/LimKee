@@ -2,6 +2,8 @@ package com.limkee.dashboard;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.widget.Toast;
+
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
@@ -14,6 +16,8 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.limkee.R;
 import java.util.ArrayList;
@@ -125,6 +129,18 @@ public class Chart {
                 l.setStackSpace(0.5F);
                 l.setYOffset(3f);
                 l.setWordWrapEnabled(true);
+
+
+                chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener()
+                {
+                    @Override
+                    public void onValueSelected(Entry entry, Highlight h) {
+                        //Do sth
+                    }
+
+                    @Override
+                    public void onNothingSelected() { }
+                });
 
                 chart.animateY(1000);
                 chart.invalidate();
