@@ -225,7 +225,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                     }
                     chart.updateDataSet("customer", sortedMonths, sortedAmounts, isEnglish);
                     chart.showChart(checkBoxStatus, isEnglish);
-                    chart.showChart(checkBoxStatus, isEnglish);
+                    //chart.showChart(checkBoxStatus, isEnglish);
                 }
 
             }
@@ -288,7 +288,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                     }
                     chart.updateDataSet("average", sortedMonths, sortedAmounts, isEnglish);
                     chart.showChart(checkBoxStatus, isEnglish);
-                    chart.showChart(checkBoxStatus, isEnglish);
+                    //chart.showChart(checkBoxStatus, isEnglish);
                 }
             }
             @Override
