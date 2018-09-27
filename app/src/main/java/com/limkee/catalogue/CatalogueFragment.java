@@ -160,7 +160,7 @@ public class CatalogueFragment extends Fragment {
             ad.show();
         }
 
-        //scheduleNotification(getContext(), notif);
+        scheduleNotification(getContext(), notif);
     }
 
     public void scheduleNotification(Context context, String content) {
@@ -176,6 +176,7 @@ public class CatalogueFragment extends Fragment {
 
         Intent notificationIntent = new Intent(context, AlarmReceiver.class);
         notificationIntent.putExtra("notif_content", content);
+        notificationIntent.putExtra("isEnglish", isEnglish);
         notificationIntent.putExtra("notif_id", notificationId);
         notificationIntent.putExtra("hour", "" + (Integer.parseInt(hour) - 1));
         notificationIntent.putExtra("mins", mins);
