@@ -1,18 +1,24 @@
 package com.limkee.payment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.limkee.R;
 import com.limkee.entity.Customer;
 import com.limkee.order.ConfirmOrderActivity;
 import com.stripe.android.view.CardInputWidget;
 
+import io.card.payment.CardIOActivity;
+import io.card.payment.CreditCard;
 import io.reactivex.disposables.CompositeDisposable;
 
 public class PaymentFragment extends Fragment {
@@ -26,13 +32,14 @@ public class PaymentFragment extends Fragment {
     private String totalPayable;
     private String isEnglish;
     private String paperBagNeeded;
+    static PaymentFragment fragment;
 
     public PaymentFragment() {
         // Required empty public constructor
     }
 
     public static PaymentFragment newInstance(String param1, String param2) {
-        PaymentFragment fragment = new PaymentFragment();
+        fragment = new PaymentFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -61,9 +68,50 @@ public class PaymentFragment extends Fragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1) {
+            String resultDisplayStr;
+            if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
+                CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
+
+                // Never log a raw card number. Avoid displaying it, but if necessary use getFormattedCardNumber()
+                resultDisplayStr = "Card Number: " + scanResult.getRedactedCardNumber() + "\n";
+
+                if (scanResult.isExpiryValid()) {
+                    resultDisplayStr += "Expiration Date: " + scanResult.expiryMonth + "/" + scanResult.expiryYear + "\n";
+                }
+
+                if (scanResult.cvv != null) {
+                    resultDisplayStr += "CVV has " + scanResult.cvv.length() + " digits.\n";
+                }
+
+            }
+            else {
+                resultDisplayStr = "Scan was cancelled.";
+            }
+            System.out.println("resultDisplayStr" + resultDisplayStr);
+
+            Intent intent = new Intent(getActivity().getBaseContext(), ScanActivity.class);
+            intent.putExtra("language", isEnglish);
+            getActivity().startActivity(intent);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_payment, container, false);
+        Button scan = view.findViewById(R.id.onScanPress);
+        scan.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent scanIntent = new Intent(getActivity(), CardIOActivity.class);
+                scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, false); // default: false
+                scanIntent.putExtra(CardIOActivity.EXTRA_SCAN_EXPIRY, true);
+                startActivityForResult(scanIntent, 1);
+            }
+        });
         return view;
     }
 
@@ -92,4 +140,4 @@ public class PaymentFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
-    }
+}
