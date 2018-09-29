@@ -111,7 +111,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         } else {
             checkBox.setText("只是我");
         }
-
+        checkBox.setChecked(true);
         checkBoxStatus = checkBox.isChecked();
         ArrayAdapter<String>adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
