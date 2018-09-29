@@ -38,5 +38,7 @@
     <string name="confirm_delete">Confirm to delete the card ending with: </string>
     <string name="invalid_card">Invalid card data</string>
     <string name="dashboard">Dashboard</string>
+    <string name="scan">Scan card</string>
+    <string name="title_activity_confirmation">ConfirmationActivity</string>
 
 </resources>

@@ -39,4 +39,5 @@
     <string name="paymentdetails">付款详情</string>
     <string name="pay">付款</string>
     <string name="dashboard">仪表板</string>
+    <string name="scan">扫描卡片</string>
 </resources>

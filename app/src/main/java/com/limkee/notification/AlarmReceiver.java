@@ -51,7 +51,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         notificationIntent.putExtra("hour", hour);
         notificationIntent.putExtra("mins", mins);
         notificationIntent.putExtra("isEnglish", isEnglish);
-        if (loginPreferences.getBoolean("FirstTimeLogin", false)) {
+        if (loginPreferences.getBoolean("FirstTimeLogin", true)) {
             if (isEnglish.equals("Yes")) {
                 content = "Please place order before " + cutoffHour + ":" + mins + " AM for today's delivery";
             } else {
@@ -60,6 +60,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }else{
             content = intent.getStringExtra("notif_content");
         }
+        notificationIntent.putExtra("notif_content", content);
 
         NotificationChannel mChannel = new NotificationChannel(id, name, importance);
         mChannel.setDescription(description);
@@ -74,7 +75,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         PendingIntent activity = PendingIntent.getActivity(context, notificationId, notifIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         builder.setContentIntent(activity);
         Notification notification = builder.build();
-
         notificationManager.notify(notificationId, notification);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);

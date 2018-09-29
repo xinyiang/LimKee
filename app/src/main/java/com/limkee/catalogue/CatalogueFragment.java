@@ -190,9 +190,9 @@ public class CatalogueFragment extends Fragment {
             loginPrefsEditor.apply();
         }
     }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_catalogue, container, false);
 
         doGetAverageQty(customer.getCompanyCode());
@@ -541,7 +541,7 @@ public class CatalogueFragment extends Fragment {
         recyclerView.setItemViewCacheSize(orderList.size());
     }
 
-        @Override
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof NavigationActivity) {
