@@ -24,17 +24,17 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:textSize="17sp"
+                android:textSize="18sp"
                 android:maxLines="1"
                 android:maxLength="20"
                 android:ellipsize="end"
+                android:textColor="@color/colorAccent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
-
 
             <TextView
                 android:id="@+id/unitSubtotal"
@@ -44,7 +44,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="8dp"
-                android:textSize="17sp"
+                android:textSize="18sp"
                 android:textColor="#000000"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -60,7 +60,8 @@
                 android:layout_marginLeft="180dp"
                 android:layout_marginTop="8dp"
                 android:text="x"
-                android:textSize="16sp"
+                android:textColor="@color/colorAccent"
+                android:textSize="17sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -74,7 +75,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
-                android:textSize="17sp"
+                android:textSize="18sp"
+                android:textColor="@color/colorAccent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/lbl"
                 app:layout_constraintTop_toTopOf="parent"
@@ -90,17 +92,15 @@
                 android:layout_marginStart="250dp"
                 android:layout_marginLeft="250dp"
                 android:layout_marginTop="8dp"
+                android:textColor="@color/colorAccent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                android:textSize="17sp"
+                android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
 
-
         </android.support.constraint.ConstraintLayout>
-
     </RelativeLayout>
-
 </FrameLayout>

@@ -118,7 +118,6 @@ public class CancelledOrderFragment extends Fragment {
             public void onResponse(Call<ArrayList<Order>> call, Response<ArrayList<Order>> response) {
                 ArrayList<Order> data = response.body();
                 OrderDAO.cancelledOrdersList = data;
-                System.out.println("cancelled company data " + data.size());
 
                 mAdapter.update(OrderDAO.cancelledOrdersList);
                 if (data.size() == 0) {

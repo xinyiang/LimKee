@@ -20,6 +20,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="46dp"
             android:text="订单号"
+            android:textStyle="bold"
             android:textColor="@color/colorPrimary"
             android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -41,6 +42,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="送货日期 "
+            android:textStyle="bold"
             android:textColor="@color/colorPrimary"
             android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -56,6 +58,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="46dp"
             android:text="数量"
+            android:textStyle="bold"
             android:textColor="@color/colorPrimary"
             android:textSize="18dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -84,12 +87,14 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text=""
             android:textSize="18dp"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

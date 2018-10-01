@@ -90,7 +90,12 @@ public class QuickReorderFragment extends Fragment {
             ((NavigationActivity)getActivity()).setActionBarTitle("快速下单");
         }
 
+
         builder= new AlertDialog.Builder(getContext());
+       // AlertDialog ad = builder.create();
+        //TextView textView = (TextView) ad.findViewById(android.R.id.message);
+        //textView.setTextSize(40);
+        //ad.setView(textView);
         loginPreferences = getContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         loginPrefsEditor = loginPreferences.edit();
         cutoffTime = loginPreferences.getString("cutofftime", "");
@@ -112,6 +117,7 @@ public class QuickReorderFragment extends Fragment {
             if(isEnglish.equals("Yes")) {
                 //format cut off time to remove seconds
                 builder.setMessage("Please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM for today's delivery");
+
             } else {
                 builder.setMessage("今日订单请在早上" + getChineseTime(cutoffTime.substring(0, cutoffTime.length()-3)) + "前下单");
             }
