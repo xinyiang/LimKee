@@ -133,6 +133,7 @@ public class BackgroundLogin extends AsyncTask<String,Void,String> {
             loginPrefsEditor.putBoolean("isLogin", true);
             loginPrefsEditor.putBoolean("isAlertDialogue", true);
             loginPrefsEditor.putString("language", isEnglish);
+            loginPrefsEditor.putBoolean("FirstTimeLogin", true);
             loginPrefsEditor.apply();
             loginPrefsEditor.commit();
             context.startActivity(it);

@@ -19,8 +19,6 @@ import java.util.Date;
 import static android.content.Context.MODE_PRIVATE;
 
 public class AlarmReceiver extends BroadcastReceiver {
-    private SharedPreferences loginPreferences;
-    private SharedPreferences.Editor loginPrefsEditor;
 
     @Override
     public void onReceive(final Context context, Intent intent) {
@@ -36,9 +34,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         String cutoffHour = "" + (Integer.parseInt(hour) + 1);
         String content;
         String cutofftime = cutoffHour + ":" + mins;
-        loginPreferences = context.getSharedPreferences("loginPrefs", MODE_PRIVATE);
-        loginPrefsEditor = loginPreferences.edit();
-        loginPrefsEditor.commit();
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -46,20 +41,16 @@ public class AlarmReceiver extends BroadcastReceiver {
         calendar.set(Calendar.MINUTE, Integer.parseInt(mins));
         //calendar.add(Calendar.DATE,1);
 
+        if (isEnglish.equals("Yes")){
+            content = "Please place order before " + cutofftime;
+        }else{
+            content = "今日订单请在早上 " + cutofftime + " 前下单";
+        }
         Intent notificationIntent = new Intent(context, AlarmReceiver.class);
         notificationIntent.putExtra("notif_id", Integer.parseInt(new SimpleDateFormat("ddHHmmss").format(new Date())));
         notificationIntent.putExtra("hour", hour);
         notificationIntent.putExtra("mins", mins);
         notificationIntent.putExtra("isEnglish", isEnglish);
-        if (loginPreferences.getBoolean("FirstTimeLogin", true)) {
-            if (isEnglish.equals("Yes")) {
-                content = "Please place order before " + cutoffHour + ":" + mins + " AM for today's delivery";
-            } else {
-                content = "今日订单请在早上" + getChineseTime(cutofftime) + "前下单";
-            }
-        }else{
-            content = intent.getStringExtra("notif_content");
-        }
         notificationIntent.putExtra("notif_content", content);
 
         NotificationChannel mChannel = new NotificationChannel(id, name, importance);
