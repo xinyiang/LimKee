@@ -73,7 +73,7 @@
         android:background="@color/colorPrimary"
         android:text="@string/pay"
         android:textColor="@color/colorPrimaryFont"
-        android:textSize="20dp"
+        android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.461"
