@@ -105,9 +105,6 @@ public class CatalogueFragment extends Fragment {
         }
 
         builder= new AlertDialog.Builder(getContext());
-        loginPreferences = getContext().getSharedPreferences("loginPrefs", MODE_PRIVATE);
-        loginPrefsEditor = loginPreferences.edit();
-        loginPrefsEditor.commit();
 
         //alert dialogue show is for today/tmr's time based on current timestamp
         Date currentTimestamp = new Date();
@@ -183,6 +180,7 @@ public class CatalogueFragment extends Fragment {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         loginPreferences = getActivity().getSharedPreferences("loginPrefs", MODE_PRIVATE);
+        loginPrefsEditor = loginPreferences.edit();
         if (loginPreferences.getBoolean("FirstTimeLogin", true)) {
             alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
