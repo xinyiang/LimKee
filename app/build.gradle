@@ -50,5 +50,6 @@ dependencies {
     implementation group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '3.9.1'
     implementation 'com.android.support:cardview-v7:26.1.0'
     implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'io.card:android-sdk:5.4.0'
 }
 apply plugin: 'com.google.gms.google-services'

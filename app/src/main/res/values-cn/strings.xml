@@ -50,5 +50,7 @@
     <string name="confirm_delete">您确定删除此尾号的卡吗： </string>
     <string name="invalid_card">卡信息错误</string>
     <string name="dashboard">仪表板</string>
+    <string name="scan">扫描卡片</string>
+    <string name="title_activity_confirmation">确认订单</string>
 
 </resources>

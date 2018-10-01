@@ -37,6 +37,7 @@ import com.limkee.order.CurrentOrderFragment;
 import com.limkee.order.OrderHistoryFragment;
 import com.limkee.payment.AsyncResponse;
 import com.limkee.payment.PaymentFragment;
+import com.limkee.payment.ScanFragment;
 import com.limkee.userProfile.UserProfileFragment;
 
 public class NavigationActivity extends BaseActivity implements
@@ -46,7 +47,7 @@ public class NavigationActivity extends BaseActivity implements
         PaymentFragment.OnFragmentInteractionListener, CancelledOrderFragment.OnFragmentInteractionListener,
         ProductDetailsFragment.OnFragmentInteractionListener, MainOrderHistoryFragment.OnFragmentInteractionListener,
         DashboardFragment.OnFragmentInteractionListener, TotalSalesFragment.OnFragmentInteractionListener,
-        TopPurchasedFragment.OnFragmentInteractionListener{
+        TopPurchasedFragment.OnFragmentInteractionListener, ScanFragment.OnFragmentInteractionListener{
 
     private Customer customer;
     private Bundle bundle;
