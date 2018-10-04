@@ -182,7 +182,8 @@ public class CurrentOrderDetailFragment extends Fragment {
             lbl_paperBagRequired.setText("Paper Bag");
 
             lbl_deliveryDetails.setText(" Delivery Details");
-            lbl_status.setText("Pending Delivery");
+            lbl_status.setText("Status");
+            pendingStatus.setText("Pending Delivery");
            // lbl_address.setText("Delivery Address");
             lbl_companyName.setText("Company Name");
             lbl_date.setText("Delivery Date");
