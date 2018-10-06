@@ -118,7 +118,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             lblTax.setText("7% 税");
             lblFinalTotal.setText("总额");
             lblPaperBagRequired.setText("纸袋");
-            paperBagRequired.setText("需要？");
+            paperBagRequired.setText("需要");
         }
 
         recyclerView = (RecyclerView) view.findViewById(com.limkee1.R.id.recyclerView);
@@ -160,17 +160,17 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         //if english, change label to english
         if (isEnglish.equals("Yes")) {
             TextView lbl_subtotal_amt, lbl_total_amt, lbl_tax_amt;
-            TextView lbl_delivery_details, lbl_name, lbl_contact, lbl_address, lbl_date, lbl_time, lbl_item_details, lbl_amt_details;
+            TextView lbl_delivery_details, lbl_name, lbl_contact, lbl_companyName, lbl_date, lbl_time, lbl_item_details, lbl_amt_details;
             Button btnNext;
             lbl_subtotal_amt = (TextView) view.findViewById(R.id.lbl_subtotal_amt);
             lbl_total_amt = (TextView) view.findViewById(R.id.lbl_total_amt);
             lbl_tax_amt = (TextView) view.findViewById(R.id.lbl_tax_amt);
             lbl_delivery_details = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
-            lbl_name = (TextView) view.findViewById(R.id.lbl_name);
+            //lbl_name = (TextView) view.findViewById(R.id.lbl_name);
             lbl_contact = (TextView) view.findViewById(R.id.lbl_phone);
-            lbl_address = (TextView) view.findViewById(R.id.lbl_address);
+            lbl_companyName = (TextView) view.findViewById(R.id.lbl_companyName);
             lbl_date = (TextView) view.findViewById(R.id.lbl_date);
-            lbl_time = (TextView) view.findViewById(R.id.lbl_time);
+            //lbl_time = (TextView) view.findViewById(R.id.lbl_time);
             lbl_item_details = (TextView) view.findViewById(R.id.lbl_items);
             lbl_amt_details = (TextView) view.findViewById(R.id.lbl_amountDetails);
             btnNext = (Button) view.findViewById(R.id.btnPlaceOrder);
@@ -179,18 +179,18 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             lbl_tax_amt.setText("Add 7% GST");
             lbl_total_amt.setText("Total Amount");
             lbl_delivery_details.setText("Delivery Details");
-            lbl_name.setText("Name");
+            //lbl_name.setText("Name");
             lbl_contact.setText("Contact No");
-            lbl_address.setText("Address");
+            lbl_companyName.setText("Company Name");
             lbl_date.setText("Date");
-            lbl_time.setText("Time");
+            //lbl_time.setText("Time");
             lbl_item_details.setText(" " + orderList.size() + "items");
             lbl_amt_details.setText("Amount details");
             btnNext.setText("Place Order");
         }
 
         //display delivery details data
-        TextView deliveryDetails, name, contact, address, deliveryTime, numItems, amtDetails;
+        TextView deliveryDetails, name, contact, address, company, numItems, amtDetails;
         EditText deliveryDate;
         Button placeOrder;
         deliveryDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
@@ -200,12 +200,11 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         deliveryDate = (EditText) view.findViewById(R.id.date);
         numItems = (TextView) view.findViewById(R.id.lbl_items);
         amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
-        deliveryTime = (TextView) view.findViewById(R.id.deliveryTime);
+        company = (TextView) view.findViewById(R.id.companyName);
         placeOrder = (Button) view.findViewById(R.id.btnPlaceOrder);
 
 
         //display customer details
-        name.setText(customer.getDebtorName());
 
         if (customer.getDeliveryContact2() == null || customer.getDeliveryContact2().length() == 0) {
             contact.setText(customer.getDeliveryContact());
@@ -213,6 +212,12 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         } else {
             contact.setText(customer.getDeliveryContact() + " ," + customer.getDeliveryContact2());
         }
+
+        company.setText(customer.getCompanyName());
+
+
+        /*
+        name.setText(customer.getDebtorName());
 
         String address2 = "";
         String address3 = "";
@@ -237,6 +242,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         }
 
         address.setText(customer.getDeliverAddr1() + " " + address2 + " " + address3 + " " + address4);
+        */
 
         if (isEnglish.equals("Yes")) {
             deliveryDetails.setText(" Delivery details");
@@ -259,11 +265,13 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             placeOrder.setText("确认订单");
         }
 
+        /*
         if (deliveryShift.equals("AM")) {
             deliveryTime.setText("4.30am - 6.30am");
         } else {
             deliveryTime.setText("7.50am - 12.30pm");
         }
+        */
 
         return view;
     }
@@ -433,10 +441,8 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     //check if paper bag is required
                     CheckBox paperBagRequired = (CheckBox)view.findViewById(R.id.checkBox);
                     if (paperBagRequired.isChecked()) {
-                        System.out.println("Checkbox is checked");
                         paperBagNeeded = "yes";
                     } else {
-                        System.out.println("Checkbox is not checked");
                         paperBagNeeded = "no";
                     }
 

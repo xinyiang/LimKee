@@ -44,7 +44,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
     String isEnglish;
     private RecyclerView mRecyclerView;
     private String uom ="";
-    private EditText quantity;
+    private EditText qty;
     private String itemCode;
     private Customer customer;
     public static Retrofit retrofit;
@@ -108,6 +108,15 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
             super(view);
             description = (TextView) view.findViewById(R.id.description);
             qty = (EditText) view.findViewById(R.id.qty);
+
+            this.qty.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view){
+                    System.out.println("enter line 115");
+                    qty.setText("");
+                }
+            });
+
             unitOfMetric = (TextView) view.findViewById(R.id.uom);
             unitPrice = (TextView) view.findViewById(R.id.price);
             image = (ImageView) view.findViewById(R.id.image);
@@ -115,6 +124,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
             unitSubtotal = (TextView) view.findViewById(R.id.unitSubtotal);
             this.quantityEditTextListener = quantityEditTextListener;
             this.qty.addTextChangedListener(quantityEditTextListener);
+
+
 
         }
 
@@ -132,7 +143,13 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                 description.setText(product.getDescription2());
                 uom = product.getUom();
             }
-
+/*
+            if (product.getDefaultQty() == 0){
+                qty.setText("");
+            } else {
+                qty.setText(Integer.toString(product.getDefaultQty()));
+            }
+            */
             qty.setText(Integer.toString(product.getDefaultQty()));
             unitOfMetric.setText(uom);
             unitPrice.setText("$" + df.format(product.getUnitPrice()));
@@ -193,65 +210,92 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
                 public void onFocusChange(View v, boolean hasFocus) {
 
-                    if(!hasFocus && valueChanged) {
+                    if (hasFocus) {
+                        if (qty.getText().toString().equals("0")) {
+                            qty.setText("");
+                        }
+                    } else {
+                        if (!hasFocus && valueChanged) {
+                            //CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
+                            CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
+                            CatalogueFragment.lbl_subtotal.setVisibility(View.VISIBLE);
 
-                        //CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
-                        CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
-                        CatalogueFragment.lbl_subtotal.setVisibility(View.VISIBLE);
+                            //check that if quantity is left blank, set qty to 0
+                            if (qty.getText().toString().equals("")) {
 
-                        //check that if quantity is left blank, set qty to 0
-                        if (qty.getText().toString().equals("")){
-
-                            product.setDefaultQty(0);
-                            qty.setText("0");
-                            //update subtotal
-                            CatalogueFragment.updateSubtotal(orderList);
-                            //update unit subtotal
-                            DecimalFormat df = new DecimalFormat("#0.00");
-                            double unitSub = 0 * product.getUnitPrice();
-                            unitSubtotal.setText("$" + df.format(unitSub));
-
-                        } else {
-                            //check if qty is in correct multiples
-                            int qtyMultiples = product.getQtyMultiples();
-                            int quantity = Integer.parseInt(qty.getText().toString());
-
-                            if (quantity % qtyMultiples != 0) {
-                                if (isEnglish.equals("Yes")){
-                                    new AlertDialog.Builder(itemView.getContext())
-                                            .setMessage("Incorrect quantity for " + product.getDescription() + ". Quantity must be in multiples of " + qtyMultiples + ". Eg: " + qtyMultiples + " , " + (qtyMultiples + qtyMultiples) + ", " + (qtyMultiples + qtyMultiples + qtyMultiples) + " and so on.")
-                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    //finish();
-                                                    //reset quantity to default prefix
-                                                    product.setDefaultQty(product.getDefaultQty());
-                                                    qty.setText(Integer.toString(product.getDefaultQty()));
-                                                    DecimalFormat df = new DecimalFormat("#0.00");
-                                                    double unitSub = product.getDefaultQty() * product.getUnitPrice();
-                                                    unitSubtotal.setText("$" + df.format(unitSub));
-                                                }
-                                            })
-                                            .show();
-                                } else {
-                                    new AlertDialog.Builder(itemView.getContext())
-                                            .setMessage(product.getDescription2() + "的数量有误, 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，"+ (qtyMultiples+qtyMultiples) + "等等")
-                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    //finish();
-                                                    //reset quantity to default prefix
-                                                    product.setDefaultQty(product.getDefaultQty());
-                                                    qty.setText(Integer.toString(product.getDefaultQty()));
-                                                    DecimalFormat df = new DecimalFormat("#0.00");
-                                                    double unitSub = product.getDefaultQty() * product.getUnitPrice();
-                                                    unitSubtotal.setText("$" + df.format(unitSub));
-                                                }
-                                            })
-                                            .show();
-                                }
+                                product.setDefaultQty(0);
+                                qty.setText("0");
+                                //update subtotal
+                                CatalogueFragment.updateSubtotal(orderList);
+                                //update unit subtotal
+                                DecimalFormat df = new DecimalFormat("#0.00");
+                                double unitSub = 0 * product.getUnitPrice();
+                                unitSubtotal.setText("$" + df.format(unitSub));
 
                             } else {
+                                //check if qty is in correct multiples
+                                int qtyMultiples = product.getQtyMultiples();
+                            /*
+                            int quantity = 0;
+                            if (qty.getText().toString().equals("")){
+                                quantity = 0;
+                            } else {
+                                quantity = Integer.parseInt(qty.getText().toString());
+                            }
+                            */
+                                int quantity = Integer.parseInt(qty.getText().toString());
+
+                                if (quantity % qtyMultiples != 0) {
+                                    if (isEnglish.equals("Yes")) {
+                                        new AlertDialog.Builder(itemView.getContext())
+                                                .setMessage("Incorrect quantity for " + product.getDescription() + ". Quantity must be in multiples of " + qtyMultiples + ". Eg: " + qtyMultiples + " , " + (qtyMultiples + qtyMultiples) + ", " + (qtyMultiples + qtyMultiples + qtyMultiples) + " and so on.")
+                                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        //finish();
+                                                        //reset quantity to default prefix
+                                                        int quantity = product.getDefaultQty();
+                                                        product.setDefaultQty(product.getDefaultQty());
+                                                        //  if (product.getDefaultQty() ==0){
+                                                        //    qty.setText("");
+                                                        //  quantity = 0;
+                                                        //} else {
+                                                        //  qty.setText(Integer.toString(product.getDefaultQty()));
+                                                        //}
+                                                        qty.setText(Integer.toString(product.getDefaultQty()));
+                                                        DecimalFormat df = new DecimalFormat("#0.00");
+                                                        double unitSub = quantity * product.getUnitPrice();
+                                                        //double unitSub = product.getDefaultQty() * product.getUnitPrice();
+                                                        unitSubtotal.setText("$" + df.format(unitSub));
+                                                    }
+                                                })
+                                                .show();
+                                    } else {
+                                        new AlertDialog.Builder(itemView.getContext())
+                                                .setMessage(product.getDescription2() + "的数量有误, 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，" + (qtyMultiples + qtyMultiples) + "等等")
+                                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        //finish();
+                                                        //reset quantity to default prefix
+                                                        int quantity = product.getDefaultQty();
+                                                        product.setDefaultQty(product.getDefaultQty());
+                                                        if (product.getDefaultQty() == 0) {
+                                                            // qty.setText("");
+                                                            //quantity = 0;
+                                                        } else {
+                                                            //qty.setText(Integer.toString(product.getDefaultQty()));
+                                                        }
+                                                        qty.setText(Integer.toString(product.getDefaultQty()));
+                                                        DecimalFormat df = new DecimalFormat("#0.00");
+                                                        double unitSub = quantity * product.getUnitPrice();
+                                                        //double unitSub = product.getDefaultQty() * product.getUnitPrice();
+                                                    }
+                                                })
+                                                .show();
+                                    }
+
+                                } else {
                                 /*
                                 //check for recommended quantity
                                 if (!shown) {
@@ -273,18 +317,19 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                 }
                                 */
 
-                                //recalculate unit subtotal and total subtotal
-                                product.setDefaultQty(quantity);
-                                //update subtotal
-                                CatalogueFragment.updateSubtotal(orderList);
-                                //update unit subtotal
-                                DecimalFormat df = new DecimalFormat("#0.00");
-                                double unitSub = quantity * product.getUnitPrice();
-                                unitSubtotal.setText("$" + df.format(unitSub));
+                                    //recalculate unit subtotal and total subtotal
+                                    product.setDefaultQty(quantity);
+                                    //update subtotal
+                                    CatalogueFragment.updateSubtotal(orderList);
+                                    //update unit subtotal
+                                    DecimalFormat df = new DecimalFormat("#0.00");
+                                    double unitSub = quantity * product.getUnitPrice();
+                                    unitSubtotal.setText("$" + df.format(unitSub));
+                                }
                             }
                         }
+                        valueChanged = false;
                     }
-                    valueChanged = false;
                 }
             });
 
@@ -296,14 +341,16 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                 int quantity = 0;
                 public void afterTextChanged(Editable s) {
                     try {
-
+/*
                         if (qty.getText().toString().equals("")){
                             quantity = 0;
-                            //qty.setText("0);
+                            qty.setText("0");
 
                         } else {
                             quantity = Integer.parseInt(qty.getText().toString());
                         }
+                        */
+                        quantity = Integer.parseInt(qty.getText().toString());
 
                         product.setDefaultQty(quantity);           //did not validate qty multiples, do it at Next button
                         //update unit subtotal
@@ -325,6 +372,9 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
                 }
             });
+
+
+
 
             image.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -364,11 +414,14 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
             // no op
+
         }
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
             qtyDataSet[position] = charSequence.toString();
+
+
         }
 
         @Override

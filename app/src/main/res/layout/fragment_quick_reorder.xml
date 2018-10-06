@@ -20,7 +20,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginTop="4dp"
             android:textColor="@color/price"
-            android:textSize="24dp"
+            android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@+id/btnPlaceOrder"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
@@ -33,7 +33,7 @@
             android:background="@color/colorPrimary"
             android:text="Next"
             android:textColor="@color/colorPrimaryFont"
-            android:textSize="20dp"
+            android:textSize="22sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.461"

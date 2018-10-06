@@ -126,13 +126,13 @@ public class OrderHistoryDetailFragment extends Fragment {
         doGetOrderQuantity(orderID);
 
         //if english, change label to english
-        TextView orderNo, status, address, deliveryDate, deliveryTime, itemCount;
+        TextView orderNo, deliveredStatus, address, deliveryDate, company, itemCount;
         orderNo = (TextView) view.findViewById(R.id.orderID);
-        status = (TextView) view.findViewById(R.id.status);
-        address = (TextView) view.findViewById(R.id.deliveryAddress);
+        deliveredStatus = (TextView) view.findViewById(R.id.deliveredStatus);
+       // address = (TextView) view.findViewById(R.id.deliveryAddress);
         deliveryDate = (TextView) view.findViewById(R.id.deliveredDate);
         itemCount = (TextView) view.findViewById(R.id.lbl_itemsCount);
-        deliveryTime = (TextView) view.findViewById(R.id.deliveredTime);
+        company = (TextView) view.findViewById(R.id.companyName);
 
         orderNo.setText("#" + orderID);
 
@@ -155,20 +155,20 @@ public class OrderHistoryDetailFragment extends Fragment {
             address4 = "";
         }
 
-        address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + address3 + " " + address4);
+       // address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + address3 + " " + address4);
 
         if (isEnglish.equals("Yes")){
             TextView lbl_subtotal_amt, lbl_total_amt, lbl_tax_amt, lbl_orderDetails, lbl_amtDetails, lbl_deliveryDetails;
-            TextView lbl_orderID, lbl_orderDate, lbl_status, lbl_address, lbl_date, lbl_time, lbl_paperBagRequired;
+            TextView lbl_orderID, lbl_orderDate, lbl_status, lbl_address, lbl_date, lbl_companyName, lbl_paperBagRequired;
             lbl_orderID  = (TextView) view.findViewById(R.id.lbl_orderID);
             lbl_orderDate  = (TextView) view.findViewById(R.id.lbl_orderDate);
             lbl_status  = (TextView) view.findViewById(R.id.lbl_status);
             lbl_subtotal_amt = (TextView) view.findViewById(R.id.lbl_subtotal_amt);
             lbl_total_amt = (TextView) view.findViewById(R.id.lbl_total_amt);
             lbl_tax_amt = (TextView) view.findViewById(R.id.lbl_tax_amt);
-            lbl_address = (TextView) view.findViewById(R.id.lbl_deliveryAddress);
+           // lbl_address = (TextView) view.findViewById(R.id.lbl_deliveryAddress);
             lbl_date = (TextView) view.findViewById(R.id.lbl_deliveryDate);
-            lbl_time = (TextView) view.findViewById(R.id.lbl_deliveryTime);
+            lbl_companyName = (TextView) view.findViewById(R.id.lbl_companyName);
             lbl_orderDetails = (TextView) view.findViewById(R.id.lbl_order_details);
             lbl_deliveryDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
             lbl_amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
@@ -181,10 +181,10 @@ public class OrderHistoryDetailFragment extends Fragment {
             lbl_paperBagRequired.setText("Paper Bag");
 
             lbl_deliveryDetails.setText(" Delivery Details");
-            status.setText("Delivered");
-            lbl_address.setText("Delivery Address");
+            deliveredStatus.setText("Delivered");
+           // lbl_address.setText("Delivery Address");
             lbl_date.setText("Delivery Date");
-            lbl_time.setText("Delivery Time");
+            lbl_companyName.setText("Company Name");
 
             lbl_amtDetails.setText(" Amount Details");
             lbl_subtotal_amt.setText("Sub Total");
@@ -198,16 +198,19 @@ public class OrderHistoryDetailFragment extends Fragment {
             }
 
         } else {
-            status.setText("已送货");
+            deliveredStatus.setText("已送货");
             itemCount.setText(" 订单样品 (" + numItems + " 样)");
         }
 
+        company.setText(customer.getCompanyName());
+
+        /*
         if (deliveryShift.equals("AM")){
             deliveryTime.setText("4.30am - 6.30am");
         } else {
             deliveryTime.setText("7.50am - 12.30pm");
         }
-
+        */
 
         return view;
     }
