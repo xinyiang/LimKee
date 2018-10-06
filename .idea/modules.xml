@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/LimKee.iml" filepath="$PROJECT_DIR$/LimKee.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LimKeeInternal.iml" filepath="$PROJECT_DIR$/LimKeeInternal.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

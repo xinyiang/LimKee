@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:clipChildren="false"
     android:clipToPadding="false"
-    tools:context="com.limkee.navigation.NavigationActivity">
+    tools:context="com.limkee1.navigation.NavigationActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

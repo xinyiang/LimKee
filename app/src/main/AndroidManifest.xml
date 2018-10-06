@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.limkee">
+    package="com.limkee1">
 
     <uses-permission android:name="android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />
 
     <application
         android:allowBackup="false"
@@ -19,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="stateVisible|adjustResize">
-        <activity android:name=".login.LoginActivity">
+        <activity android:name="com.limkee1.login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,42 +28,42 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".navigation.NavigationActivity"
-            android:parentActivityName=".login.LoginActivity"
+            android:name="com.limkee1.navigation.NavigationActivity"
+            android:parentActivityName="com.limkee1.login.LoginActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".login.LogoutActivity"
-            android:parentActivityName=".login.LoginActivity"
+            android:name="com.limkee1.login.LogoutActivity"
+            android:parentActivityName="com.limkee1.login.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".order.ConfirmOrderActivity"
-            android:parentActivityName=".navigation.NavigationActivity" />
+            android:name="com.limkee1.order.ConfirmOrderActivity"
+            android:parentActivityName="com.limkee1.navigation.NavigationActivity" />
         <activity
-            android:name=".order.CurrentOrderDetailActivity"
-            android:parentActivityName=".order.ConfirmOrderActivity" />
+            android:name="com.limkee1.order.CurrentOrderDetailActivity"
+            android:parentActivityName="com.limkee1.order.ConfirmOrderActivity" />
         <activity
-            android:name=".payment.PaymentActivity"
-            android:parentActivityName=".order.CurrentOrderDetailActivity" />
+            android:name="com.limkee1.payment.PaymentActivity"
+            android:parentActivityName="com.limkee1.order.CurrentOrderDetailActivity" />
         <activity
-            android:name=".payment.ConfirmationActivity"
+            android:name="com.limkee1.payment.ConfirmationActivity"
             android:label="@string/title_activity_confirmation"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".order.QuickReorderConfirmOrderActivity"
-            android:parentActivityName=".order.QuickReorderConfirmOrderActivity" />
-        <activity android:name=".order.OrderHistoryDetailActivity" />
-        <activity android:name=".order.CancelledOrderDetailActivity" />
-        <activity android:name=".order.CancelledOrderActivity" />
-        <activity android:name=".catalogue.ProductDetailsActivity" />
+            android:name="com.limkee1.order.QuickReorderConfirmOrderActivity"
+            android:parentActivityName="com.limkee1.order.QuickReorderConfirmOrderActivity" />
+        <activity android:name="com.limkee1.order.OrderHistoryDetailActivity" />
+        <activity android:name="com.limkee1.order.CancelledOrderDetailActivity" />
+        <activity android:name="com.limkee1.order.CancelledOrderActivity" />
+        <activity android:name="com.limkee1.catalogue.ProductDetailsActivity" />
 
         <receiver
-            android:name=".notification.AlarmReceiver"
+            android:name="com.limkee1.notification.AlarmReceiver"
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".dashboard.DashboardActivity" />
-        <activity android:name=".payment.ScanActivity"></activity>
+        <activity android:name="com.limkee1.dashboard.DashboardActivity" />
+        <activity android:name="com.limkee1.payment.ScanActivity"></activity>
     </application>
 
 </manifest>

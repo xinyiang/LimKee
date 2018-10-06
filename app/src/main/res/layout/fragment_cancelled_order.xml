@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.limkee.order.CancelledOrderFragment"
+    tools:context="com.limkee1.order.CancelledOrderFragment"
     tools:layout_editor_absoluteY="25dp">
 
     <android.support.constraint.ConstraintLayout
