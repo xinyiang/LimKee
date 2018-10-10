@@ -1,6 +1,7 @@
 package com.limkee1.constant;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import com.limkee1.entity.Order;
@@ -79,6 +80,15 @@ public interface PostData {
 
         @GET("dashboard/getsuggestedquantity")
         Call<Integer> getRecommendedQuantity(@Query("companyCode") String companyCode, @Query("itemCode") String itemCode, @Query("orderQuantity") int orderQuantity);
+
+        @GET("wallet/getwalletamount")
+        Call<Double> getCustomerWallet(@Query("customerCode") String customerCode);
+
+        @GET("wallet/getrefundtransactionhistory")
+        Call<ArrayList<OrderDetails>> getRefundTransaction(@Query("customerCode") String customerCode);
+
+        @GET("wallet/getrefundtransactionproductdetails")
+        Call<ArrayList<OrderQuantity>> getRefundTransactionProductDetails(@Query("orderNo") String orderNo);
 
 }
 

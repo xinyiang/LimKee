@@ -1,4 +1,4 @@
-package com.limkee1.order;
+package com.limkee1.wallet;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,26 +11,27 @@ import com.limkee1.entity.OrderQuantity;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class CancelledOrderDetailAdapter extends RecyclerView.Adapter<CancelledOrderDetailAdapter.MyViewHolder> {
-
+public class TransactionHistoryDetailAdapter  extends RecyclerView.Adapter<TransactionHistoryDetailAdapter.MyViewHolder>  {
     private ArrayList<OrderQuantity> oqList;
     private OrderDetails od;
-    private CancelledOrderDetailFragment fragment;
+    private TransactionHistoryDetailsFragment fragment;
     private String isEnglish;
     private String uom = "";
+    private String status;
 
-    public CancelledOrderDetailAdapter(CancelledOrderDetailFragment fragment, String isEnglish) {
+    public TransactionHistoryDetailAdapter(TransactionHistoryDetailsFragment fragment, String isEnglish, String status) {
         this.fragment = fragment;
         this.isEnglish = isEnglish;
+        this.status = status;
     }
 
     @Override
-    public CancelledOrderDetailAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+    public TransactionHistoryDetailAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.order_details_product, parent, false);
-        return new CancelledOrderDetailAdapter.MyViewHolder(itemView);
+        return new TransactionHistoryDetailAdapter.MyViewHolder(itemView);
     }
-    public void onBindViewHolder(final CancelledOrderDetailAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(final TransactionHistoryDetailAdapter.MyViewHolder holder, int position) {
 
         OrderQuantity product = oqList.get(position);
         holder.bindContent(product);
@@ -52,7 +53,6 @@ public class CancelledOrderDetailAdapter extends RecyclerView.Adapter<CancelledO
             DecimalFormat df = new DecimalFormat("#0.00");
             if (isEnglish.equals("Yes")) {
                 description.setText(product.getDescription());
-                description.setText(product.getDescription());
                 if (product.getDescription().equals("CS")){
                     uom = "btl";
                 } else {
@@ -63,9 +63,23 @@ public class CancelledOrderDetailAdapter extends RecyclerView.Adapter<CancelledO
                 uom = product.getUom();
             }
 
-            qty.setText(Integer.toString(product.getQty()));
+            double unitSub = 0;
+
+            if (status.equals("Pending Delivery")) {
+                qty.setText(Integer.toString(product.getReduceQty()));
+                unitSub = product.getReduceQty() * product.getUnitPrice();
+            } else if (status.equals("Delivered")){
+                qty.setText(Integer.toString(product.getReturnQty()));
+                unitSub = product.getReturnQty() * product.getUnitPrice();
+            } else if (status.equals("Cancelled")){
+                qty.setText(Integer.toString(product.getQty()));
+                unitSub = product.getQty() * product.getUnitPrice();
+            } else {
+                //do nothing
+            }
+
             unitOfMetric.setText(uom);
-            double unitSub = product.getQty() * product.getUnitPrice();
+
             unitSubtotal.setText("$" + df.format(unitSub));
 
         }

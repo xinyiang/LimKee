@@ -38,6 +38,9 @@
     <string name="quickreorder">Quick Reorder</string>
     <string name="currentorders">Current Orders</string>
     <string name="orderhistory">Order History</string>
+    <string name="wallet">Wallet</string>
+    <string name="lbl_walletAmt">Total Amount</string>
+    <string name="lblwallet_autodeduct">Automatically deducted at checkout</string>
     <string name="save_this_card">Save This Card</string>
     <string name="pay_with_saved_cards">Pay with saved cards</string>
     <string name="confirm">confirm</string>

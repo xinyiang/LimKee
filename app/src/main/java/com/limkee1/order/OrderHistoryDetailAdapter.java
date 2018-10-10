@@ -54,7 +54,11 @@ public class OrderHistoryDetailAdapter extends RecyclerView.Adapter<OrderHistory
 
             if (isEnglish.equals("Yes")) {
                 description.setText(product.getDescription());
-                uom = "pcs";
+                if (product.getDescription().equals("CS")){
+                    uom = "btl";
+                } else {
+                    uom = "pcs";
+                }
             } else {
                 description.setText(product.getDescription2());
                 uom = product.getUom();

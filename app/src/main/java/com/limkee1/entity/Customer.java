@@ -1,10 +1,8 @@
 package com.limkee1.entity;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Miaozi on 21/5/18.
- */
 @SuppressWarnings("serial")
 public class Customer implements Parcelable{
     private String companyCode;

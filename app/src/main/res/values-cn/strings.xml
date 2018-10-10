@@ -21,6 +21,9 @@
     <string name="quickreorder">快速下单</string>
     <string name="currentorders">当前订单</string>
     <string name="orderhistory">订单历史</string>
+    <string name="wallet">钱包</string>
+    <string name="lbl_walletAmt">数目</string>
+    <string name="lblwallet_autodeduct">将自动在付款扣钱</string>
     <string name="lbl_orderDetails">订单详情</string>
     <string name="lbl_orderID">订单号</string>
     <string name="lbl_orderDate">订单日期</string>

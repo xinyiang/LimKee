@@ -1,6 +1,9 @@
 package com.limkee1.entity;
 
-public class OrderDetails {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class OrderDetails implements Parcelable {
     String orderID;
     String orderDate;
     double subtotal;
@@ -18,6 +21,19 @@ public class OrderDetails {
         this.deliveryDate = deliveryDate;
         this.subtotal = subtotal;
         this.paperBagRequired = paperBagRequired;
+    }
+
+    public OrderDetails(String orderID, double refundSubtotal){
+        this.orderID = orderID;
+        this.subtotal = refundSubtotal;
+    }
+
+    public OrderDetails(String orderID, double refundSubtotal, String orderDate, String status, String deliveryDate){
+        this.orderID = orderID;
+        this.subtotal = refundSubtotal;
+        this.orderDate = orderDate;
+        this.status = status;
+        this.deliveryDate = deliveryDate;
     }
 
     public String getOrderID() {
@@ -66,5 +82,45 @@ public class OrderDetails {
 
     public void setPaperBagRequired(int paperBagRequired) {
         this.paperBagRequired = paperBagRequired;
+    }
+
+    public OrderDetails(Parcel in) {
+        super();
+        readFromParcel(in);
+    }
+
+
+    public static final Parcelable.Creator<OrderDetails> CREATOR = new Parcelable.Creator<OrderDetails>() {
+        public OrderDetails createFromParcel(Parcel in) {
+            return new OrderDetails(in);
+        }
+
+        public OrderDetails[] newArray(int size) {
+
+            return new OrderDetails[size];
+        }
+
+    };
+
+    public void readFromParcel(Parcel in) {
+        orderID = in.readString();
+        orderDate = in.readString();
+        status = in.readString();
+        deliveryDate = in.readString();
+        subtotal = in.readDouble();
+        paperBagRequired = in.readInt();
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(orderID);
+        dest.writeString(orderDate);
+        dest.writeString(status);
+        dest.writeString(deliveryDate);
+        dest.writeDouble(subtotal);
+        dest.writeInt(paperBagRequired);
     }
 }
