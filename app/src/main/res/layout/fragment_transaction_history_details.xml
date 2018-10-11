@@ -320,6 +320,64 @@
                 app:layout_constraintStart_toEndOf="@+id/lbl_total_amt"
                 app:layout_constraintTop_toBottomOf="@+id/taxAmt" />
 
+            <TextView
+                android:id="@+id/lbl_walletDeducted_amt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:text="@string/lbl_walletDeducted_amt"
+                android:visibility="invisible"
+                android:textColor="@color/colorAccent"
+                android:textSize="19sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_total_amt" />
+
+            <TextView
+                android:id="@+id/walletDeductedAmt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                android:visibility="invisible"
+                app:layout_constraintStart_toEndOf="@+id/lbl_walletDeducted_amt"
+                app:layout_constraintTop_toBottomOf="@+id/totalAmt" />
+
+            <TextView
+                android:id="@+id/lbl_paid_amt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:text="@string/lbl_paid_amt"
+                android:visibility="invisible"
+                android:textColor="@color/colorAccent"
+                android:textSize="19sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_walletDeducted_amt" />
+
+            <TextView
+                android:id="@+id/paidAmt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                android:visibility="invisible"
+                app:layout_constraintStart_toEndOf="@+id/lbl_walletDeducted_amt"
+                app:layout_constraintTop_toBottomOf="@+id/walletDeductedAmt" />
+
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="81dp"

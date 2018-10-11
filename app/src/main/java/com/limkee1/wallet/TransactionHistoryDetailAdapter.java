@@ -19,10 +19,10 @@ public class TransactionHistoryDetailAdapter  extends RecyclerView.Adapter<Trans
     private String uom = "";
     private String status;
 
-    public TransactionHistoryDetailAdapter(TransactionHistoryDetailsFragment fragment, String isEnglish, String status) {
+    public TransactionHistoryDetailAdapter(TransactionHistoryDetailsFragment fragment, String isEnglish, OrderDetails od) {
         this.fragment = fragment;
         this.isEnglish = isEnglish;
-        this.status = status;
+        this.od = od;
     }
 
     @Override
@@ -63,25 +63,11 @@ public class TransactionHistoryDetailAdapter  extends RecyclerView.Adapter<Trans
                 uom = product.getUom();
             }
 
-            double unitSub = 0;
-
-            if (status.equals("Pending Delivery")) {
-                qty.setText(Integer.toString(product.getReduceQty()));
-                unitSub = product.getReduceQty() * product.getUnitPrice();
-            } else if (status.equals("Delivered")){
-                qty.setText(Integer.toString(product.getReturnQty()));
-                unitSub = product.getReturnQty() * product.getUnitPrice();
-            } else if (status.equals("Cancelled")){
-                qty.setText(Integer.toString(product.getQty()));
-                unitSub = product.getQty() * product.getUnitPrice();
-            } else {
-                //do nothing
-            }
-
+            status = od.getStatus();
+            qty.setText(Integer.toString(product.getQty()));
+            double unitSub = product.getQty()  * product.getUnitPrice();
             unitOfMetric.setText(uom);
-
             unitSubtotal.setText("$" + df.format(unitSub));
-
         }
     }
     public void update(OrderDetails od){

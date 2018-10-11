@@ -24,6 +24,8 @@
     <string name="wallet">钱包</string>
     <string name="lbl_walletAmt">数目</string>
     <string name="lblwallet_autodeduct">将自动在付款扣钱</string>
+    <string name="lbl_paid_amt">总付款</string>
+    <string name="lbl_walletDeducted_amt">钱包扣钱</string>
     <string name="lbl_orderDetails">订单详情</string>
     <string name="lbl_orderID">订单号</string>
     <string name="lbl_orderDate">订单日期</string>

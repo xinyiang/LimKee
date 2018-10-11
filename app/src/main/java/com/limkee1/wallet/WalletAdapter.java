@@ -1,6 +1,7 @@
 package com.limkee1.wallet;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -134,8 +135,35 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.MyViewHold
                  lbl.setText("从订单号");
             }
 
-             subtotal.setText("+ $" + df.format(od.getSubtotal()));
-             orderID.setText("#" + od.getOrderID());
+            double subtotalAmt = od.getSubtotal();
+            double paidAmt = od.getPaidAmt();
+            double refundAmt = od.getRefundSubtotal();
+
+            //negative is redemption (paid with wallet)
+            //positive is refunds (reduce, return, cancelled)
+
+            //if refund is $0, then is redemption
+            if (refundAmt == 0) {
+                if (paidAmt < subtotalAmt) {
+                    //wallet deduction is the difference
+                    subtotal.setText("- $" + df.format(subtotalAmt - paidAmt));
+                    subtotal.setTextColor(Color.parseColor("#FF0000"));     //red
+                } else if (paidAmt == 0) {
+                    //full deduction from wallet
+                    subtotal.setText("- $" + df.format(subtotalAmt*1.07));
+                    subtotal.setTextColor(Color.parseColor("#FF0000"));     //red
+
+
+                } else {
+                    //do not show transaction
+                }
+            } else {
+                //refunds
+                subtotal.setText("+ $" + df.format(refundAmt));
+                subtotal.setTextColor(Color.parseColor("#008000"));     //green
+            }
+
+            orderID.setText("#" + od.getOrderID());
         }
     }
 

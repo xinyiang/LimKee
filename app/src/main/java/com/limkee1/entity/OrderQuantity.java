@@ -9,9 +9,6 @@ public class OrderQuantity {
     double unitPrice;
     String uom;
     String orderID;
-    int returnQty;
-    int reduceQty;
-
 
     public OrderQuantity() {
     }
@@ -30,14 +27,12 @@ public class OrderQuantity {
         this.uom = uom;
     }
 
-    public OrderQuantity(String orderID, String description, String description2, double unitPrice, String uom, int reduceQty, int returnQty, int qty) {
+    public OrderQuantity(String orderID, String description, String description2, double unitPrice, String uom, int qty) {
         this.orderID = orderID;
         this.description = description;
         this.description2 = description2;
         this.unitPrice = unitPrice;
         this.uom = uom;
-        this.returnQty = returnQty;
-        this.reduceQty = reduceQty;
         this.qty = qty;
 
     }
@@ -88,21 +83,5 @@ public class OrderQuantity {
 
     public void setOrderID(String orderID) {
         this.orderID = orderID;
-    }
-
-    public int getReturnQty() {
-        return returnQty;
-    }
-
-    public void setReturnQty(int returnQty) {
-        this.returnQty = returnQty;
-    }
-
-    public int getReduceQty() {
-        return reduceQty;
-    }
-
-    public void setReduceQty(int reduceQty) {
-        this.reduceQty = reduceQty;
     }
 }

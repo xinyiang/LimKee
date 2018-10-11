@@ -72,9 +72,9 @@ public class TransactionHistoryDetailsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (isEnglish.equals("Yes")){
-            ((TransactionHistoryActivity) getActivity()).setActionBarTitle("Refund Order Details");
+            ((TransactionHistoryActivity) getActivity()).setActionBarTitle("Order Details");
         } else {
-            ((TransactionHistoryActivity) getActivity()).setActionBarTitle("退货订单详情");
+            ((TransactionHistoryActivity) getActivity()).setActionBarTitle("订单详情");
         }
 
         Bundle bundle = getArguments();
@@ -94,7 +94,7 @@ public class TransactionHistoryDetailsFragment extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(com.limkee1.R.id.recyclerView);
 
-        mAdapter = new TransactionHistoryDetailAdapter(this, isEnglish, od.getStatus());
+        mAdapter = new TransactionHistoryDetailAdapter(this, isEnglish, od);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -182,10 +182,30 @@ public class TransactionHistoryDetailsFragment extends Fragment {
 
         company.setText(customer.getCompanyName());
 
-        TextView subtotalAmt, tax, totalAmt;
+        TextView subtotalAmt, tax, totalAmt, paidAmt, lbl_paidAmt,  lbl_walletDeductedAmt, walletDeductedAmt;
         DecimalFormat df = new DecimalFormat("#0.00");
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
-        double subtotal = od.getSubtotal();
+        lbl_paidAmt  = view.findViewById(R.id.lbl_paid_amt);
+        paidAmt = view.findViewById(R.id.paidAmt);
+        lbl_walletDeductedAmt  = view.findViewById(R.id.lbl_walletDeducted_amt);
+        walletDeductedAmt = view.findViewById(R.id.walletDeductedAmt);
+
+        double subtotal = 0;
+        if (od.getRefundSubtotal() == 0){
+            subtotal = od.getSubtotal();
+            //show paid amt and wallet deducted amt
+            lbl_paidAmt.setVisibility(View.VISIBLE);
+            paidAmt.setVisibility(View.VISIBLE);
+            paidAmt.setText("$" + df.format(od.getPaidAmt()));
+
+            lbl_walletDeductedAmt.setVisibility(View.VISIBLE);
+            walletDeductedAmt.setVisibility(View.VISIBLE);
+            walletDeductedAmt.setText("-$" + df.format((od.getSubtotal()*1.07) - od.getPaidAmt()));
+
+        } else {
+            subtotal = od.getRefundSubtotal();
+        }
+
         subtotalAmt.setText("$" + df.format(subtotal));
 
         tax = view.findViewById(R.id.taxAmt);
@@ -234,7 +254,7 @@ public class TransactionHistoryDetailsFragment extends Fragment {
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<ArrayList<OrderQuantity>> call = service.getRefundTransactionProductDetails(orderID);
+        Call<ArrayList<OrderQuantity>> call = service.getTransactionProductDetails(orderID, od.getRefundSubtotal());
         call.enqueue(new Callback<ArrayList<OrderQuantity>>() {
 
             @Override

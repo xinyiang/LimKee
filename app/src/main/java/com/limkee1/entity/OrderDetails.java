@@ -10,17 +10,20 @@ public class OrderDetails implements Parcelable {
     String status;
     String deliveryDate;
     int paperBagRequired;
+    double paidAmt;
+    double refundSubtotal;
 
     public OrderDetails(){
     }
 
-    public OrderDetails(String orderID, String orderDate, String status, String deliveryDate, double subtotal, int paperBagRequired){
+    public OrderDetails(String orderID, String orderDate, String status, String deliveryDate, double subtotal, int paperBagRequired, double paidAmt){
         this.orderID = orderID;
         this.orderDate = orderDate;
         this.status = status;
         this.deliveryDate = deliveryDate;
         this.subtotal = subtotal;
         this.paperBagRequired = paperBagRequired;
+        this.paidAmt = paidAmt;
     }
 
     public OrderDetails(String orderID, double refundSubtotal){
@@ -28,12 +31,15 @@ public class OrderDetails implements Parcelable {
         this.subtotal = refundSubtotal;
     }
 
-    public OrderDetails(String orderID, double refundSubtotal, String orderDate, String status, String deliveryDate){
+    public OrderDetails(String orderID, double subtotal, String orderDate, String status, String deliveryDate, double paidAmt, double refundSubtotal){
         this.orderID = orderID;
-        this.subtotal = refundSubtotal;
+        this.subtotal = subtotal;
         this.orderDate = orderDate;
         this.status = status;
         this.deliveryDate = deliveryDate;
+        this.paidAmt = paidAmt;
+        this.refundSubtotal = refundSubtotal;
+
     }
 
     public String getOrderID() {
@@ -84,11 +90,27 @@ public class OrderDetails implements Parcelable {
         this.paperBagRequired = paperBagRequired;
     }
 
+    public double getPaidAmt() {
+        return paidAmt;
+    }
+
+    public void setPaidAmt(double paidAmt) {
+        this.paidAmt = paidAmt;
+    }
+
+
     public OrderDetails(Parcel in) {
         super();
         readFromParcel(in);
     }
 
+    public double getRefundSubtotal() {
+        return refundSubtotal;
+    }
+
+    public void setRefundSubtotal(double refundSubtotal) {
+        this.refundSubtotal = refundSubtotal;
+    }
 
     public static final Parcelable.Creator<OrderDetails> CREATOR = new Parcelable.Creator<OrderDetails>() {
         public OrderDetails createFromParcel(Parcel in) {
@@ -109,6 +131,8 @@ public class OrderDetails implements Parcelable {
         deliveryDate = in.readString();
         subtotal = in.readDouble();
         paperBagRequired = in.readInt();
+        paidAmt = in.readDouble();
+        refundSubtotal = in.readDouble();
     }
 
     public int describeContents() {
@@ -122,5 +146,7 @@ public class OrderDetails implements Parcelable {
         dest.writeString(deliveryDate);
         dest.writeDouble(subtotal);
         dest.writeInt(paperBagRequired);
+        dest.writeDouble(paidAmt);
+        dest.writeDouble(refundSubtotal);
     }
 }

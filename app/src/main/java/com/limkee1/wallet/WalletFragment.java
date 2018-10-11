@@ -138,14 +138,13 @@ public class WalletFragment extends Fragment {
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<ArrayList<OrderDetails>> call = service.getRefundTransaction(customerCode);
+        Call<ArrayList<OrderDetails>> call = service.getTransaction(customerCode);
         call.enqueue(new Callback<ArrayList<OrderDetails>>() {
 
             @Override
             public void onResponse(Call<ArrayList<OrderDetails>> call, Response<ArrayList<OrderDetails>> response) {
                 ArrayList<OrderDetails> data = response.body();
                 WalletDAO.refundTransaction = data;
-                System.out.println("data for wallet " + data);
                 mAdapter.update(WalletDAO.refundTransaction);
                 if (data == null || data.size() == 0) {
                     if (isEnglish.equals("Yes")) {
@@ -155,7 +154,7 @@ public class WalletFragment extends Fragment {
                     } else {
                         lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
                         lbl_noOrders.setText("没有历史");
-                         view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
+                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
                     }
                 }
             }
