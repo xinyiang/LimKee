@@ -7,6 +7,7 @@
     <string name="company_code">用户名</string>
     <string name="password">密码</string>
     <string name="login">登陆</string>
+    <string name="confirmOrder">确认订单</string>
     <string name="payment">付款</string>
     <string name="userprofile">用户资料</string>
     <string name="orderslip">订单表</string>
@@ -25,6 +26,9 @@
     <string name="lbl_paid_amt">总付款</string>
     <string name="lbl_walletDeducted_amt">钱包扣钱</string>
     <string name="lbl_orderDetails">订单详情</string>
+    <string name="lbl_order_details"> 订单详情</string>
+    <string name="lbl_product_details"> 订单样品</string>
+    <string name="lbl_numItemsHeader">数量</string>
     <string name="lbl_orderID">订单号</string>
     <string name="lbl_orderDate">订单日期</string>
     <string name="lbl_companyName">公司名字</string>
@@ -33,14 +37,16 @@
     <string name="pendingStatus">待送货</string>
     <string name="deliveredStatus">已送货</string>
     <string name="cancelledStatus">取消</string>
-    <string name="lbl_deliveryDate">送货日期</string>
     <string name="lbl_productDetails">物品详情</string>
     <string name="lbl_paperBag">纸袋</string>
+    <string name="paperBagRequired">需要</string>
     <string name="subtotal">小计</string>
     <string name="tax">7% 税</string>
     <string name="totalAmount">总额</string>
-    <string name="deliveryDetails">送货详情</string>
-    <string name="amountDetails">价钱详情</string>
+    <string name="deliveryDetails"> 送货详情</string>
+    <string name="lbl_deliveryDate"> 送货日期</string>
+    <string name="date">日/月/年</string>
+    <string name="amountDetails"> 价钱详情</string>
     <string name="save_this_card">保存此卡</string>
     <string name="pay_with_saved_cards">使用已储存的卡支付</string>
     <string name="confirm">确定</string>

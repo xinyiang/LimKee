@@ -44,11 +44,9 @@ public class OrderHistoryDetailFragment extends Fragment {
     public static Retrofit retrofit;
     private String date;
     private int numItems;
-    private String deliveryShift;
     private int paperBagRequiredNeeded;
 
     public OrderHistoryDetailFragment() {
-        // Required empty public constructor
     }
 
     public static OrderHistoryDetailFragment newInstance() {
@@ -68,7 +66,6 @@ public class OrderHistoryDetailFragment extends Fragment {
         orderID = bundle.getString("orderID");
         date = bundle.getString("deliveryDate");
         numItems = bundle.getInt("numItems");
-        deliveryShift = bundle.getString("deliveryShift");
 
     }
 
@@ -87,7 +84,6 @@ public class OrderHistoryDetailFragment extends Fragment {
         isEnglish = bundle.getString("language");
         date = bundle.getString("deliveryDate");
         numItems = bundle.getInt("numItems");
-        deliveryShift = bundle.getString("deliveryShift");
         doGetOrderDetails(orderID);
         doGetOrderQuantity(orderID);
     }
@@ -125,11 +121,8 @@ public class OrderHistoryDetailFragment extends Fragment {
         doGetOrderDetails(orderID);
         doGetOrderQuantity(orderID);
 
-        //if english, change label to english
         TextView orderNo, deliveredStatus, address, deliveryDate, company, itemCount;
         orderNo = (TextView) view.findViewById(R.id.orderID);
-        deliveredStatus = (TextView) view.findViewById(R.id.deliveredStatus);
-       // address = (TextView) view.findViewById(R.id.deliveryAddress);
         deliveryDate = (TextView) view.findViewById(R.id.deliveredDate);
         itemCount = (TextView) view.findViewById(R.id.lbl_itemsCount);
         company = (TextView) view.findViewById(R.id.companyName);
@@ -145,51 +138,8 @@ public class OrderHistoryDetailFragment extends Fragment {
         } catch (Exception e){
             deliveryDate.setText(date);
         }
-        String address3 = "";
-        String address4 = "";
-        if (customer.getDeliverAddr3() == null){
-            address3 = "";
-        }
-
-        if (customer.getDeliverAddr4() == null){
-            address4 = "";
-        }
-
-       // address.setText(customer.getDeliverAddr1() + " " + customer.getDeliverAddr2() + " " + address3 + " " + address4);
 
         if (isEnglish.equals("Yes")){
-            TextView lbl_subtotal_amt, lbl_total_amt, lbl_tax_amt, lbl_orderDetails, lbl_amtDetails, lbl_deliveryDetails;
-            TextView lbl_orderID, lbl_orderDate, lbl_status, lbl_address, lbl_date, lbl_companyName, lbl_paperBagRequired;
-            lbl_orderID  = (TextView) view.findViewById(R.id.lbl_orderID);
-            lbl_orderDate  = (TextView) view.findViewById(R.id.lbl_orderDate);
-            lbl_status  = (TextView) view.findViewById(R.id.lbl_status);
-            lbl_subtotal_amt = (TextView) view.findViewById(R.id.lbl_subtotal_amt);
-            lbl_total_amt = (TextView) view.findViewById(R.id.lbl_total_amt);
-            lbl_tax_amt = (TextView) view.findViewById(R.id.lbl_tax_amt);
-           // lbl_address = (TextView) view.findViewById(R.id.lbl_deliveryAddress);
-            lbl_date = (TextView) view.findViewById(R.id.lbl_deliveryDate);
-            lbl_companyName = (TextView) view.findViewById(R.id.lbl_companyName);
-            lbl_orderDetails = (TextView) view.findViewById(R.id.lbl_order_details);
-            lbl_deliveryDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
-            lbl_amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
-            lbl_paperBagRequired = (TextView) view.findViewById(R.id.lbl_paperBag);
-
-            lbl_orderDetails.setText(" Order Details");
-            lbl_orderID.setText("Order ID");
-            lbl_orderDate.setText("Order Date");
-            lbl_status.setText("Status");
-            lbl_paperBagRequired.setText("Paper Bag");
-
-            lbl_deliveryDetails.setText(" Delivery Details");
-            deliveredStatus.setText("Delivered");
-           // lbl_address.setText("Delivery Address");
-            lbl_date.setText("Delivery Date");
-            lbl_companyName.setText("Company Name");
-
-            lbl_amtDetails.setText(" Amount Details");
-            lbl_subtotal_amt.setText("Sub Total");
-            lbl_tax_amt.setText("GST (7%)");
-            lbl_total_amt.setText("Total Amount");
 
             if (numItems == 1){
                 itemCount.setText(" Product Details (" + numItems + " item)");
@@ -198,19 +148,10 @@ public class OrderHistoryDetailFragment extends Fragment {
             }
 
         } else {
-            deliveredStatus.setText("已送货");
             itemCount.setText(" 订单样品 (" + numItems + " 样)");
         }
 
         company.setText(customer.getCompanyName());
-
-        /*
-        if (deliveryShift.equals("AM")){
-            deliveryTime.setText("4.30am - 6.30am");
-        } else {
-            deliveryTime.setText("7.50am - 12.30pm");
-        }
-        */
 
         return view;
     }
@@ -224,7 +165,6 @@ public class OrderHistoryDetailFragment extends Fragment {
                     .build();
         }
 
-        System.out.println("order details" + orderID);
         PostData service = retrofit.create(PostData.class);
         Call<OrderDetails> call = service.getOrderHistoryDetails(orderID);
 
@@ -256,7 +196,7 @@ public class OrderHistoryDetailFragment extends Fragment {
                     }
                 }
 
-                TextView subtotalAmt, tax, totalAmt;
+                TextView subtotalAmt, tax, totalAmt, paidAmt, lbl_paidAmt, lbl_walletDeductedAmt, walletDeductedAmt;
                 DecimalFormat df = new DecimalFormat("#0.00");
                 subtotalAmt = view.findViewById(R.id.subtotalAmt);
                 double subtotal = od.getSubtotal();
@@ -269,6 +209,23 @@ public class OrderHistoryDetailFragment extends Fragment {
                 totalAmt = view.findViewById(R.id.totalAmt);
                 double totalPayable = taxAmt + subtotal;
                 totalAmt.setText("$" + df.format(totalPayable));
+
+                //show paid amt and wallet deducted amt
+                if (od.getSubtotal()*1.07 != od.getPaidAmt()){
+                    lbl_paidAmt  = view.findViewById(R.id.lbl_paid_amt);
+                    paidAmt = view.findViewById(R.id.paidAmt);
+
+                    lbl_paidAmt.setVisibility(View.VISIBLE);
+                    paidAmt.setVisibility(View.VISIBLE);
+                    paidAmt.setText("$" + df.format(od.getPaidAmt()));
+
+                    lbl_walletDeductedAmt  = view.findViewById(R.id.lbl_walletDeducted_amt);
+                    walletDeductedAmt = view.findViewById(R.id.walletDeductedAmt);
+
+                    lbl_walletDeductedAmt.setVisibility(View.VISIBLE);
+                    walletDeductedAmt.setVisibility(View.VISIBLE);
+                    walletDeductedAmt.setText("-$" + df.format((od.getSubtotal()*1.07) - od.getPaidAmt()));
+                }
 
                 TextView orderDateTxt = view.findViewById(R.id.orderDate);
                 String orderDate = od.getOrderDate();

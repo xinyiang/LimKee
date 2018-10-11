@@ -10,28 +10,29 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.limkee1.BaseActivity;
 import com.limkee1.R;
 
-public class TransactionHistoryActivity extends AppCompatActivity implements WalletFragment.OnFragmentInteractionListener, TransactionHistoryDetailsFragment.OnFragmentInteractionListener {
+public class TransactionHistoryActivity extends BaseActivity implements WalletFragment.OnFragmentInteractionListener, TransactionHistoryDetailsFragment.OnFragmentInteractionListener {
 
-        public static Bundle myBundle = new Bundle();
+    public static Bundle myBundle = new Bundle();
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_transaction_history);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_transaction_history);
 
-            myBundle = getIntent().getExtras();
+        myBundle = getIntent().getExtras();
 
-            Toolbar toolbar = findViewById(com.limkee1.R.id.toolbar);
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = findViewById(com.limkee1.R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-            TransactionHistoryDetailsFragment transactionFragment = new TransactionHistoryDetailsFragment();
-            transactionFragment.setArguments(myBundle);
+        TransactionHistoryDetailsFragment transactionFragment = new TransactionHistoryDetailsFragment();
+        transactionFragment.setArguments(myBundle);
 
-            loadFragment(transactionFragment);
-        }
+        loadFragment(transactionFragment);
+    }
 
     private void loadFragment(Fragment fragment) {
 

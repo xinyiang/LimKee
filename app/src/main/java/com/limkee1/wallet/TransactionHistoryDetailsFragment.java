@@ -182,7 +182,7 @@ public class TransactionHistoryDetailsFragment extends Fragment {
 
         company.setText(customer.getCompanyName());
 
-        TextView subtotalAmt, tax, totalAmt, paidAmt, lbl_paidAmt,  lbl_walletDeductedAmt, walletDeductedAmt;
+        TextView subtotalAmt, tax, totalAmt, paidAmt, lbl_paidAmt, lbl_walletDeductedAmt, walletDeductedAmt;
         DecimalFormat df = new DecimalFormat("#0.00");
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
         lbl_paidAmt  = view.findViewById(R.id.lbl_paid_amt);

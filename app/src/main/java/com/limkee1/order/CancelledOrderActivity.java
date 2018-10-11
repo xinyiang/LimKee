@@ -9,10 +9,12 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.limkee1.BaseActivity;
 import com.limkee1.R;
 import com.limkee1.entity.Customer;
 
-public class CancelledOrderActivity extends AppCompatActivity implements CancelledOrderFragment.OnFragmentInteractionListener, OrderHistoryFragment.OnFragmentInteractionListener {
+public class CancelledOrderActivity extends BaseActivity implements CancelledOrderFragment.OnFragmentInteractionListener, OrderHistoryFragment.OnFragmentInteractionListener {
 
     public static Bundle myBundle = new Bundle();
     private Customer customer;

@@ -9,9 +9,11 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.limkee1.BaseActivity;
 import com.limkee1.R;
 
-public class CancelledOrderDetailActivity extends AppCompatActivity implements CancelledOrderFragment.OnFragmentInteractionListener, CancelledOrderDetailFragment.OnFragmentInteractionListener {
+public class CancelledOrderDetailActivity extends BaseActivity implements CancelledOrderFragment.OnFragmentInteractionListener, CancelledOrderDetailFragment.OnFragmentInteractionListener {
 
     public static Bundle myBundle = new Bundle();
 

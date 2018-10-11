@@ -9,9 +9,11 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.limkee1.BaseActivity;
 import com.limkee1.R;
 
-public class CurrentOrderDetailActivity extends AppCompatActivity implements ConfirmOrderFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener, CurrentOrderDetailFragment.OnFragmentInteractionListener {
+public class CurrentOrderDetailActivity extends BaseActivity implements ConfirmOrderFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener, CurrentOrderDetailFragment.OnFragmentInteractionListener {
 
     public static Bundle myBundle = new Bundle();
 

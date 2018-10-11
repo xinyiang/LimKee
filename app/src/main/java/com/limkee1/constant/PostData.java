@@ -17,15 +17,22 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface PostData {
-
     @GET("get-catalogue")
     Call<ArrayList<Product>> getCatalogue();
 
-    @GET("dashboard/getaveragequantitycatalogue")
-    Call<ArrayList<Product>> getAverageQuantity(@Query("companyCode") String companyCode);
-
-    @GET("get-order/latestorder")
+    @GET("get-order/getlastestorder")
     Call<ArrayList<Product>> getQuickOrderCatalogue(@Query("companyCode") String companyCode);
+
+    /*
+    @GET("catalogue/get-catalogue")
+    Call<ArrayList<Product>> getCatalogue();
+
+    @GET("catalogue/getlastorder")
+    Call<ArrayList<Product>> getQuickOrderCatalogue(@Query("companyCode") String companyCode);
+
+    @GET("catalogue/getlastpaparbag")
+    Call<Integer> getLastOrderPaperBag(@Query("companyCode") String companyCode);
+    */
 
     @GET("get-order/currentorder")
     Call<ArrayList<Order>> getCurrentOrders(@Query("companyCode") String companyCode);
@@ -78,8 +85,8 @@ public interface PostData {
     @GET("dashboard/getearliestyear")
     Call<Integer> getEarliestYear(@Query("companyCode") String companyCode);
 
-    @GET("dashboard/getsuggestedquantity")
-    Call<Integer> getRecommendedQuantity(@Query("companyCode") String companyCode, @Query("itemCode") String itemCode, @Query("orderQuantity") int orderQuantity);
+   @GET("dashboard/getaveragequantitycatalogue")
+    Call<ArrayList<Product>> getAverageQuantity(@Query("companyCode") String companyCode);
 
     @GET("wallet/getwalletamount")
     Call<Double> getCustomerWallet(@Query("customerCode") String customerCode);
@@ -89,6 +96,10 @@ public interface PostData {
 
     @GET("wallet/gettransactionproductdetails")
     Call<ArrayList<OrderQuantity>> getTransactionProductDetails(@Query("orderNo") String orderNo, @Query("refundAmt") double refundAmt);
+
+    @FormUrlEncoded
+    @POST("wallet/reducecustomerwalletamt")
+    Observable<Boolean> addSalesOrder(@Field("debtorCode") String debtorCode, @Field("reduceAmt") double reduceAmt);
 
 }
 

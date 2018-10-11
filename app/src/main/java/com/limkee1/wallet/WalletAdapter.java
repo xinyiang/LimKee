@@ -146,7 +146,7 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.MyViewHold
             if (refundAmt == 0) {
                 if (paidAmt < subtotalAmt) {
                     //wallet deduction is the difference
-                    subtotal.setText("- $" + df.format(subtotalAmt - paidAmt));
+                    subtotal.setText("- $" + df.format((subtotalAmt*1.07) - paidAmt));
                     subtotal.setTextColor(Color.parseColor("#FF0000"));     //red
                 } else if (paidAmt == 0) {
                     //full deduction from wallet
@@ -159,7 +159,7 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.MyViewHold
                 }
             } else {
                 //refunds
-                subtotal.setText("+ $" + df.format(refundAmt));
+                subtotal.setText("+ $" + df.format(refundAmt*1.07));
                 subtotal.setTextColor(Color.parseColor("#008000"));     //green
             }
 

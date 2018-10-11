@@ -7,6 +7,7 @@
     <string name="company_code">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
+    <string name="confirmOrder">Place Order</string>
     <string name="payment">Payment</string>
     <string name="paymentdetails">Payment Details</string>
     <string name="pay">Pay</string>
@@ -17,6 +18,7 @@
     <string name="backTo">Back</string>
     <string name="logout">Logout</string>
     <string name="lbl_orderDetails">Order Details</string>
+    <string name="lbl_order_details"> Order Details</string>
     <string name="lbl_orderID">Order ID</string>
     <string name="lbl_orderDate">Order Date</string>
     <string name="lbl_companyName">Company Name</string>
@@ -26,13 +28,16 @@
     <string name="deliveredStatus">Delivered</string>
     <string name="cancelledStatus">Cancelled</string>
     <string name="lbl_deliveryDate">Delivery Date</string>
+    <string name="date">DD/MM/YY</string>
     <string name="lbl_productDetails">Product Details</string>
     <string name="lbl_paperBag">Paper Bag</string>
+    <string name="paperBagRequired">Yes</string>
     <string name="subtotal">Sub Total</string>
     <string name="tax">7% GST</string>
+    <string name="lbl_numItemsHeader">Total No.</string>
     <string name="totalAmount">Total Amount</string>
-    <string name="deliveryDetails">Delivery Details</string>
-    <string name="amountDetails">Amount Details</string>
+    <string name="deliveryDetails"> Delivery Details</string>
+    <string name="amountDetails"> Amount Details</string>
     <string name="userprofile">User Profile</string>
     <string name="orderslip">Order Slip</string>
     <string name="quickreorder">Quick Reorder</string>
@@ -41,7 +46,7 @@
     <string name="wallet">Wallet</string>
     <string name="lbl_walletAmt">Total Amount</string>
     <string name="lblwallet_autodeduct">Automatically deducted at checkout</string>
-    <string name="lbl_paid_amt">Total Paid</string>
+    <string name="lbl_paid_amt">Total Payable</string>
     <string name="lbl_walletDeducted_amt">Wallet Deduction</string>
     <string name="save_this_card">Save This Card</string>
     <string name="pay_with_saved_cards">Pay with saved cards</string>
