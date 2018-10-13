@@ -12,7 +12,10 @@ import android.widget.Button;
 
 import com.limkee1.R;
 import com.limkee1.entity.Customer;
+import com.limkee1.entity.Product;
 import com.stripe.android.view.CardInputWidget;
+
+import java.util.ArrayList;
 
 import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
@@ -29,6 +32,9 @@ public class PaymentFragment extends Fragment {
     private String totalPayable;
     private String isEnglish;
     private String paperBagNeeded;
+    private String deliveryDate;
+    private ArrayList<Product> orderList;
+
     static PaymentFragment fragment;
 
     public PaymentFragment() {
@@ -53,6 +59,8 @@ public class PaymentFragment extends Fragment {
         totalPayable = String.valueOf(bundle.getDouble("totalPayable"));
         isEnglish = bundle.getString("language");
         paperBagNeeded = bundle.getString("paperBagRequired");
+        deliveryDate = bundle.getString("deliveryDate");
+        orderList = bundle.getParcelableArrayList("orderList");
 
         if (getActivity() instanceof PaymentActivity) {
             if (isEnglish.equals("Yes")) {
@@ -61,38 +69,22 @@ public class PaymentFragment extends Fragment {
                 ((PaymentActivity) getActivity()).setActionBarTitle("付款");
             }
         }
-
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == 1) {
-            String resultDisplayStr;
             if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
                 CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
-
-                // Never log a raw card number. Avoid displaying it, but if necessary use getFormattedCardNumber()
-                resultDisplayStr = "Card Number: " + scanResult.getRedactedCardNumber() + "\n";
-
-                if (scanResult.isExpiryValid()) {
-                    resultDisplayStr += "Expiration Date: " + scanResult.expiryMonth + "/" + scanResult.expiryYear + "\n";
-                }
-
-                if (scanResult.cvv != null) {
-                    resultDisplayStr += "CVV has " + scanResult.cvv.length() + " digits.\n";
-                }
-
+                Intent intent = new Intent(getActivity().getBaseContext(), ScanActivity.class);
+                intent.putExtra("totalPayable", totalPayable);
+                intent.putExtra("cardnum", ""+ scanResult.getFormattedCardNumber());
+                intent.putExtra("language", isEnglish);
+                getActivity().startActivity(intent);
+            }else{
+                getActivity().getFragmentManager().popBackStack();
             }
-            else {
-                resultDisplayStr = "Scan was cancelled.";
-            }
-            System.out.println("resultDisplayStr" + resultDisplayStr);
-
-            Intent intent = new Intent(getActivity().getBaseContext(), ScanActivity.class);
-            intent.putExtra("language", isEnglish);
-            getActivity().startActivity(intent);
         }
     }
 
@@ -104,8 +96,6 @@ public class PaymentFragment extends Fragment {
         scan.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent scanIntent = new Intent(getActivity(), CardIOActivity.class);
-                scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, false); // default: false
-                scanIntent.putExtra(CardIOActivity.EXTRA_SCAN_EXPIRY, true);
                 startActivityForResult(scanIntent, 1);
             }
         });

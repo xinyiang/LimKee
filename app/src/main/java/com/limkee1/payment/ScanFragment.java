@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.limkee1.R;
 import com.limkee1.entity.Customer;
@@ -14,7 +15,6 @@ import com.limkee1.entity.Customer;
 import io.reactivex.disposables.CompositeDisposable;
 
 public class ScanFragment extends Fragment {
-
     private com.limkee1.payment.ScanFragment.OnFragmentInteractionListener mListener;
 
     CompositeDisposable compositeDisposable;
@@ -24,6 +24,8 @@ public class ScanFragment extends Fragment {
     private String totalPayable;
     private String isEnglish;
     private String paperBagNeeded;
+    private String cardNum;
+    private EditText cardNumber;
 
     public ScanFragment() {
     }
@@ -58,6 +60,17 @@ public class ScanFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_scan, container, false);
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        Bundle bundle = getArguments();
+        cardNumber = (EditText) getActivity().findViewById(R.id.cardNumber);
+        cardNum = bundle.getString("cardNumber");
+        cardNumber.setText(cardNum);
+
     }
 
     @Override
