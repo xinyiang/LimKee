@@ -18,7 +18,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.support.design.widget.NavigationView;
-
 import com.google.gson.Gson;
 import com.limkee1.BaseActivity;
 import com.limkee1.catalogue.CatalogueFragment;
@@ -39,6 +38,8 @@ import com.limkee1.payment.AsyncResponse;
 import com.limkee1.payment.PaymentFragment;
 import com.limkee1.payment.ScanFragment;
 import com.limkee1.userProfile.UserProfileFragment;
+import com.limkee1.wallet.TransactionHistoryDetailsFragment;
+import com.limkee1.wallet.WalletFragment;
 
 public class NavigationActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener, CatalogueFragment.OnFragmentInteractionListener,
@@ -47,7 +48,8 @@ public class NavigationActivity extends BaseActivity implements
         PaymentFragment.OnFragmentInteractionListener, CancelledOrderFragment.OnFragmentInteractionListener,
         ProductDetailsFragment.OnFragmentInteractionListener, MainOrderHistoryFragment.OnFragmentInteractionListener,
         DashboardFragment.OnFragmentInteractionListener, TotalSalesFragment.OnFragmentInteractionListener,
-        TopPurchasedFragment.OnFragmentInteractionListener, ScanFragment.OnFragmentInteractionListener{
+        TopPurchasedFragment.OnFragmentInteractionListener, ScanFragment.OnFragmentInteractionListener,
+        WalletFragment.OnFragmentInteractionListener, TransactionHistoryDetailsFragment.OnFragmentInteractionListener{
 
     private Customer customer;
     private Bundle bundle;
@@ -175,6 +177,9 @@ public class NavigationActivity extends BaseActivity implements
         } else if (id == R.id.nav_dashboard) {
             fragmentClass = DashboardFragment.class;
             loadFragment(fragmentClass);
+        } else if (id == R.id.nav_wallet) {
+            fragmentClass = WalletFragment.class;
+            loadFragment(fragmentClass);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -189,7 +194,6 @@ public class NavigationActivity extends BaseActivity implements
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         fragment.setArguments(bundle);
         //Change screen to option selected (using fragments)
         FragmentManager fragmentManager = getSupportFragmentManager();

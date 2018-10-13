@@ -9,12 +9,14 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.limkee1.BaseActivity;
 import com.limkee1.R;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Order;
 import java.util.ArrayList;
 
-public class OrderHistoryDetailActivity extends AppCompatActivity implements OrderHistoryFragment.OnFragmentInteractionListener, OrderHistoryDetailFragment.OnFragmentInteractionListener {
+public class OrderHistoryDetailActivity extends BaseActivity implements OrderHistoryFragment.OnFragmentInteractionListener, OrderHistoryDetailFragment.OnFragmentInteractionListener {
 
 
     public static Bundle myBundle = new Bundle();

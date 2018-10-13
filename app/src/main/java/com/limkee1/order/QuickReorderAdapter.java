@@ -45,9 +45,7 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
     private RecyclerView mRecyclerView;
     private String uom ="";
     private Customer customer;
-    private boolean shown = false;
     public static Retrofit retrofit;
-
     private String selectedProductName;
     private String selectedProductUOM;
 
@@ -70,7 +68,6 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
         this.customer = customer;
     }
 
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         itemView = LayoutInflater.from(parent.getContext())
@@ -79,6 +76,7 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
         QuickReorderFragment.confirmOrder.setVisibility(View.VISIBLE);
         return vh;
     }
+
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Product product = catalogueList.get(position);
         holder.bindContent(product);
@@ -88,7 +86,6 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
         DecimalFormat df = new DecimalFormat("#0.00");
         double unitSub = product.getDefaultQty() * product.getUnitPrice();
         holder.unitSubtotal.setText("$" + df.format(unitSub));
-
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -150,33 +147,7 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                         imm.hideSoftInputFromWindow(qty.getWindowToken(), 0);
                         QuickReorderFragment.confirmOrder.setVisibility(View.VISIBLE);
                         QuickReorderFragment.lbl_subtotal.setVisibility(View.VISIBLE);
-
-                        /*
-                        //check for recommended quantity
-                        if (!shown) {
-                            if (isEnglish.equals("Yes")) {
-
-                                if (selectedProductUOM.equals("CS")) {
-                                    selectedProductUOM = "btl";
-                                } else {
-                                    selectedProductUOM = "pcs";
-                                }
-
-                            } else {
-                                selectedProductName = product.getDescription2();
-                                selectedProductUOM = product.getUom();
-                            }
-
-                            getSuggestedQuantity(customer.getCompanyCode(), product.getItemCode(), product.getDefaultQty());
-                            shown = true;
-
-                        }
-                        */
-
                     }
-
-                    shown = false;
-
                     return false;
                 }
             });
@@ -244,28 +215,6 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                                     }
 
                                 } else {
-                                /*
-                                //check for recommended quantity
-                                if (!shown) {
-
-                                    if (isEnglish.equals("Yes")) {
-                                        selectedProductName = product.getDescription();
-                                        if (product.getItemCode().equals("CS")) {
-                                            selectedProductUOM = "btl";
-                                        } else {
-                                            selectedProductUOM = "pcs";
-                                        }
-
-                                    } else {
-                                        selectedProductName = product.getDescription2();
-                                        selectedProductUOM = product.getUom();
-                                    }
-                                    getSuggestedQuantity(customer.getCompanyCode(), product.getItemCode(), quantity);
-                                    shown = true;
-                                }
-                            */
-
-                                    //recalculate unit subtotal and total subtotal
                                     product.setDefaultQty(quantity);
                                     //update subtotal
                                     QuickReorderFragment.updateSubtotal(orderList);
@@ -281,8 +230,6 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                 }
             });
 
-            shown = false;
-
             //update when on text change instead of clicking tick in keyboard
             qty.clearFocus();
             qty.addTextChangedListener(new TextWatcher() {
@@ -292,11 +239,8 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
 
                         if (qty.getText().toString().equals("")){
                             quantity = 0;
-                            //qty.setText("0);
-
                         } else {
                             quantity = Integer.parseInt(qty.getText().toString());
-                            //qty.setText(qty.getText().toString());
                         }
 
                         product.setDefaultQty(quantity);           //did not validate qty multiples, do it at Next button
@@ -311,14 +255,11 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                         quantity = 0;
 
                     }
-
                 }
 
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-
                 }
             });
 
@@ -382,85 +323,6 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
         }
     }
 
-    private void getSuggestedQuantity(String companyCode, String itemCode, int orderQuantity) {
-        if (retrofit == null) {
-
-            retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(HttpConstant.BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-        }
-        PostData service = retrofit.create(PostData.class);
-
-        Call<Integer> call = service.getRecommendedQuantity(companyCode, itemCode, orderQuantity);
-        call.enqueue(new Callback<Integer>() {
-
-            @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
-                int quantity = response.body();
-                System.out.println("quantity in quick reorder for item " + itemCode + " order " + orderQuantity + " companyCode " + companyCode);
-                System.out.println("quantityy " + quantity);
-                if (quantity != 1 || quantity != 3) {
-                    if (quantity == 0 && orderQuantity != 0) {
-
-                        if (isEnglish.equals("Yes")) {
-                            new AlertDialog.Builder(itemView.getContext())
-                                    .setMessage("We do not recommend you to buy " + selectedProductName)
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            //finish();
-                                        }
-                                    })
-                                    .show();
-                        } else {
-                            new AlertDialog.Builder(itemView.getContext())
-                                    .setMessage("不建议您需要买" + selectedProductName)
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            //finish();
-                                        }
-                                    })
-                                    .show();
-                        }
-
-                    } else if (quantity == orderQuantity) {
-                        //do nothing
-                    } else if (orderQuantity > quantity && quantity != 1) {
-                        if (isEnglish.equals("Yes")) {
-                            new AlertDialog.Builder(itemView.getContext())
-                                    .setMessage(quantity + " " + selectedProductUOM + " for " + selectedProductName + " is recommended.")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            //finish();
-                                        }
-                                    })
-                                    .show();
-                        } else {
-                            new AlertDialog.Builder(itemView.getContext())
-                                    .setMessage("建议只需买 " + quantity + selectedProductUOM + " " + selectedProductName)
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            //finish();
-                                        }
-                                    })
-                                    .show();
-                        }
-                    } else {
-                        //do nothing
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Integer> call, Throwable t) {
-                System.out.println(t.getMessage());
-            }
-        });
-    }
 
     public static ArrayList<Product> getOrderList(){
         return orderList;

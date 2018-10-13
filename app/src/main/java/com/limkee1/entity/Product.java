@@ -4,10 +4,6 @@ package com.limkee1.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Xin Yi on 24/6/2018.
- */
-
 public class Product implements Parcelable{
 
     private String itemCode;

@@ -24,6 +24,9 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.limkee1.R;
+import com.limkee1.constant.HttpConstant;
+import com.limkee1.constant.PostData;
+import com.limkee1.dao.CatalogueDAO;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
 import com.limkee1.payment.PaymentActivity;
@@ -34,6 +37,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import io.reactivex.disposables.CompositeDisposable;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class QuickReorderConfirmOrderFragment extends Fragment {
 
@@ -52,7 +60,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
     private ArrayList<Product> orderList;
     private String isEnglish;
     private Customer customer;
-    private String deliveryShift;
     CompositeDisposable compositeDisposable;
     private String ETADeliveryDate;
     private int day;
@@ -60,6 +67,9 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
     private int year;
     private String cutoffTime;
     private String paperBagNeeded;
+    private CheckBox paperBagRequired;
+    public static Retrofit retrofit;
+
 
     public QuickReorderConfirmOrderFragment() {
         // Required empty public constructor
@@ -80,7 +90,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         orderList = bundle.getParcelableArrayList("orderList");
         customer = bundle.getParcelable("customer");
         isEnglish = bundle.getString("language");
-        deliveryShift = bundle.getString("deliveryShift");
         cutoffTime = bundle.getString("cutoffTime");
         if (getActivity() instanceof QuickReorderConfirmOrderActivity) {
             if (isEnglish.equals("Yes")) {
@@ -99,27 +108,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_quick_reorder_confirm_order, container, false);
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
-
-        //if english, set label in english language
-        TextView lblSubtotal = view.findViewById(R.id.lbl_subtotal_amt);
-        TextView lblTax = view.findViewById(R.id.lbl_tax_amt);
-        TextView lblFinalTotal = view.findViewById(R.id.lbl_total_amt);
-        TextView lblPaperBagRequired = view.findViewById(R.id.lbl_paperBag);
-        CheckBox paperBagRequired = view.findViewById(R.id.checkBox);
-
-        if (isEnglish.equals("Yes")) {
-            lblSubtotal.setText("Sub Total");
-            lblTax.setText("7% GST");
-            lblFinalTotal.setText("Total Amount");
-            lblPaperBagRequired.setText("Paper Bag");
-            paperBagRequired.setText("Yes");
-        } else {
-            lblSubtotal.setText("小计");
-            lblTax.setText("7% 税");
-            lblFinalTotal.setText("总额");
-            lblPaperBagRequired.setText("纸袋");
-            paperBagRequired.setText("需要");
-        }
 
         recyclerView = (RecyclerView) view.findViewById(com.limkee1.R.id.recyclerView);
         mAdapter = new QuickReorderConfirmOrderAdapter(this, orderList, isEnglish);
@@ -143,6 +131,10 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             }
         }.start();
 
+        //check if paper bag is required
+        paperBagRequired = (CheckBox)view.findViewById(R.id.checkBox);
+        //doGetLastPaperBag(customer.getCompanyCode());
+
         subtotal = calculateSubtotal(orderList);
         DecimalFormat df = new DecimalFormat("#0.00");
 
@@ -159,52 +151,24 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
 
         //if english, change label to english
         if (isEnglish.equals("Yes")) {
-            TextView lbl_subtotal_amt, lbl_total_amt, lbl_tax_amt;
-            TextView lbl_delivery_details, lbl_name, lbl_contact, lbl_companyName, lbl_date, lbl_time, lbl_item_details, lbl_amt_details;
+
+            TextView lbl_item_details;
             Button btnNext;
-            lbl_subtotal_amt = (TextView) view.findViewById(R.id.lbl_subtotal_amt);
-            lbl_total_amt = (TextView) view.findViewById(R.id.lbl_total_amt);
-            lbl_tax_amt = (TextView) view.findViewById(R.id.lbl_tax_amt);
-            lbl_delivery_details = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
-            //lbl_name = (TextView) view.findViewById(R.id.lbl_name);
-            lbl_contact = (TextView) view.findViewById(R.id.lbl_phone);
-            lbl_companyName = (TextView) view.findViewById(R.id.lbl_companyName);
-            lbl_date = (TextView) view.findViewById(R.id.lbl_date);
-            //lbl_time = (TextView) view.findViewById(R.id.lbl_time);
             lbl_item_details = (TextView) view.findViewById(R.id.lbl_items);
-            lbl_amt_details = (TextView) view.findViewById(R.id.lbl_amountDetails);
             btnNext = (Button) view.findViewById(R.id.btnPlaceOrder);
 
-            lbl_subtotal_amt.setText("Sub Total");
-            lbl_tax_amt.setText("Add 7% GST");
-            lbl_total_amt.setText("Total Amount");
-            lbl_delivery_details.setText("Delivery Details");
-            //lbl_name.setText("Name");
-            lbl_contact.setText("Contact No");
-            lbl_companyName.setText("Company Name");
-            lbl_date.setText("Date");
-            //lbl_time.setText("Time");
             lbl_item_details.setText(" " + orderList.size() + "items");
-            lbl_amt_details.setText("Amount details");
             btnNext.setText("Place Order");
         }
 
         //display delivery details data
-        TextView deliveryDetails, name, contact, address, company, numItems, amtDetails;
+        TextView contact, company, numItems;
         EditText deliveryDate;
-        Button placeOrder;
-        deliveryDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
-        name = (TextView) view.findViewById(R.id.name);
+
         contact = (TextView) view.findViewById(R.id.phone);
-        address = (TextView) view.findViewById(R.id.address);
         deliveryDate = (EditText) view.findViewById(R.id.date);
         numItems = (TextView) view.findViewById(R.id.lbl_items);
-        amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
         company = (TextView) view.findViewById(R.id.companyName);
-        placeOrder = (Button) view.findViewById(R.id.btnPlaceOrder);
-
-
-        //display customer details
 
         if (customer.getDeliveryContact2() == null || customer.getDeliveryContact2().length() == 0) {
             contact.setText(customer.getDeliveryContact());
@@ -216,62 +180,57 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         company.setText(customer.getCompanyName());
 
 
-        /*
-        name.setText(customer.getDebtorName());
-
-        String address2 = "";
-        String address3 = "";
-        String address4 = "";
-        if (customer.getDeliverAddr2() == null || customer.getDeliverAddr2().length() == 0) {
-            address2 = "";
-        } else {
-            address2 = customer.getDeliverAddr2();
-        }
-
-        if (customer.getDeliverAddr3() == null || customer.getDeliverAddr3().length() == 0) {
-            address3 = "";
-        } else {
-            address3 = customer.getDeliverAddr3();
-        }
-
-
-        if (customer.getDeliverAddr4() == null || customer.getDeliverAddr4().length() == 0) {
-            address4 = "";
-        } else {
-            address4 = customer.getDeliverAddr4();
-        }
-
-        address.setText(customer.getDeliverAddr1() + " " + address2 + " " + address3 + " " + address4);
-        */
-
         if (isEnglish.equals("Yes")) {
-            deliveryDetails.setText(" Delivery details");
-
             if (orderList.size() == 1) {
                 numItems.setText(" Product details (" + orderList.size() + " item)");
             } else {
                 numItems.setText(" Product details (" + orderList.size() + " items)");
             }
 
-            amtDetails.setText(" Amount details");
-            deliveryDate.setText("DD/MM/YYYY");
-            placeOrder.setText("Place Order");
-
         } else {
-            deliveryDetails.setText(" 送货详情");
             numItems.setText(" 订单样品 (" + orderList.size() + " 样)");
-            amtDetails.setText(" 价钱详情");
-            deliveryDate.setText("日/月/年");
-            placeOrder.setText("确认订单");
         }
 
-        /*
-        if (deliveryShift.equals("AM")) {
-            deliveryTime.setText("4.30am - 6.30am");
+        //check if paper bag is required
+        if (paperBagRequired.isChecked()) {
+            paperBagNeeded = "yes";
         } else {
-            deliveryTime.setText("7.50am - 12.30pm");
+            paperBagNeeded = "no";
         }
-        */
+
+        //check if today's delivery is before cut off time and set delivery date field
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            Date currentTimestamp = new Date();
+            String currentDate = "";
+
+            currentDate = sdf.format(currentTimestamp);
+
+            String date = currentDate.substring(0,10);
+            String dateTime = date + " " + cutoffTime;
+
+            Date cutoffTimestamp = sdf.parse(dateTime);
+
+            String deliverDate = "";
+            if (currentTimestamp.before(cutoffTimestamp)) {
+                System.out.println("delivery time before cut off");
+                //set delivery date to today's date by default
+                deliverDate = date.substring(8,date.length()) +"/" + date.substring(5,7) + "/" + date.substring(0,4);
+                deliveryDate.setText(deliverDate);
+
+            } else {
+                System.out.println("delivery time after cut off");
+                //set delivery date to tomorrow's date by default
+                String day = date.substring(8,date.length());
+                int nextDay = Integer.parseInt(day) + 1;
+                deliverDate = nextDay +"/" + date.substring(5,7) + "/" + date.substring(0,4);
+                deliveryDate.setText(deliverDate);
+
+            }
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+        }
+
 
         return view;
     }
@@ -439,7 +398,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                 } else {
 
                     //check if paper bag is required
-                    CheckBox paperBagRequired = (CheckBox)view.findViewById(R.id.checkBox);
                     if (paperBagRequired.isChecked()) {
                         paperBagNeeded = "yes";
                     } else {
@@ -501,13 +459,43 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     } catch (ParseException e) {
                         System.out.println(e.getMessage());
                     }
-
-
                 }
             }
         });
     }
 
+    /*
+    private void doGetLastPaperBag(String companyCode) {
+        if (retrofit == null) {
+
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(HttpConstant.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        PostData service = retrofit.create(PostData.class);
+        Call<Integer> call = service.getLastOrderPaperBag(companyCode);
+        call.enqueue(new Callback<Integer>() {
+
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                int data = response.body();
+                if (data == 1){
+                    paperBagRequired.setChecked(true);
+                    paperBagNeeded = "yes";
+                } else {
+                    paperBagNeeded = "no";
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
+
+    }
+    */
 
     private double calculateSubtotal(ArrayList<Product> orderList) {
         double subtotal = 0;

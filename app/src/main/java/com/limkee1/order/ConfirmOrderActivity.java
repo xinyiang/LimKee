@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.limkee1.BaseActivity;
 import com.limkee1.R;
 import com.limkee1.catalogue.*;
 import com.limkee1.entity.Customer;
@@ -21,7 +23,7 @@ import com.limkee1.entity.Product;
 import java.util.ArrayList;
 
 
-public class ConfirmOrderActivity extends AppCompatActivity implements ConfirmOrderFragment.OnFragmentInteractionListener,
+public class ConfirmOrderActivity extends BaseActivity implements ConfirmOrderFragment.OnFragmentInteractionListener,
         CatalogueFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener {
 
     private View rootView;

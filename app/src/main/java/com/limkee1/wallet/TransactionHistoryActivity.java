@@ -1,4 +1,4 @@
-package com.limkee1.order;
+package com.limkee1.wallet;
 
 import android.net.Uri;
 import android.support.v4.app.Fragment;
@@ -12,34 +12,26 @@ import android.widget.TextView;
 
 import com.limkee1.BaseActivity;
 import com.limkee1.R;
-import com.limkee1.entity.Customer;
 
-public class CancelledOrderActivity extends BaseActivity implements CancelledOrderFragment.OnFragmentInteractionListener, OrderHistoryFragment.OnFragmentInteractionListener {
+public class TransactionHistoryActivity extends BaseActivity implements WalletFragment.OnFragmentInteractionListener, TransactionHistoryDetailsFragment.OnFragmentInteractionListener {
 
     public static Bundle myBundle = new Bundle();
-    private Customer customer;
-    private String isEnglish;
-    private CancelledOrderFragment cancelledOrderFragment = new CancelledOrderFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cancelled_order);
+        setContentView(R.layout.activity_transaction_history);
+
+        myBundle = getIntent().getExtras();
 
         Toolbar toolbar = findViewById(com.limkee1.R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        myBundle = getIntent().getExtras();
-        customer = myBundle.getParcelable("customer");
-        isEnglish = myBundle.getString("language");
+        TransactionHistoryDetailsFragment transactionFragment = new TransactionHistoryDetailsFragment();
+        transactionFragment.setArguments(myBundle);
 
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("customer",customer);
-        bundle.putString("language", isEnglish);
-        cancelledOrderFragment.setArguments(bundle);
-        loadFragment(cancelledOrderFragment);
-
+        loadFragment(transactionFragment);
     }
 
     private void loadFragment(Fragment fragment) {
@@ -86,6 +78,5 @@ public class CancelledOrderActivity extends BaseActivity implements CancelledOrd
     public void onFragmentInteraction(Uri uri) {
 
     }
-
 
 }

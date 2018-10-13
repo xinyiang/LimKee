@@ -54,7 +54,6 @@ public class QuickReorderFragment extends Fragment {
     public static Retrofit retrofit;
     private Customer customer;
     private String companyCode;
-    private String deliveryShift;
     String invalidDesc;
     String invalidDesc2;
     int qtyMultiples;
@@ -81,7 +80,6 @@ public class QuickReorderFragment extends Fragment {
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
         companyCode = customer.getCompanyCode();
-        deliveryShift =  bundle.getString("deliveryShift");
 
         if (isEnglish.equals("Yes")){
             ((NavigationActivity)getActivity()).setActionBarTitle("Quick Reorder");
@@ -91,7 +89,7 @@ public class QuickReorderFragment extends Fragment {
 
 
         builder= new AlertDialog.Builder(getContext());
-       // AlertDialog ad = builder.create();
+        // AlertDialog ad = builder.create();
         //TextView textView = (TextView) ad.findViewById(android.R.id.message);
         //textView.setTextSize(40);
         //ad.setView(textView);
@@ -144,7 +142,7 @@ public class QuickReorderFragment extends Fragment {
             ad.show();
         }
 
-       // doGetLastOrder(companyCode);
+        // doGetLastOrder(companyCode);
     }
 
     @Override
@@ -302,7 +300,6 @@ public class QuickReorderFragment extends Fragment {
                         intent.putExtra("language", isEnglish);
                         intent.putExtra("orderList", orderList);
                         intent.putExtra("customer", customer);
-                        intent.putExtra("deliveryShift", deliveryShift);
                         intent.putExtra("cutoffTime", cutoffTime);
                         getActivity().startActivity(intent);
                     }
@@ -399,30 +396,30 @@ public class QuickReorderFragment extends Fragment {
                 ArrayList<Product> data = response.body();
                 CatalogueDAO.quickReorder_list = data;
 
-                if (data == null || data.size() == 0){
+                if (data == null || data.size() == 0) {
                     //show default catalogue
                     doGetCatalogue();
+                } else {
+
+                    recyclerView.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.VISIBLE);
+                    recyclerView = (RecyclerView) view.findViewById(com.limkee1.R.id.recyclerView);
+
+                    //by default, let order list be the same as catalogue. if there is any change in qty, it will be updated.
+                    tempOrderList = CatalogueDAO.quickReorder_list;
+                    String[] qtyDataSet = new String[tempOrderList.size()];
+                    for (int i = 0; i < tempOrderList.size(); i++) {
+                        Product p = tempOrderList.get(i);
+                        qtyDataSet[i] = Integer.toString(p.getDefaultQty());
+                    }
+
+                    mAdapter.update(qtyDataSet, CatalogueDAO.quickReorder_list, tempOrderList);
+                    recyclerView.setItemViewCacheSize(qtyDataSet.length);
+
+                    DecimalFormat df = new DecimalFormat("#0.00");
+                    subtotalAmt.setText("$" + df.format(calculateSubtotal(CatalogueDAO.quickReorder_list)));
                 }
-
-                recyclerView.setVisibility(View.GONE);
-                progressBar.setVisibility(View.VISIBLE);
-                recyclerView = (RecyclerView) view.findViewById(com.limkee1.R.id.recyclerView);
-                
-                //by default, let order list be the same as catalogue. if there is any change in qty, it will be updated.
-                tempOrderList = CatalogueDAO.quickReorder_list;
-                String[] qtyDataSet= new String[tempOrderList.size()];
-                for (int i = 0; i <tempOrderList.size(); i++) {
-                    Product p = tempOrderList.get(i);
-                    qtyDataSet[i] = Integer.toString(p.getDefaultQty());
-                }
-
-                mAdapter.update(qtyDataSet, CatalogueDAO.quickReorder_list, tempOrderList);
-                recyclerView.setItemViewCacheSize(qtyDataSet.length);
-
-                DecimalFormat df = new DecimalFormat("#0.00");
-                subtotalAmt.setText("$" + df.format(calculateSubtotal(CatalogueDAO.quickReorder_list)));
             }
-
             @Override
             public void onFailure(Call<ArrayList<Product>> call, Throwable t) {
                 System.out.println(t.getMessage());

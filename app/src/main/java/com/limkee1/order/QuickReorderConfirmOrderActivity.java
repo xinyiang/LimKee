@@ -11,19 +11,20 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.limkee1.BaseActivity;
 import com.limkee1.R;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
 
 import java.util.ArrayList;
 
-public class QuickReorderConfirmOrderActivity extends AppCompatActivity implements QuickReorderConfirmOrderFragment.OnFragmentInteractionListener ,QuickReorderFragment.OnFragmentInteractionListener{
+public class QuickReorderConfirmOrderActivity extends BaseActivity implements QuickReorderConfirmOrderFragment.OnFragmentInteractionListener ,QuickReorderFragment.OnFragmentInteractionListener{
 
     public static Bundle myBundle = new Bundle();
     private ArrayList<Product> orderList;
     private Customer customer;
     private String isEnglish;
-    private String deliveryShift;
     private String cutofftime;
     private AlertDialog ad;
     boolean result = true;
@@ -41,14 +42,12 @@ public class QuickReorderConfirmOrderActivity extends AppCompatActivity implemen
         customer = myBundle.getParcelable("customer");
         orderList  = myBundle.getParcelableArrayList("orderList");
         isEnglish = myBundle.getString("language");
-        deliveryShift = myBundle.getString("deliveryShift");
         cutofftime = myBundle.getString("cutoffTime");
 
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("orderList", orderList);
         bundle.putParcelable("customer",customer);
         bundle.putString("language", isEnglish);
-        bundle.putString("deliveryShift", deliveryShift);
         bundle.putString("cutoffTime", cutofftime);
 
         QuickReorderConfirmOrderFragment confirmOrderFragment = new QuickReorderConfirmOrderFragment();

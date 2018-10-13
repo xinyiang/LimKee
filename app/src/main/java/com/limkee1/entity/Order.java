@@ -1,10 +1,5 @@
 package com.limkee1.entity;
 
-
-/**
- * Created by Xin Yi on 24/6/2018.
- */
-
 public class Order {
     private String orderID;
     private String deliveryDate;
@@ -20,6 +15,11 @@ public class Order {
         this.deliveryDate = deliveryDate;
         this.noOfItems = noOfItems;
         this.deliveryShift = deliveryShift;
+    }
+
+    public Order(String orderID, double subtotal) {
+        this.orderID = orderID;
+        this.deliveryDate = deliveryDate;
     }
 
     public String getOrderID() {

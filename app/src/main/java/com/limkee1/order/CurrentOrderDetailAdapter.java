@@ -53,7 +53,11 @@ public class CurrentOrderDetailAdapter extends RecyclerView.Adapter<CurrentOrder
             DecimalFormat df = new DecimalFormat("#0.00");
             if (isEnglish.equals("Yes")) {
                 description.setText(product.getDescription());
-                uom = "pcs";
+                if (product.getDescription().equals("CS")){
+                    uom = "btl";
+                } else {
+                    uom = "pcs";
+                }
             } else {
                 description.setText(product.getDescription2());
                 uom = product.getUom();

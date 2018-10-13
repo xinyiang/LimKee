@@ -72,6 +72,18 @@
             android:title=""/>
 
         <item
+            android:id="@+id/nav_wallet"
+            android:title="@string/wallet"/>
+
+        <item
+            android:id="@+id/footer_spacer_7"
+            android:checkable="false"
+            android:enabled="false"
+            android:orderInCategory="200"
+            android:title=""/>
+
+
+        <item
             android:id="@+id/nav_logout"
             android:title="@string/logout"/>
 
