@@ -37,7 +37,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.StringTokenizer;
 
 public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmentInteractionListener {
     public static Bundle myBundle = new Bundle();
@@ -132,13 +135,12 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
 
         Card card = new Card(cardNumber.getText().toString(), expMth, expYr, cvc.getText().toString());
 
-        if (card == null || nameOnCard.getText().toString().isEmpty() || expDate.getText().toString().isEmpty() || cvc == null) {
-            Toast.makeText(context,
-                    getResources().getString(R.string.invalid_card), Toast.LENGTH_LONG).show();
+        if (card == null || nameOnCard.getText().toString().isEmpty() || !isValidFutureDate(""+expMth+"/01/20"+expYr) || cvc == null) {
+            Toast.makeText(context, getResources().getString(R.string.invalid_card), Toast.LENGTH_LONG).show();
             if (nameOnCard.getText().toString().isEmpty()){
                 err.setError("Your name on card is invalid");
             }
-            if (expDate.getText().toString().isEmpty()){
+            if (expDate.getText().toString().isEmpty() || !isValidFutureDate(""+expMth+"/01/20"+expYr)){
                 err2.setError("Expiration date is invalid");
             }
             if (cvc.getText().toString().isEmpty()){
@@ -162,12 +164,91 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
                             bp.execute(type, totalPayable, token.getId(), isEnglish, paperBagNeeded);
                         }
                         public void onError(Exception error) {
-                            Toast.makeText(context, "Error", Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "Error processing charge", Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.INVISIBLE);
                         }
                     }
             );
         }
+    }
+
+    public static boolean isValidFutureDate(String pDateString) {
+        if (!isValidDate(pDateString)) {
+            return false;
+        }
+        StringTokenizer st =  new StringTokenizer(pDateString.trim(), "/");
+        if (st.countTokens() != 3) {
+            throw new NumberFormatException("Date format should be MM/DD/YYYY.");
+        }
+        String month = st.nextToken();
+        String day = st.nextToken();
+        String year = st.nextToken();
+        long oneDayInMillis = 86400000;
+        GregorianCalendar ref = new GregorianCalendar();
+        ref.setTime(new Date(System.currentTimeMillis() - oneDayInMillis));
+        ref.set(Calendar.HOUR_OF_DAY, 0);
+        ref.set(Calendar.MINUTE, 1);
+        ref.set(Calendar.AM_PM, Calendar.AM);
+        GregorianCalendar now = toDate(year, month, day);
+        now.set(Calendar.HOUR_OF_DAY, 0);
+        now.set(Calendar.MINUTE, 2);
+        ref.set(Calendar.AM_PM, Calendar.AM);
+
+        return now.after(ref);
+    }
+
+    public static boolean isValidDate(String pDateString) {
+        StringTokenizer st=  new StringTokenizer(pDateString.trim(), "/");
+        if (st.countTokens() != 3) {
+            throw new NumberFormatException("Date format should be MM/DD/YYYY.");
+        }
+        String month = st.nextToken();
+        String day = st.nextToken();
+        String year = st.nextToken();
+        return toDate(year, month, day) != null;
+    }
+
+    public static GregorianCalendar toDate(final String year, final String month, final String day) {
+        int mm, dd, yyyy;
+
+        try {
+            if(year.length() != 4) {
+                throw new NumberFormatException("Please provide four(4) digits for the year.");
+            }
+            yyyy = Integer.parseInt(year);
+            if(yyyy == 0) {
+                throw new NumberFormatException("zero is an invalid year.");
+            }
+        }
+        catch(NumberFormatException nfe) {
+            throw new NumberFormatException(year + " is an invalid year.");
+        }
+
+        try {
+            mm = Integer.parseInt(month);
+            if(mm < 1 || mm > 12) {
+                throw new NumberFormatException(month + " is an invalid month.");
+            }
+        }
+        catch(NumberFormatException nfe) {
+            throw new NumberFormatException(month + " is an invalid month.");
+        }
+
+        try {
+            dd = Integer.parseInt(day);
+        }
+        catch(NumberFormatException nfe) {
+            throw new NumberFormatException(day + " is an invalid day.");
+        }
+
+        GregorianCalendar gc = new GregorianCalendar( yyyy, --mm, 1 );
+        if(dd > gc.getActualMaximum(GregorianCalendar.DATE)) {
+            throw new NumberFormatException();
+        }
+        if(dd < gc.getActualMinimum(GregorianCalendar.DATE)) {
+            throw new NumberFormatException();
+        }
+        return new GregorianCalendar(yyyy,mm,dd);
     }
 
     class RadioOnClick implements DialogInterface.OnClickListener{
