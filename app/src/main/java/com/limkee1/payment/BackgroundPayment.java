@@ -242,11 +242,10 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     }
 
     private void handleSalesOrderResponse(String orderNo) {
-
         if (orderNo != null || orderNo.length() != 0) {
             //create Sales Order Details
-            System.out.println("SALES ORDER CREATED " + newOrderID);
             newOrderID = orderNo;
+            System.out.println("SALES ORDER CREATED " + newOrderID);
             createSalesOrderDetails(newOrderID);
         } else {
             System.out.println("Background payment failed in line 244. SALES ORDER NOT CREATED " + orderNo);
@@ -273,6 +272,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         DecimalFormat df = new DecimalFormat("#0.00");
         double totalAmt = tp*(100.0/107.0);
         totalAmt = Double.parseDouble(df.format(totalAmt));
+        System.out.println("tocheck" +orderNo);
         compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, totalAmt, orderNo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -283,9 +283,6 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         if (added) {
             //create Sales Order Quantity
             createSalesOrderQuantity();
-        } else {
-            //show error msg
-            //delete sales order record
         }
     }
 
@@ -307,6 +304,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             itemQuantity.add(p.getItemCode() + "&" + p.getDefaultQty());
         }
 
+        System.out.println("quantity + " + itemQuantity);
         compositeDisposable.add(postData.addSalesOrderQuantity(itemQuantity, newOrderID)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -324,16 +322,12 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 newOrderID = "00000" + newOrderID;
             } else if (newOrderID.length() == 2) {
                 newOrderID = "0000" + newOrderID;
-
             } else if (newOrderID.length() == 3) {
                 newOrderID = "000" + newOrderID;
-
             } else if (newOrderID.length() == 4) {
                 newOrderID = "00" + newOrderID;
-
             } else if (newOrderID.length() == 5) {
                 newOrderID = "0" + newOrderID;
-
             } else if (newOrderID.length() == 6) {
                 //remain as original
             } else {
@@ -372,6 +366,8 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             it.putExtra("customer", customer);
             it.putExtra("orderId", newOrderID);
             it.putExtra("language", isEnglish);
+            it.putExtra("deliveryDate", deliveryDate);
+            it.putParcelableArrayListExtra("orderList", orderList);
             context.startActivity(it);
 
             activity.finish();
