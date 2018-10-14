@@ -81,6 +81,10 @@ public class PaymentFragment extends Fragment {
                 intent.putExtra("totalPayable", totalPayable);
                 intent.putExtra("cardnum", ""+ scanResult.getFormattedCardNumber());
                 intent.putExtra("language", isEnglish);
+                intent.putExtra("paperBagNeeded", paperBagNeeded);
+                intent.putExtra("customer", customer);
+                intent.putExtra("deliveryDate", deliveryDate);
+                intent.putParcelableArrayListExtra("orderList", orderList);
                 getActivity().startActivity(intent);
             }else{
                 getActivity().getFragmentManager().popBackStack();

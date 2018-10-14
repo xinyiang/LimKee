@@ -54,13 +54,17 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
     private EditText expDate;
     private EditText cvc;
     private TextInputLayout err;
+    private TextInputLayout err2;
+    private TextInputLayout err3;
     private Button payButton;
     private CheckBox saveCard;
     private Customer customer;
-    private String paperBagRequired;
+    private String paperBagNeeded;
     private ArrayList<Product> orderList;
     private ScanActivity.RadioOnClick radioOnClick = new RadioOnClick(0);
     public static Activity activity;
+    private Integer expMth = 0 ;
+    private Integer expYr = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,11 +84,8 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
         deliveryDate = myBundle.getString("deliveryDate");
         orderList = myBundle.getParcelableArrayList("orderList");
         totalPayable = myBundle.getString("totalPayable");
-        paperBagRequired = myBundle.getString("paperBagRequired");
-
+        paperBagNeeded = myBundle.getString("paperBagNeeded");
         Double tp = Double.parseDouble(totalPayable);
-
-        Toast.makeText(getBaseContext(),""+tp, Toast.LENGTH_SHORT).show();
 
         TextView tv = (TextView)findViewById(R.id.totalPayable);
         tv.setText(String.format("$%.2f", tp));
@@ -101,7 +102,7 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
         bundle.putParcelable("customer", customer);
         bundle.putString("language", isEnglish);
         bundle.putParcelableArrayList("orderList", orderList);
-        bundle.putString("paperBagRequired", paperBagRequired);
+        bundle.putString("paperBagNeeded", paperBagNeeded);
         bundle.putString("deliveryDate", deliveryDate);
         bundle.putDouble("totalPayable", tp);
         bundle.putString("cardNumber", cardnum);
@@ -114,119 +115,59 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
         final String type = mType;
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        if (type.equals("pay_with_saved_card")){
+        nameOnCard = (EditText) findViewById(R.id.nameOnCard);
+        err = (TextInputLayout) findViewById(R.id.nameOnCard_inputLayout);
+        err2 = (TextInputLayout) findViewById(R.id.expirydate_inputLayout);
+        err3 = (TextInputLayout) findViewById(R.id.cvc_inputLayout);
 
-        }else{
-            nameOnCard = (EditText) findViewById(R.id.nameOnCard);
-            err = (TextInputLayout) findViewById(R.id.nameOnCard_inputLayout);
-            cardNumber = (EditText) findViewById(R.id.cardNumber);
-            expDate = (EditText) findViewById(R.id.expDate);
-            Integer expMth = Integer.parseInt(expDate.getText().toString().substring(0,2));
-            Integer expYr = Integer.parseInt(expDate.getText().toString().substring(2));
-            //expDate.addTextChangedListener(new DateInputMask());
-
-            cvc = (EditText) findViewById(R.id.cvc);
-
-            Date date;
-
-            saveCard = (CheckBox) findViewById(R.id.saveCard);
-
-            Card card = new Card(
-                    cardNumber.getText().toString(),
-                    expMth,
-                    expYr,
-                    cvc.getText().toString()
-            );
-
-            if (card == null || nameOnCard.getText().toString().isEmpty()) {
-                Toast.makeText(context,
-                        getResources().getString(R.string.invalid_card),
-                        Toast.LENGTH_LONG
-                ).show();
-                if (nameOnCard.getText().toString().isEmpty()){
-                    err.setError("Your name on card is invalid");
-                }
-                nameOnCard.addTextChangedListener(filterTextWatcher);
-            } else {
-                progressBar.setVisibility(View.VISIBLE);
-                Stripe stripe = new Stripe(context, "pk_test_FPldW3NRDq68iu1drr2o7Anb");
-                stripe.createToken(
-                        card,
-                        new TokenCallback() {
-                            public void onSuccess(Token token) {
-                                BackgroundPayment bp = new BackgroundPayment(context, activity);
-                                bp.saveCustomer(customer);
-                                bp.saveDeliveryDate(deliveryDate);
-                                bp.saveOrderList(orderList);
-                                if (saveCard.isChecked()){
-                                    bp.saveCard(card);
-                                }
-                                bp.execute(type, totalPayable, token.getId(), isEnglish, paperBagRequired);
-                            }
-                            public void onError(Exception error) {
-                                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show();
-                                progressBar.setVisibility(View.INVISIBLE);
-                            }
-                        }
-                );
-            }
+        cardNumber = (EditText) findViewById(R.id.cardNumber);
+        expDate = (EditText) findViewById(R.id.expDate);
+        if(!expDate.getText().toString().isEmpty()) {
+            expMth = Integer.parseInt(expDate.getText().toString().substring(0, 2));
+            expYr = Integer.parseInt(expDate.getText().toString().substring(3));
         }
-    }
+        cvc = (EditText) findViewById(R.id.cvc);
+        Date date;
+        saveCard = (CheckBox) findViewById(R.id.saveCard);
 
-    public void selectSavedCard() {
-        //get saved card
-        GetJson getSavedCards = (GetJson) new GetJson(
-                new AsyncResponse() {
-                    @Override
-                    public void processFinish(String output) {
-                        if (output == null){
-                            Toast.makeText(context, getResources().getString(R.string.no_saved_card), Toast.LENGTH_SHORT).show();
-                        }else{
-                            try{
-                                loadIntoAlertDialog(output);
-                            }catch (Exception e){
-                                e.printStackTrace();
+        Card card = new Card(cardNumber.getText().toString(), expMth, expYr, cvc.getText().toString());
+
+        if (card == null || nameOnCard.getText().toString().isEmpty() || expDate.getText().toString().isEmpty() || cvc == null) {
+            Toast.makeText(context,
+                    getResources().getString(R.string.invalid_card), Toast.LENGTH_LONG).show();
+            if (nameOnCard.getText().toString().isEmpty()){
+                err.setError("Your name on card is invalid");
+            }
+            if (expDate.getText().toString().isEmpty()){
+                err2.setError("Expiration date is invalid");
+            }
+            if (cvc.getText().toString().isEmpty()){
+                err3.setError("CVC is invalid");
+            }
+            nameOnCard.addTextChangedListener(filterTextWatcher);
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+            Stripe stripe = new Stripe(context, "pk_test_FPldW3NRDq68iu1drr2o7Anb");
+            stripe.createToken(
+                    card,
+                    new TokenCallback() {
+                        public void onSuccess(Token token) {
+                            BackgroundPayment bp = new BackgroundPayment(context, activity);
+                            bp.saveCustomer(customer);
+                            bp.saveDeliveryDate(deliveryDate);
+                            bp.saveOrderList(orderList);
+                            if (saveCard.isChecked()){
+                                bp.saveCard(card);
                             }
+                            bp.execute(type, totalPayable, token.getId(), isEnglish, paperBagNeeded);
+                        }
+                        public void onError(Exception error) {
+                            Toast.makeText(context, "Error", Toast.LENGTH_LONG).show();
+                            progressBar.setVisibility(View.INVISIBLE);
                         }
                     }
-                }
-        ).execute(customer.getDebtorCode());
-
-    }
-
-    private void loadIntoAlertDialog(String json) throws JSONException {
-        JSONArray jsonArray = new JSONArray(json);
-        String[] cards = new String[jsonArray.length()];
-        for (int i = 0; i < jsonArray.length(); i++){
-            JSONObject obj = jsonArray.getJSONObject(i);
-            cards[i] = "XXXX XXXX XXXX " + obj.getString("LastFourDigit");
+            );
         }
-
-        AlertDialog ad = new AlertDialog.Builder(ScanActivity.this).setTitle(getResources().getString(R.string.select_card))
-                .setSingleChoiceItems(cards,radioOnClick.getIndex(),radioOnClick).create();
-        ad.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.confirm), new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton){
-                ListView lw = ((AlertDialog)dialog).getListView();
-                Object selectedItem = lw.getAdapter().getItem(lw.getCheckedItemPosition());
-                String selectedCard = selectedItem.toString();
-                pay("pay_with_saved_card", selectedCard.substring(selectedCard.length() - 4));
-            }
-        });
-        ad.setButton(DialogInterface.BUTTON_NEUTRAL, getResources().getString(R.string.delete_card), new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton){
-                ListView lw = ((AlertDialog)dialog).getListView();
-                Object selectedItem = lw.getAdapter().getItem(lw.getCheckedItemPosition());
-                String selectedCard = selectedItem.toString();
-                deleteCard(dialog, selectedCard.substring(selectedCard.length() - 4));
-            }
-        });
-        ad.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int i) {
-                dialog.cancel();
-            }
-        });
-        ad.show();
     }
 
     class RadioOnClick implements DialogInterface.OnClickListener{
@@ -264,28 +205,6 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
 
         }
     };
-
-    protected void deleteCard(DialogInterface singleChoiceDialog, String lastFourDigit){
-        AlertDialog ad = new AlertDialog.Builder(ScanActivity.this).setMessage(getResources().getString(R.string.confirm_delete) + lastFourDigit).create();
-        ad.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.confirm), new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int i){
-                BackgroundDelete bd = (BackgroundDelete) new BackgroundDelete(
-                        new AsyncResponse() {
-                            @Override
-                            public void processFinish(String output) {
-                                selectSavedCard();
-                            }
-                        }
-                ).execute(customer.getDebtorCode(), lastFourDigit);
-            }
-        });
-        ad.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.cancel), new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int i){
-                dialog.cancel();
-            }
-        });
-        ad.show();
-    }
 
     private void loadFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();

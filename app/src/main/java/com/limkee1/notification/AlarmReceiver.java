@@ -39,7 +39,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         //calendar.add(Calendar.DATE,1);
 
         if (isEnglish.equals("Yes")){
-            content = "Please place order before " + cutofftime;
+            content = "Please place order before " + cutofftime + " AM for today's delivery";
         }else{
             content = "今日订单请在早上 " + cutofftime + " 前下单";
         }
