@@ -61,7 +61,7 @@ public class ConfirmOrderFragment extends Fragment {
     private int month;
     private int year;
     private String cutoffTime;
-    private String paperBagNeeded;
+    private int paperBagNeeded;
 
     public ConfirmOrderFragment() {
     }
@@ -503,9 +503,9 @@ public class ConfirmOrderFragment extends Fragment {
                     //check if paper bag is required
                     CheckBox paperBagRequired = (CheckBox)view.findViewById(R.id.checkBox);
                     if (paperBagRequired.isChecked()) {
-                        paperBagNeeded = "yes";
+                        paperBagNeeded = 1;
                     } else {
-                        paperBagNeeded = "no";
+                        paperBagNeeded = 0;
                     }
 
                     //check if today's delivery is before cut off time

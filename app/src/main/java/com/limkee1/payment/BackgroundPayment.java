@@ -52,7 +52,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     private ArrayList<Product> orderList;
     private String isEnglish;
     private String paperBagNeeded;
-    private int paperBagRequired;
+
 
     BackgroundPayment(Context ctx, Activity act) {
         context = ctx;
@@ -195,7 +195,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             it.putExtra("totalPayable", tp);
             it.putExtra("customer", customer);
             it.putExtra("language", isEnglish);
-            it.putExtra("paperBagNeeded", paperBagNeeded);
+            it.putExtra("paperBagRequired", paperBagNeeded);
             it.putParcelableArrayListExtra("orderList", orderList);
             context.startActivity(it);
 
@@ -229,13 +229,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 .client(client)
                 .build().create(PostData.class);
 
-        if (paperBagNeeded.equals("yes")) {
-            paperBagRequired = 1;
-        } else {
-            paperBagRequired = 0;
-        }
-
-        compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode(), paperBagRequired)
+        compositeDisposable.add(postData.addSalesOrder(customer.getDebtorCode(), Integer.parseInt(paperBagNeeded))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderResponse, this::handleError));
@@ -273,7 +267,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         double totalAmt = tp*(100.0/107.0);
         totalAmt = Double.parseDouble(df.format(totalAmt));
         System.out.println("tocheck" +orderNo);
-        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, totalAmt, orderNo)
+        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, totalAmt,0, orderNo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderDetailsResponse, this::handleError));

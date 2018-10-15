@@ -67,7 +67,7 @@ public interface PostData {
 
     @FormUrlEncoded
     @POST("add-order/salesorderdetails")
-    Observable<Boolean> addSalesOrderDetails(@Field("deliveryDate") String deliveryDate, @Field("subtotal") double subtotal, @Field("orderNo") String orderNo);
+    Observable<Boolean> addSalesOrderDetails(@Field("deliveryDate") String deliveryDate, @Field("subtotal") double subtotal, @Field("paidAmt") double paidAmt, @Field("orderNo") String orderNo);
 
     @FormUrlEncoded
     @POST("add-order/salesorderquantity")

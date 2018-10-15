@@ -67,7 +67,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
     private int month;
     private int year;
     private String cutoffTime;
-    private String paperBagNeeded;
+    private int paperBagNeeded;
     private CheckBox paperBagRequired;
     public static Retrofit retrofit;
 
@@ -194,9 +194,9 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
 
         //check if paper bag is required
         if (paperBagRequired.isChecked()) {
-            paperBagNeeded = "yes";
+            paperBagNeeded = 1;
         } else {
-            paperBagNeeded = "no";
+            paperBagNeeded = 0;
         }
 
 
@@ -535,9 +535,9 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
 
                     //check if paper bag is required
                     if (paperBagRequired.isChecked()) {
-                        paperBagNeeded = "yes";
+                        paperBagNeeded = 1;
                     } else {
-                        paperBagNeeded = "no";
+                        paperBagNeeded = 0;
                     }
 
                     //check if today's delivery is before cut off time
@@ -618,9 +618,9 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                 int data = response.body();
                 if (data == 1){
                     paperBagRequired.setChecked(true);
-                    paperBagNeeded = "yes";
+                    paperBagNeeded = 1;
                 } else {
-                    paperBagNeeded = "no";
+                    paperBagNeeded = 0;
                 }
             }
 
