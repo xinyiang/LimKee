@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.limkee1.R;
+import com.limkee1.Utility.DateUtility;
 import com.limkee1.constant.HttpConstant;
 import com.limkee1.constant.PostData;
 import com.limkee1.dao.CatalogueDAO;
@@ -133,7 +134,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
 
         //check if paper bag is required
         paperBagRequired = (CheckBox)view.findViewById(R.id.checkBox);
-        //doGetLastPaperBag(customer.getCompanyCode());
+        doGetLastPaperBag(customer.getCompanyCode());
 
         subtotal = calculateSubtotal(orderList);
         DecimalFormat df = new DecimalFormat("#0.00");
@@ -198,6 +199,8 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             paperBagNeeded = "no";
         }
 
+
+        String deliverDate = "";
         //check if today's delivery is before cut off time and set delivery date field
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -205,33 +208,166 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             String currentDate = "";
 
             currentDate = sdf.format(currentTimestamp);
-
             String date = currentDate.substring(0,10);
-            String dateTime = date + " " + cutoffTime;
 
+            String dateTime = date + " " + cutoffTime;
             Date cutoffTimestamp = sdf.parse(dateTime);
 
-            String deliverDate = "";
+            String day = date.substring(8,date.length());
+            String month = date.substring(5,7);
+            String yr = date.substring(0,4);
+
+            SimpleDateFormat sundayFormat = new SimpleDateFormat("EEEE");
+            String dayOfWeek = "";
+
+            //need to check if is new month/new year
+            int lastDay = DateUtility.getLastDayOfMonth(month);
+
             if (currentTimestamp.before(cutoffTimestamp)) {
-                System.out.println("delivery time before cut off");
+                //System.out.println("delivery time before cut off");
+
                 //set delivery date to today's date by default
-                deliverDate = date.substring(8,date.length()) +"/" + date.substring(5,7) + "/" + date.substring(0,4);
-                deliveryDate.setText(deliverDate);
+                //need to check if today day is a sunday then +1 again
+                Date todayDate = new Date(yr + "/" +  month + "/" + day);
+                dayOfWeek = sundayFormat.format(todayDate);
 
+                int todayDay = Integer.parseInt(day);
+                if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
+                    todayDay = todayDay+1;
+
+                    if (todayDay>lastDay){
+                        todayDay = lastDay;
+                    }
+                    //System.out.println("line 56 delivery time before cut off time is a sunday " + todayDay);
+                    String currentDay = "";
+                    if (todayDay < 10){
+                        currentDay = "0" + todayDay;
+                    } else {
+                        currentDay = Integer.toString(todayDay);
+                    }
+
+                    if (month.length() == 1){
+                        month = "0" + month;
+                    }
+
+                    deliverDate = currentDay + "/" + month + "/" + yr;
+                } else {
+
+                    if (month.length() == 1){
+                        month = "0" + month;
+                    }
+
+                    deliverDate = day + "/" + month + "/" + yr;
+                }
+                //System.out.println("delivery time before cut off " + deliverDate + " last day " + lastDay);
             } else {
-                System.out.println("delivery time after cut off");
-                //set delivery date to tomorrow's date by default
-                String day = date.substring(8,date.length());
+                //System.out.println("delivery time after cut off");
+                //set delivery date to tomorrow's date by default if its not a sunday
                 int nextDay = Integer.parseInt(day) + 1;
-                deliverDate = nextDay +"/" + date.substring(5,7) + "/" + date.substring(0,4);
-                deliveryDate.setText(deliverDate);
 
+                if (nextDay > lastDay){
+                    nextDay = 1;
+                }
+
+                //need to check if next day is a sunday then +1 again
+                Date nextDayDate = new Date(yr + "/" +  month + "/" + nextDay);
+                dayOfWeek = sundayFormat.format(nextDayDate);
+
+                if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
+                    nextDay = nextDay+1;
+
+                    if (nextDay>lastDay){
+                        nextDay = 1;
+                    }
+                    //System.out.println("line 66 delivery time after cut off is a sunday " + nextDayDate);
+                }
+
+                if (nextDay == 1 && Integer.parseInt(month) != 12) {
+                    //new month
+                    int newMth = Integer.parseInt(month) + 1;
+                    String newMonth = "";
+                    if (newMth < 10){
+                        newMonth = "0" + newMth;
+                    } else {
+                        newMonth = Integer.toString(newMth);
+                    }
+
+                    //need to check if 1st day of new month is a sunday eg: 01/09/2019
+                    String nextDayStr = "";
+                    if (nextDay < 10){
+                        nextDayStr = "0" + nextDay;
+                    } else {
+                        nextDayStr = Integer.toString(nextDay);
+                    }
+
+                    Date newYear = new Date(yr + "/" +  newMth + "/" + nextDayStr);
+                    dayOfWeek = sundayFormat.format(newYear);
+
+                    if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
+                        deliverDate = "02" + "/" + newMonth + "/" + yr;
+                    } else {
+                        deliverDate = "01" + "/" + newMonth + "/" + yr;
+                    }
+
+                    //System.out.println("line 281 delivery time after cut off for new MONTH " + deliverDate);
+                } else if (nextDay == 1 && Integer.parseInt(month) == 12) {
+                    //new year
+                    int newYr = Integer.parseInt(yr) + 1;
+                    int newDay = 1;
+
+                    //need to check new year day is a Sunday eg: 01/01/2023
+
+                    Date newYear = new Date(newYr + "/" +  "01" + "/" + "01");
+                    dayOfWeek = sundayFormat.format(newYear);
+
+                    if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
+                        newDay = nextDay+1;
+                        //System.out.println("line 129 delivery time after cut off for a NEW YEAR is a sunday " + nextDayDate);
+                    }
+
+                    String newYearDay = "0" + newDay;   //either 1st Jan or 2nd Jan
+
+                    deliverDate = newYearDay + "/" + "01" + "/" + newYr;
+                    //System.out.println("line 295 delivery time after cut off for new year " + deliverDate);
+
+                } else {
+                    //within same month
+                    String nextD = "";
+                    if (nextDay < 10){
+                        nextD = "0" + nextDay;
+                    } else {
+                        nextD = Integer.toString(nextDay);
+                    }
+
+                    if (month.length() == 1){
+                        month = "0" + month;
+                    }
+
+                    deliverDate = nextD + "/" + month + "/" + yr;
+                    //System.out.println("line 319 delivery time after cut off " + deliverDate);
+                }
             }
         } catch (ParseException e) {
             System.out.println(e.getMessage());
         }
 
+        SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
 
+        try {
+            Date datetime = expectedPattern.parse(deliverDate);
+            String timestamp = formatter.format(datetime);
+            deliveryDate.setText(timestamp);
+
+            String day = deliverDate.substring(0,2);
+            String month = deliverDate.substring(3,5);
+            String yr = deliverDate.substring(6);
+            ETADeliveryDate = yr + "-" + month + "-" + day;
+            System.out.println("ETA in QuickReorder Confirm Order line 352 is " + ETADeliveryDate);
+
+        } catch (Exception e) {
+            System.out.println("Error in QuickReorder Confirm Order line in line 355 " + e.getMessage());
+        }
         return view;
     }
 
@@ -464,7 +600,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         });
     }
 
-    /*
+
     private void doGetLastPaperBag(String companyCode) {
         if (retrofit == null) {
 
@@ -495,7 +631,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         });
 
     }
-    */
+
 
     private double calculateSubtotal(ArrayList<Product> orderList) {
         double subtotal = 0;

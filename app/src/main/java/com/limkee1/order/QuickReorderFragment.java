@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.limkee1.R;
+import com.limkee1.Utility.ChineseCharUtility;
 import com.limkee1.constant.HttpConstant;
 import com.limkee1.constant.PostData;
 import com.limkee1.dao.CatalogueDAO;
@@ -114,10 +115,10 @@ public class QuickReorderFragment extends Fragment {
             if(isEnglish.equals("Yes")) {
                 //format cut off time to remove seconds
                 builder.setMessage("Please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM for today's delivery");
-
             } else {
-                builder.setMessage("今日订单请在早上" + getChineseTime(cutoffTime.substring(0, cutoffTime.length()-3)) + "前下单");
+                builder.setMessage("今日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0, cutoffTime.length()-3)) + "前下单");
             }
+
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
 
@@ -130,7 +131,7 @@ public class QuickReorderFragment extends Fragment {
             if(isEnglish.equals("Yes")) {
                 builder.setMessage("Please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM for tomorrow's delivery");
             } else {
-                builder.setMessage("明日订单请在早上" + getChineseTime(cutoffTime.substring(0, cutoffTime.length()-3)) + "前下单");
+                builder.setMessage("明日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0, cutoffTime.length()-3)) + "前下单");
             }
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
@@ -308,77 +309,6 @@ public class QuickReorderFragment extends Fragment {
         });
     }
 
-    public static String getChineseTime(String time){
-        String minutes = time.substring(3,time.length());
-        String chineseHour = "";
-        String chineseTime;
-
-        time = time.substring(0,2);
-        //check hour
-        if (time.equals("01")){
-            chineseHour = "一";
-        } else if (time.equals("02")){
-            chineseHour = "二";
-        } else if (time.equals("03")){
-            chineseHour = "三";
-        } else if (time.equals("04")){
-            chineseHour = "四";
-        }  else if (time.equals("05")){
-            chineseHour = "五";
-        } else if (time.equals("06")){
-            chineseHour = "六";
-        } else if (time.equals("07")){
-            chineseHour = "七";
-        } else if (time.equals("08")){
-            chineseHour = "八";
-        } else if (time.equals("09")){
-            chineseHour = "九";
-        } else if (time.equals("10")) {
-            chineseHour = "十";
-        } else {
-            chineseHour = "";
-        }
-
-        //check if got mins
-        if (minutes.equals("00")){
-            chineseTime = chineseHour + "点";
-        } else if (minutes.equals("30")){
-            chineseTime = chineseHour + "点半";
-        } else{
-            chineseTime = chineseHour + "点" + getNumber(minutes) + "分";
-        }
-        return chineseTime;
-    }
-
-    public static String getNumber(String number){
-        String chineseNumber = "";
-
-        if (number.equals("05")){
-            chineseNumber = "零五";
-        } else if (number.equals("10")){
-            chineseNumber = "十";
-        } else if (number.equals("15")){
-            chineseNumber = "十五";
-        } else if (number.equals("20")){
-            chineseNumber = "二十";
-        } else if (number.equals("25")){
-            chineseNumber = "二十五";
-        } else if (number.equals("35")){
-            chineseNumber = "三十五";
-        } else if (number.equals("40")){
-            chineseNumber = "四十";
-        } else if (number.equals("45")){
-            chineseNumber = "四十五";
-        } else if (number.equals("50")){
-            chineseNumber = "五十";
-        } else if (number.equals("55")){
-            chineseNumber = "五十五";
-        }  else {
-            chineseNumber = "零";
-        }
-        return chineseNumber;
-    }
-
     private void doGetLastOrder(String companyCode) {
         if (retrofit == null) {
 
@@ -439,7 +369,6 @@ public class QuickReorderFragment extends Fragment {
 
     public static void updateSubtotal(ArrayList<Product> orderList) {
         double subtotal = 0;
-        System.out.println("ORDER LIST SIZE is " + orderList.size());
         for(Product p : orderList) {
             int qty = p.getDefaultQty();
             subtotal += p.getUnitPrice() * qty;

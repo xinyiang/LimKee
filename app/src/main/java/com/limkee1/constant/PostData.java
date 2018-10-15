@@ -17,13 +17,14 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface PostData {
+    /*
     @GET("get-catalogue")
     Call<ArrayList<Product>> getCatalogue();
 
     @GET("get-order/getlastestorder")
     Call<ArrayList<Product>> getQuickOrderCatalogue(@Query("companyCode") String companyCode);
+    */
 
-    /*
     @GET("catalogue/get-catalogue")
     Call<ArrayList<Product>> getCatalogue();
 
@@ -32,7 +33,6 @@ public interface PostData {
 
     @GET("catalogue/getlastpaparbag")
     Call<Integer> getLastOrderPaperBag(@Query("companyCode") String companyCode);
-    */
 
     @GET("get-order/currentorder")
     Call<ArrayList<Order>> getCurrentOrders(@Query("companyCode") String companyCode);

@@ -25,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.limkee1.R;
+import com.limkee1.Utility.ChineseCharUtility;
 import com.limkee1.constant.HttpConstant;
 import com.limkee1.constant.PostData;
 import com.limkee1.dao.CatalogueDAO;
@@ -62,7 +63,6 @@ public class CatalogueFragment extends Fragment {
     private SharedPreferences.Editor loginPrefsEditor;
     public static Retrofit retrofit;
     private Customer customer;
-    private String deliveryShift;
     private static CatalogueFragment fragment;
     private AlarmManager alarmManager;
     private Calendar calendar;
@@ -92,7 +92,6 @@ public class CatalogueFragment extends Fragment {
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
         cutoffTime = bundle.getString("cutofftime");
-        deliveryShift = bundle.getString("deliveryShift");
 
         if (isEnglish.equals("Yes")){
             ((NavigationActivity)getActivity()).setActionBarTitle("Order Slip");
@@ -108,9 +107,6 @@ public class CatalogueFragment extends Fragment {
         String hour = time.substring(0,2);
         String mins = time.substring(3,5);
 
-        //Date cutoffTimestamp = new Date();
-        //cutoffTimestamp.setHours(Integer.parseInt(hour));
-        //cutoffTimestamp.setMinutes(Integer.parseInt(mins));
         Calendar cutoffTimeCalendar = Calendar.getInstance();
         cutoffTimeCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hour));
         cutoffTimeCalendar.set(Calendar.MINUTE, Integer.parseInt(mins));
@@ -125,8 +121,8 @@ public class CatalogueFragment extends Fragment {
                 notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery";
                 builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
             } else {
-                notif = "今日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单";
-                builder.setMessage("今日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
+                notif = "今日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单";
+                builder.setMessage("今日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
             }
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
@@ -141,8 +137,8 @@ public class CatalogueFragment extends Fragment {
                 notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for tomorrow's delivery";
                 builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for tomorrow's delivery");
             } else {
-                notif = "明日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单";
-                builder.setMessage("明日订单请在早上" + getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
+                notif = "明日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单";
+                builder.setMessage("明日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
             }
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
@@ -246,7 +242,6 @@ public class CatalogueFragment extends Fragment {
                 invalidDesc2 = "";
                 qtyMultiples = 0;
 
-
                 for (Product p : tempOrderList) {
                     int quantity = p.getDefaultQty();
                     //show error message when products that has wrong quantity
@@ -322,13 +317,12 @@ public class CatalogueFragment extends Fragment {
                         }
                     }
                         else {
-
                             DecimalFormat df = new DecimalFormat("#0.00");
                             subtotalAmt = view.findViewById(R.id.subtotalAmt);
                             subtotal = calculateSubtotal(orderList);
                             subtotalAmt.setText("$" + df.format(subtotal));
 
-                            // //updateSubtotal(orderList);
+                            //updateSubtotal(orderList);
                             CatalogueDAO.order_list = orderList;
 
                             //store all products with qty > 1 into a temporary arraylist of products
@@ -337,88 +331,12 @@ public class CatalogueFragment extends Fragment {
                             intent.putExtra("language", isEnglish);
                             intent.putExtra("orderList", orderList);
                             intent.putExtra("customer", customer);
-                            intent.putExtra("deliveryShift", deliveryShift);
                             intent.putExtra("cutoffTime", cutoffTime);
                             getActivity().startActivity(intent);
                         }
                     }
                 }
         });
-    }
-
-    public static String getChineseTime(String time){
-        String minutes = time.substring(3,time.length());
-        String chineseHour = "";
-        String chineseTime;
-
-        time = time.substring(0,2);
-        //check hour
-        if (time.equals("01")){
-            chineseHour = "一";
-        } else if (time.equals("02")){
-            chineseHour = "二";
-        } else if (time.equals("03")){
-            chineseHour = "三";
-        } else if (time.equals("04")){
-            chineseHour = "四";
-        }  else if (time.equals("05")){
-            chineseHour = "五";
-        } else if (time.equals("06")){
-            chineseHour = "六";
-        } else if (time.equals("07")){
-            chineseHour = "七";
-        } else if (time.equals("08")){
-            chineseHour = "八";
-        } else if (time.equals("09")){
-            chineseHour = "九";
-        } else if (time.equals("10")) {
-            chineseHour = "十";
-        } else if (time.equals("11")) {
-            chineseHour = "十一";
-        } else if (time.equals("12")) {
-            chineseHour = "十二";
-        } else {
-            chineseHour = "";
-        }
-
-        //check if got mins
-        if (minutes.equals("00")){
-            chineseTime = chineseHour + "点";
-        } else if (minutes.equals("30")){
-            chineseTime = chineseHour + "点半";
-        } else{
-            chineseTime = chineseHour + "点" + getNumber(minutes) + "分";
-        }
-        return chineseTime;
-    }
-
-    public static String getNumber(String number){
-        String chineseNumber = "";
-
-        if (number.equals("05")){
-            chineseNumber = "零五";
-        } else if (number.equals("10")){
-            chineseNumber = "十";
-        } else if (number.equals("15")){
-            chineseNumber = "十五";
-        } else if (number.equals("20")){
-            chineseNumber = "二十";
-        } else if (number.equals("25")){
-            chineseNumber = "二十五";
-        } else if (number.equals("35")){
-            chineseNumber = "三十五";
-        } else if (number.equals("40")){
-            chineseNumber = "四十";
-        } else if (number.equals("45")){
-            chineseNumber = "四十五";
-        } else if (number.equals("50")){
-            chineseNumber = "五十";
-        } else if (number.equals("55")){
-            chineseNumber = "五十五";
-        }  else {
-            chineseNumber = "零";
-        }
-        return chineseNumber;
     }
 
     private void doGetCatalogue() {
@@ -429,6 +347,7 @@ public class CatalogueFragment extends Fragment {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
+
         PostData service = retrofit.create(PostData.class);
         Call<ArrayList<Product>> call = service.getCatalogue();
         call.enqueue(new Callback<ArrayList<Product>>() {
@@ -462,7 +381,6 @@ public class CatalogueFragment extends Fragment {
                 System.out.println(t.getMessage());
             }
         });
-
     }
 
     private void doGetAverageQty(String companyCode) {
