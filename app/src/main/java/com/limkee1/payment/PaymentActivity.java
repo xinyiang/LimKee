@@ -45,7 +45,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-
 public class PaymentActivity extends BaseActivity implements PaymentFragment.OnFragmentInteractionListener{
     private View rootView;
     private String totalPayable;
@@ -77,6 +76,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("@string/payment");
+
         myBundle = getIntent().getExtras();
         activity = this;
         context = getApplicationContext();
@@ -110,9 +110,11 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         bundle.putString("language", isEnglish);
         bundle.putParcelableArrayList("orderList", orderList);
         bundle.putString("paperBagRequired", paperBagRequired);
+        bundle.putString("deliveryDate", deliveryDate);
+        bundle.putDouble("totalPayable", tp);
+
         paymentFragment.setArguments(bundle);
         loadFragment(paymentFragment);
-
     }
 
     public void pay(String mType, String lastFourDigit){

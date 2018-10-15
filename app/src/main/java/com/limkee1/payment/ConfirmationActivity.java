@@ -11,7 +11,10 @@ import android.widget.TextView;
 import com.limkee1.BaseActivity;
 import com.limkee1.R;
 import com.limkee1.entity.Customer;
+import com.limkee1.entity.Product;
 import com.limkee1.navigation.NavigationActivity;
+
+import java.util.ArrayList;
 
 
 public class ConfirmationActivity extends BaseActivity {
@@ -23,6 +26,9 @@ public class ConfirmationActivity extends BaseActivity {
     double tp = 0.00;
     private String orderId;
     private String language;
+    private ArrayList<Product> orderList;
+    private String paperBagNeeded;
+    private String deliveryDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +41,9 @@ public class ConfirmationActivity extends BaseActivity {
         customer = myBundle.getParcelable("customer");
         orderId = myBundle.getString("orderId");
         language = myBundle.getString("language");
-        System.out.println(orderId+"!!!");
+        paperBagNeeded = myBundle.getString("paperBagNeeded");
+        deliveryDate = myBundle.getString("deliveryDate");
+        orderList = myBundle.getParcelableArrayList("orderList");
         TextView pmtResult = ((Activity)this).findViewById(R.id.pmtResult);
         TextView description = ((Activity)this).findViewById(R.id.description);
         TextView notifDescription = ((Activity)this).findViewById(R.id.smsNotification);
@@ -69,6 +77,10 @@ public class ConfirmationActivity extends BaseActivity {
             Intent it = new Intent(getApplicationContext(), PaymentActivity.class);
             it.putExtra("totalPayable", tp);
             it.putExtra("customer", customer);
+            it.putExtra("language", language);
+            it.putExtra("paperBagRequired", paperBagNeeded);
+            it.putExtra("deliveryDate", deliveryDate);
+            it.putParcelableArrayListExtra("orderList", orderList);
             context.startActivity(it);
             this.finish();
         }
