@@ -35,7 +35,6 @@ public class CurrentOrderFragment extends Fragment {
     private CoordinatorLayout coordinatorLayout;
     private RecyclerView recyclerView;
     private Customer customer;
-    private String companyCode;
     public static Retrofit retrofit;
     private  String isEnglish;
     TextView lbl_noOrders;
@@ -55,7 +54,6 @@ public class CurrentOrderFragment extends Fragment {
 
         Bundle bundle = getArguments();
         customer = bundle.getParcelable("customer");
-        companyCode = customer.getCompanyCode();
         isEnglish = bundle.getString("language");
 
         if (isEnglish.equals("Yes")){
@@ -63,7 +61,6 @@ public class CurrentOrderFragment extends Fragment {
         } else {
             ((NavigationActivity)getActivity()).setActionBarTitle("当前订单");
         }
-
     }
 
     @Override
@@ -90,12 +87,12 @@ public class CurrentOrderFragment extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
-        doGetCurrentOrders(companyCode);
+        doGetCurrentOrders(customer.getDebtorCode());
 
         return view;
     }
 
-    private void doGetCurrentOrders(String companyCode) {
+    private void doGetCurrentOrders(String customerCode) {
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(HttpConstant.BASE_URL)
@@ -103,7 +100,7 @@ public class CurrentOrderFragment extends Fragment {
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<ArrayList<Order>> call = service.getCurrentOrders(companyCode);
+        Call<ArrayList<Order>> call = service.getCurrentOrders(customerCode);
         call.enqueue(new Callback<ArrayList<Order>>() {
 
             @Override

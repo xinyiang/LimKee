@@ -35,10 +35,8 @@ public class CancelledOrderFragment extends Fragment {
     private CoordinatorLayout coordinatorLayout;
     private RecyclerView recyclerView;
     private Customer customer;
-    private String companyCode;
     public static Retrofit retrofit;
     private  String isEnglish;
-    boolean show = true;
     TextView lbl_noOrders;
 
     public CancelledOrderFragment(){}
@@ -55,11 +53,8 @@ public class CancelledOrderFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         Bundle bundle = getArguments();
-
         customer = bundle.getParcelable("customer");
-        companyCode = customer.getCompanyCode();
         isEnglish = bundle.getString("language");
-
     }
 
     @Override
@@ -86,7 +81,7 @@ public class CancelledOrderFragment extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
-        doGetCancelledOrders(companyCode);
+        doGetCancelledOrders(customer.getDebtorCode());
 
         return view;
     }
@@ -101,7 +96,7 @@ public class CancelledOrderFragment extends Fragment {
         }
     }
 
-    private void doGetCancelledOrders(String companyCode) {
+    private void doGetCancelledOrders(String customerCode) {
         //final int numOrders = 0;
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
@@ -109,9 +104,8 @@ public class CancelledOrderFragment extends Fragment {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
-        System.out.println("CANCELLED COMPANY " + companyCode);
         PostData service = retrofit.create(PostData.class);
-        Call<ArrayList<Order>> call = service.getCancelledOrders(companyCode);
+        Call<ArrayList<Order>> call = service.getCancelledOrders(customerCode);
         call.enqueue(new Callback<ArrayList<Order>>() {
 
             @Override

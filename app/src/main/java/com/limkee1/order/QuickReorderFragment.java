@@ -54,7 +54,6 @@ public class QuickReorderFragment extends Fragment {
     private SharedPreferences.Editor loginPrefsEditor;
     public static Retrofit retrofit;
     private Customer customer;
-    private String companyCode;
     String invalidDesc;
     String invalidDesc2;
     int qtyMultiples;
@@ -80,14 +79,12 @@ public class QuickReorderFragment extends Fragment {
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
-        companyCode = customer.getCompanyCode();
 
         if (isEnglish.equals("Yes")){
             ((NavigationActivity)getActivity()).setActionBarTitle("Quick Reorder");
         } else {
             ((NavigationActivity)getActivity()).setActionBarTitle("快速下单");
         }
-
 
         builder= new AlertDialog.Builder(getContext());
         // AlertDialog ad = builder.create();
@@ -142,8 +139,6 @@ public class QuickReorderFragment extends Fragment {
             final AlertDialog ad = builder.create();
             ad.show();
         }
-
-        // doGetLastOrder(companyCode);
     }
 
     @Override
@@ -151,7 +146,7 @@ public class QuickReorderFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_quick_reorder, container, false);
 
-        doGetLastOrder(companyCode);
+        doGetLastOrder(customer.getDebtorCode());
 
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
@@ -214,7 +209,6 @@ public class QuickReorderFragment extends Fragment {
                     int quantity = p.getDefaultQty();
 
                     //show error message when products that has wrong quantity
-
                     if (quantity != 0) {
                         int multiples = p.getQtyMultiples();
 
@@ -309,7 +303,7 @@ public class QuickReorderFragment extends Fragment {
         });
     }
 
-    private void doGetLastOrder(String companyCode) {
+    private void doGetLastOrder(String customerCode) {
         if (retrofit == null) {
 
             retrofit = new retrofit2.Retrofit.Builder()
@@ -318,7 +312,7 @@ public class QuickReorderFragment extends Fragment {
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<ArrayList<Product>> call = service.getQuickOrderCatalogue(companyCode);
+        Call<ArrayList<Product>> call = service.getQuickOrderCatalogue(customerCode);
         call.enqueue(new Callback<ArrayList<Product>>() {
 
             @Override

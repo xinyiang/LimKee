@@ -17,25 +17,18 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface PostData {
-    /*
-    @GET("get-catalogue")
-    Call<ArrayList<Product>> getCatalogue();
-
-    @GET("get-order/getlastestorder")
-    Call<ArrayList<Product>> getQuickOrderCatalogue(@Query("companyCode") String companyCode);
-    */
 
     @GET("catalogue/get-catalogue")
     Call<ArrayList<Product>> getCatalogue();
 
     @GET("catalogue/getlastorder")
-    Call<ArrayList<Product>> getQuickOrderCatalogue(@Query("companyCode") String companyCode);
+    Call<ArrayList<Product>> getQuickOrderCatalogue(@Query("customerCode") String customerCode);
 
     @GET("catalogue/getlastpaparbag")
-    Call<Integer> getLastOrderPaperBag(@Query("companyCode") String companyCode);
+    Call<Integer> getLastOrderPaperBag(@Query("customerCode") String customerCode);
 
     @GET("get-order/currentorder")
-    Call<ArrayList<Order>> getCurrentOrders(@Query("companyCode") String companyCode);
+    Call<ArrayList<Order>> getCurrentOrders(@Query("customerCode") String customerCode);
 
     @GET("get-order/currentorderdetails")
     Call<OrderDetails> getCurrentOrderDetails(@Query("orderNo") String orderNo);
@@ -44,7 +37,7 @@ public interface PostData {
     Call<ArrayList<OrderQuantity>> getCurrentOrderQuantity(@Query("orderNo") String orderNo);
 
     @GET("get-order/orderhistory")
-    Call<ArrayList<Order>> getOrderHistory(@Query("companyCode") String companyCode);
+    Call<ArrayList<Order>> getOrderHistory(@Query("customerCode") String customerCode);
 
     @GET("get-order/orderhistorydetails")
     Call<OrderDetails> getOrderHistoryDetails(@Query("orderNo") String orderNo);
@@ -53,7 +46,7 @@ public interface PostData {
     Call<ArrayList<OrderQuantity>> getOrderHistoryQuantity(@Query("orderNo") String orderNo);
 
     @GET("get-order/cancelledorder")
-    Call<ArrayList<Order>> getCancelledOrders(@Query("companyCode") String companyCode);
+    Call<ArrayList<Order>> getCancelledOrders(@Query("customerCode") String customerCode);
 
     @GET("get-order/cancelledorderdetails")
     Call<OrderDetails> getCancelledOrderDetails(@Query("orderNo") String orderNo);
@@ -63,7 +56,7 @@ public interface PostData {
 
     @FormUrlEncoded
     @POST("add-order/salesorder")
-    Observable<String> addSalesOrder(@Field("debtorCode") String debtorCode, @Field("PaperBagRequired") int PaperBagRequired);
+    Observable<String> addSalesOrder(@Field("customerCode") String customerCode, @Field("PaperBagRequired") int PaperBagRequired);
 
     @FormUrlEncoded
     @POST("add-order/salesorderdetails")
@@ -74,19 +67,19 @@ public interface PostData {
     Observable<Integer> addSalesOrderQuantity(@Field("itemQuantity") ArrayList<String> itemQuantity, @Field("orderNo") String orderNo);
 
     @GET("dashboard/gettopproducts")
-    Call<Map<String,Integer>> getTopPurchasedProducts(@Query("companyCode") String companyCode, @Query("selectedMonth") String selectedMonth, @Query("selectedYear") String selectedYear, @Query("language") String language);
+    Call<Map<String,Integer>> getTopPurchasedProducts(@Query("customerCode") String customerCode, @Query("selectedMonth") String selectedMonth, @Query("selectedYear") String selectedYear, @Query("language") String language);
 
     @GET("dashboard/getcustomersales")
-    Call<LinkedHashMap<String,Double>> getFilteredCustomerSales(@Query("companyCode") String companyCode, @Query("selectedYear") String selectedYear);
+    Call<LinkedHashMap<String,Double>> getFilteredCustomerSales(@Query("customerCode") String customerCode, @Query("selectedYear") String selectedYear);
 
     @GET("dashboard/getaveragesales")
     Call<LinkedHashMap<String,Double>> getAverageSales(@Query("selectedYear") String selectedYear);
 
     @GET("dashboard/getearliestyear")
-    Call<Integer> getEarliestYear(@Query("companyCode") String companyCode);
+    Call<Integer> getEarliestYear(@Query("customerCode") String customerCode);
 
    @GET("dashboard/getaveragequantitycatalogue")
-    Call<ArrayList<Product>> getAverageQuantity(@Query("companyCode") String companyCode);
+    Call<ArrayList<Product>> getAverageQuantity(@Query("customerCode") String customerCode);
 
     @GET("wallet/getwalletamount")
     Call<Double> getCustomerWallet(@Query("customerCode") String customerCode);
@@ -99,7 +92,7 @@ public interface PostData {
 
     @FormUrlEncoded
     @POST("wallet/reducecustomerwalletamt")
-    Observable<Boolean> addSalesOrder(@Field("debtorCode") String debtorCode, @Field("reduceAmt") double reduceAmt);
+    Observable<Boolean> addSalesOrder(@Field("customerCode") String customerCode, @Field("reduceAmt") double reduceAmt);
 
 }
 

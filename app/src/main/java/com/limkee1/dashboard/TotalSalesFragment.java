@@ -137,7 +137,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                     if (!isChecked) {
                         doGetAverageSales(selectedYear);
                     }
-                    doGetCustomerSales(customer.getCompanyCode(), selectedYear);
+                    doGetCustomerSales(customer.getDebtorCode(), selectedYear);
                 }
             }
             @Override
@@ -153,9 +153,9 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                     chart.hide(isEnglish);
                 } else {
                     if (isChecked) {
-                        doGetCustomerSales(customer.getCompanyCode(), selectedYear);
+                        doGetCustomerSales(customer.getDebtorCode(), selectedYear);
                     } else {
-                        doGetCustomerSales(customer.getCompanyCode(), selectedYear);
+                        doGetCustomerSales(customer.getDebtorCode(), selectedYear);
                         doGetAverageSales(selectedYear);
                     }
                 }
@@ -170,7 +170,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         super.onActivityCreated(savedInstanceState);
     }
 
-    private void doGetCustomerSales(String companyCode, String selectedYear) {
+    private void doGetCustomerSales(String customerCode, String selectedYear) {
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(HttpConstant.BASE_URL)
@@ -179,7 +179,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         }
         PostData service = retrofit.create(PostData.class);
 
-        Call<LinkedHashMap<String,Double>> call = service.getFilteredCustomerSales(companyCode, selectedYear);
+        Call<LinkedHashMap<String,Double>> call = service.getFilteredCustomerSales(customerCode, selectedYear);
         call.enqueue(new Callback<LinkedHashMap<String,Double>>() {
 
             @Override

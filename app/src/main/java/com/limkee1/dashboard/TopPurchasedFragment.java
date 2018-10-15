@@ -139,7 +139,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         view = inflater.inflate(R.layout.fragment_top_purchased, container, false);
         chart = new Chart((HorizontalBarChart)view.findViewById(R.id.chart));
 
-        doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
+        doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
 
         ddlYear = (Spinner)view.findViewById(R.id.ddl_year);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
@@ -161,8 +161,8 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 if (selectedYear.equals("Year") || selectedYear.equals("年")){
                     chart.hide(isEnglish);
                 } else {
-                    doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
-                    doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
+                    doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
+                    doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
                 }
             }
 
@@ -220,8 +220,8 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 if (selectedMonth.equals("Month") || selectedMonth.equals("月")){
                     chart.hide(isEnglish);
                 } else {
-                    doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
-                    doGetTopProducts(customer.getCompanyCode(), selectedMonth, selectedYear, language);
+                    doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
+                    doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
                 }
             }
 
@@ -376,7 +376,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         super.onActivityCreated(savedInstanceState);
     }
 
-    private void doGetTopProducts(String companyCode, String selectedMonth, String selectedYear, String language) {
+    private void doGetTopProducts(String customerCode, String selectedMonth, String selectedYear, String language) {
         System.out.println("purchase data is entered");
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
@@ -385,7 +385,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<Map<String,Integer>> call = service.getTopPurchasedProducts(companyCode, selectedMonth, selectedYear, language);
+        Call<Map<String,Integer>> call = service.getTopPurchasedProducts(customerCode, selectedMonth, selectedYear, language);
         call.enqueue(new Callback<Map<String,Integer>>() {
             @Override
             public void onResponse(Call<Map<String,Integer>> call, Response<Map<String,Integer>> response) {
@@ -449,7 +449,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         });
     }
 
-    private void getEarliestYear(String companyCode) {
+    private void getEarliestYear(String customerCode) {
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(HttpConstant.BASE_URL)
@@ -457,7 +457,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<Integer> call = service.getEarliestYear(companyCode);
+        Call<Integer> call = service.getEarliestYear(customerCode);
         call.enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {

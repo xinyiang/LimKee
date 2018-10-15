@@ -134,7 +134,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
 
         //check if paper bag is required
         paperBagRequired = (CheckBox)view.findViewById(R.id.checkBox);
-        doGetLastPaperBag(customer.getCompanyCode());
+        doGetLastPaperBag(customer.getDebtorCode());
 
         subtotal = calculateSubtotal(orderList);
         DecimalFormat df = new DecimalFormat("#0.00");
@@ -198,7 +198,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         } else {
             paperBagNeeded = 0;
         }
-
 
         String deliverDate = "";
         //check if today's delivery is before cut off time and set delivery date field
@@ -351,6 +350,8 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             System.out.println(e.getMessage());
         }
 
+
+        //format date to display in textview
         SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
 
@@ -493,7 +494,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
 
                             mCurrentDate.set(selectedDay, selectedMonth, selectedYear);
                         }
-
                     }
                 }, year, month, day);
                 mDatePicker.show();
@@ -530,7 +530,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                 })
                                 .show();
                     }
-
                 } else {
 
                     //check if paper bag is required
@@ -601,7 +600,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
     }
 
 
-    private void doGetLastPaperBag(String companyCode) {
+    private void doGetLastPaperBag(String customerCode) {
         if (retrofit == null) {
 
             retrofit = new retrofit2.Retrofit.Builder()
@@ -610,7 +609,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<Integer> call = service.getLastOrderPaperBag(companyCode);
+        Call<Integer> call = service.getLastOrderPaperBag(customerCode);
         call.enqueue(new Callback<Integer>() {
 
             @Override

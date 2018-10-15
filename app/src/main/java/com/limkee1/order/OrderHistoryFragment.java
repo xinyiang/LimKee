@@ -25,7 +25,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-
 public class OrderHistoryFragment extends Fragment {
 
     private OrderHistoryFragment.OnFragmentInteractionListener mListener;
@@ -33,7 +32,6 @@ public class OrderHistoryFragment extends Fragment {
     private View view;
     private RecyclerView recyclerView;
     private Customer customer;
-    private String companyCode;
     public static Retrofit retrofit;
     private String isEnglish;
     private Bundle myBundle = new Bundle();
@@ -52,18 +50,12 @@ public class OrderHistoryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         Bundle bundle = getArguments();
         customer = bundle.getParcelable("customer");
-        companyCode = customer.getCompanyCode();
         isEnglish = bundle.getString("language");
-
         myBundle.putParcelable("customer", customer);
         myBundle.putString("language", isEnglish);
-
-
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,12 +82,12 @@ public class OrderHistoryFragment extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
-        doGetOrderHistory(companyCode);
+        doGetOrderHistory(customer.getDebtorCode());
 
         return view;
     }
 
-    private void doGetOrderHistory(String companyCode) {
+    private void doGetOrderHistory(String customerCode) {
 
         if (retrofit == null) {
             retrofit = new retrofit2.Retrofit.Builder()
@@ -104,7 +96,7 @@ public class OrderHistoryFragment extends Fragment {
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<ArrayList<Order>> call = service.getOrderHistory(companyCode);
+        Call<ArrayList<Order>> call = service.getOrderHistory(customerCode);
         call.enqueue(new Callback<ArrayList<Order>>() {
 
             @Override
