@@ -71,6 +71,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     private int earliestYear;
     private int length;
     private Chart chart;
+    private int numMonth;
 
     public TopPurchasedFragment() {
     }
@@ -94,7 +95,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/M/dd hh:mm:ss");
             String today = sdf.format(new Date());
             systemYear = today.substring(0, 4);
-            int numMonth = Integer.parseInt(today.substring(5, 6));
+            numMonth = Integer.parseInt(today.substring(5, 6));
             systemMonth = getMonth(numMonth);
             systemMonthInChinese = getChineseMonth(systemMonth);
 
@@ -139,7 +140,8 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         view = inflater.inflate(R.layout.fragment_top_purchased, container, false);
         chart = new Chart((HorizontalBarChart)view.findViewById(R.id.chart));
 
-        doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
+        doGetTopProducts(customer.getDebtorCode(), systemMonth, selectedYear, language);
+        doGetTopProducts(customer.getDebtorCode(), systemMonth, selectedYear, language);
 
         ddlYear = (Spinner)view.findViewById(R.id.ddl_year);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
@@ -184,6 +186,10 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             }
         }
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        String today = sdf.format(new Date());
+        numMonth = Integer.parseInt(today.substring(5, 7));
+        ddlMonth.setSelection(numMonth);
         ddlMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
