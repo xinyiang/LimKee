@@ -228,59 +228,57 @@ public class QuickReorderFragment extends Fragment {
                     }
                 }
 
-                //check if subtotal hits minimum requirements
-                if (calculateSubtotal(orderList) < 30) {
+                if (invalidItem >= 1) {
                     if (isEnglish.equals("Yes")) {
-                        new AlertDialog.Builder(getContext())
-                                .setMessage("Minimum order is $30.00.")
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        new android.support.v7.app.AlertDialog.Builder(view.getContext())
+                                .setMessage("Incorrect quantity for " + invalidDesc + ". Quantity must be in multiples of " + qtyMultiples + ". Eg: " + qtyMultiples + " , " + (qtyMultiples + qtyMultiples) + ", " + (qtyMultiples + qtyMultiples + qtyMultiples) + " and so on.")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
+                                        //reset quantity to default prefix
+                                        //p.setDefaultQty(p.getDefaultQty());
                                     }
                                 })
                                 .show();
                     } else {
-                        new AlertDialog.Builder(getContext())
-                                .setMessage("订单总额最少要 $30.00")
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        new android.support.v7.app.AlertDialog.Builder(view.getContext())
+                                .setMessage(invalidDesc2 + "的数量有误, 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，" + (qtyMultiples + qtyMultiples) + "等等")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
+                                        //reset quantity to default prefix
+                                        // p.setDefaultQty(p.getDefaultQty());
                                     }
                                 })
                                 .show();
                     }
                 } else {
-                    if (invalidItem >= 1) {
+                    //check if subtotal hits minimum requirements
+                    if (calculateSubtotal(orderList) < 30) {
                         if (isEnglish.equals("Yes")) {
-                            new android.support.v7.app.AlertDialog.Builder(view.getContext())
-                                    .setMessage("Incorrect quantity for " + invalidDesc + ". Quantity must be in multiples of " + qtyMultiples + ". Eg: " + qtyMultiples + " , " + (qtyMultiples + qtyMultiples) + ", " + (qtyMultiples + qtyMultiples + qtyMultiples) + " and so on.")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            new AlertDialog.Builder(getContext())
+                                    .setMessage("Minimum order is $30.00.")
+                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             //finish();
-                                            //reset quantity to default prefix
-                                            //p.setDefaultQty(p.getDefaultQty());
                                         }
                                     })
                                     .show();
                         } else {
-                            new android.support.v7.app.AlertDialog.Builder(view.getContext())
-                                    .setMessage(invalidDesc2 + "的数量有误, 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，" + (qtyMultiples + qtyMultiples) + "等等")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            new AlertDialog.Builder(getContext())
+                                    .setMessage("订单总额最少要 $30.00")
+                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             //finish();
-                                            //reset quantity to default prefix
-                                            // p.setDefaultQty(p.getDefaultQty());
                                         }
                                     })
                                     .show();
                         }
-                    }
-                    else{
-
+                    } else{
                         DecimalFormat df = new DecimalFormat("#0.00");
                         subtotalAmt = view.findViewById(R.id.subtotalAmt);
                         subtotal = calculateSubtotal(orderList);

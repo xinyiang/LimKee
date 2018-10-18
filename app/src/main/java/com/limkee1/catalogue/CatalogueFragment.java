@@ -242,100 +242,99 @@ public class CatalogueFragment extends Fragment {
                 invalidDesc2 = "";
                 qtyMultiples = 0;
 
-                for (Product p : tempOrderList) {
-                    int quantity = p.getDefaultQty();
-                    //show error message when products that has wrong quantity
+                for (Product product : tempOrderList) {
+                    int quantity = product.getDefaultQty();
+                    //check if qty is correct
                     if (quantity != 0) {
-                        int multiples = p.getQtyMultiples();
+                        int multiples = product.getQtyMultiples();
 
                         if (quantity % multiples != 0) {
                             invalidItem++;
                             if (invalidItem == 1) {
-                                invalidDesc = p.getDescription();
-                                invalidDesc2 = p.getDescription2();
-                                qtyMultiples = p.getQtyMultiples();
-                                selectedItemCode = p.getItemCode();
-                                selectedProductUOM = p.getUom();
+                                invalidDesc = product.getDescription();
+                                invalidDesc2 = product.getDescription2();
+                                qtyMultiples = product.getQtyMultiples();
+                                selectedItemCode = product.getItemCode();
+                                selectedProductUOM = product.getUom();
                                 orderedQty = quantity;
                             }
                         } else {
-                            orderList.add(p);
+                            orderList.add(product);
                         }
                     }
                 }
 
-            //check if subtotal hits minimum requirements
-                if (calculateSubtotal(orderList) < 30) {
+                if (invalidItem >= 1) {
                     if (isEnglish.equals("Yes")) {
-                        new AlertDialog.Builder(getContext())
-                                .setMessage("Minimum order is $30.00.")
+                        new android.support.v7.app.AlertDialog.Builder(view.getContext())
+                                .setMessage("Incorrect quantity for " + invalidDesc + ". Quantity must be in multiples of " + qtyMultiples + ". Eg: " + qtyMultiples + " , " + (qtyMultiples + qtyMultiples) + ", " + (qtyMultiples + qtyMultiples + qtyMultiples) + " and so on.")
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
+                                        //reset quantity to default prefix
+                                        //p.setDefaultQty(p.getDefaultQty());
                                     }
                                 })
                                 .show();
                     } else {
-                        new AlertDialog.Builder(getContext())
-                                .setMessage("订单总额最少要 $30.00")
+                        new android.support.v7.app.AlertDialog.Builder(view.getContext())
+                                .setMessage(invalidDesc2 + "的数量有误, 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，" + (qtyMultiples + qtyMultiples) + "等等")
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
+                                        //reset quantity to default prefix
+                                        // p.setDefaultQty(p.getDefaultQty());
                                     }
                                 })
                                 .show();
                     }
-
                 } else {
-                    if (invalidItem >= 1) {
+                    //check if subtotal hits minimum requirements
+                    if (calculateSubtotal(orderList) < 30) {
                         if (isEnglish.equals("Yes")) {
-                            new android.support.v7.app.AlertDialog.Builder(view.getContext())
-                                    .setMessage("Incorrect quantity for " + invalidDesc + ". Quantity must be in multiples of " + qtyMultiples + ". Eg: " + qtyMultiples + " , " + (qtyMultiples + qtyMultiples) + ", " + (qtyMultiples + qtyMultiples + qtyMultiples) + " and so on.")
+                            new AlertDialog.Builder(getContext())
+                                    .setMessage("Minimum order is $30.00.")
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             //finish();
-                                            //reset quantity to default prefix
-                                            //p.setDefaultQty(p.getDefaultQty());
                                         }
                                     })
                                     .show();
                         } else {
-                            new android.support.v7.app.AlertDialog.Builder(view.getContext())
-                                    .setMessage(invalidDesc2 + "的数量有误, 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，" + (qtyMultiples + qtyMultiples) + "等等")
+                            new AlertDialog.Builder(getContext())
+                                    .setMessage("订单总额最少要 $30.00")
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             //finish();
-                                            //reset quantity to default prefix
-                                            // p.setDefaultQty(p.getDefaultQty());
                                         }
                                     })
                                     .show();
                         }
-                    }
-                        else {
-                            DecimalFormat df = new DecimalFormat("#0.00");
-                            subtotalAmt = view.findViewById(R.id.subtotalAmt);
-                            subtotal = calculateSubtotal(orderList);
-                            subtotalAmt.setText("$" + df.format(subtotal));
 
-                            //updateSubtotal(orderList);
-                            CatalogueDAO.order_list = orderList;
+                    } else {
+                        DecimalFormat df = new DecimalFormat("#0.00");
+                        subtotalAmt = view.findViewById(R.id.subtotalAmt);
+                        subtotal = calculateSubtotal(orderList);
+                        subtotalAmt.setText("$" + df.format(subtotal));
 
-                            //store all products with qty > 1 into a temporary arraylist of products
-                            Intent intent = new Intent(view.getContext(), ConfirmOrderActivity.class);
-                            intent.putParcelableArrayListExtra("orderList", orderList);
-                            intent.putExtra("language", isEnglish);
-                            intent.putExtra("orderList", orderList);
-                            intent.putExtra("customer", customer);
-                            intent.putExtra("cutoffTime", cutoffTime);
-                            getActivity().startActivity(intent);
-                        }
+                        //updateSubtotal(orderList);
+                        CatalogueDAO.order_list = orderList;
+
+                        //store all products with qty > 1 into a temporary arraylist of products
+                        Intent intent = new Intent(view.getContext(), ConfirmOrderActivity.class);
+                        intent.putParcelableArrayListExtra("orderList", orderList);
+                        intent.putExtra("language", isEnglish);
+                        intent.putExtra("orderList", orderList);
+                        intent.putExtra("customer", customer);
+                        intent.putExtra("cutoffTime", cutoffTime);
+                        getActivity().startActivity(intent);
                     }
                 }
+            }
         });
     }
 

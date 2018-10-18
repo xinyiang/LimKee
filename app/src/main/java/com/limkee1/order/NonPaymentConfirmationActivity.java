@@ -64,7 +64,7 @@ public class NonPaymentConfirmationActivity extends BaseActivity  {
             result.setText("订单号: #" + orderID + "\n" + "订单已成功下单!");
             notifDescription.setText("确认短信会发至 +65 " + customer.getDeliveryContact() + "\n 如果电话号码变更，请告知林记包点");
         }
-        //doUpdateCustomerWallet(customer.getDebtorCode(), walletDeduction);
+        doUpdateCustomerWallet(customer.getDebtorCode(), walletDeduction);
     }
 
     private void doUpdateCustomerWallet(String customerCode, double walletDeduction) {
