@@ -11,7 +11,7 @@
         android:layout_width="397dp"
         android:layout_height="53dp"
         android:background="@color/colorPrimary"
-        android:onClick="back"
+        android:onClick="backTo"
         android:text="@string/backTo"
         android:textColor="@color/colorPrimaryFont"
         android:textSize="20sp"

@@ -2,9 +2,12 @@ package com.limkee1.order;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,7 +27,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NonPaymentConfirmationActivity extends BaseActivity  {
-
     public static Bundle myBundle = new Bundle();
     Context context;
     Customer customer;
@@ -38,6 +40,7 @@ public class NonPaymentConfirmationActivity extends BaseActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_non_payment_confirmation);
+        context = getApplicationContext();
 
         myBundle = getIntent().getExtras();
         customer = myBundle.getParcelable("customer");
@@ -61,7 +64,7 @@ public class NonPaymentConfirmationActivity extends BaseActivity  {
             result.setText("订单号: #" + orderID + "\n" + "订单已成功下单!");
             notifDescription.setText("确认短信会发至 +65 " + customer.getDeliveryContact() + "\n 如果电话号码变更，请告知林记包点");
         }
-        doUpdateCustomerWallet(customer.getDebtorCode(), walletDeduction);
+        //doUpdateCustomerWallet(customer.getDebtorCode(), walletDeduction);
     }
 
     private void doUpdateCustomerWallet(String customerCode, double walletDeduction) {
@@ -82,12 +85,12 @@ public class NonPaymentConfirmationActivity extends BaseActivity  {
                 .subscribe(this::handleUpdateWalletResponse, this::handleError));
 
     }
+
     private void handleUpdateWalletResponse(boolean result) {
         if (result) {
             System.out.println("Wallet amount is updated");
         } else {
             System.out.println("Wallet amount did not get updated");
-            //show error msg
         }
     }
 
@@ -95,8 +98,14 @@ public class NonPaymentConfirmationActivity extends BaseActivity  {
         System.out.println("Error " + error.getMessage());
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+        Intent intent = new Intent(this, NavigationActivity.class);
+        startActivity(intent);
+    }
 
-    public void back(View view){
+    public void backTo(View view){
         Intent it = new Intent(getApplicationContext(), NavigationActivity.class);
         context.startActivity(it);
         this.finish();

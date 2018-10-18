@@ -28,6 +28,7 @@ import com.limkee1.dashboard.TopPurchasedFragment;
 import com.limkee1.dashboard.TotalSalesFragment;
 import com.limkee1.order.CancelledOrderFragment;
 import com.limkee1.order.MainOrderHistoryFragment;
+import com.limkee1.order.NonPaymentFragment;
 import com.limkee1.order.QuickReorderFragment;
 import com.limkee1.entity.Customer;
 import com.limkee1.login.LoginActivity;
@@ -49,7 +50,8 @@ public class NavigationActivity extends BaseActivity implements
         ProductDetailsFragment.OnFragmentInteractionListener, MainOrderHistoryFragment.OnFragmentInteractionListener,
         DashboardFragment.OnFragmentInteractionListener, TotalSalesFragment.OnFragmentInteractionListener,
         TopPurchasedFragment.OnFragmentInteractionListener, ScanFragment.OnFragmentInteractionListener,
-        WalletFragment.OnFragmentInteractionListener, TransactionHistoryDetailsFragment.OnFragmentInteractionListener{
+        WalletFragment.OnFragmentInteractionListener, TransactionHistoryDetailsFragment.OnFragmentInteractionListener,
+        NonPaymentFragment.OnFragmentInteractionListener{
 
     private Customer customer;
     private Bundle bundle;

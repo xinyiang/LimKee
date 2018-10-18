@@ -3,10 +3,16 @@ package com.limkee1.order;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,8 +36,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class NonPaymentActivity extends BaseActivity {
-
+public class NonPaymentActivity extends BaseActivity implements NonPaymentFragment.OnFragmentInteractionListener{
     private String totalPayable;
     public static Bundle myBundle = new Bundle();
     private String deliveryDate;
@@ -49,6 +54,7 @@ public class NonPaymentActivity extends BaseActivity {
     String totalAmt;
     private String newOrderID;
     CompositeDisposable compositeDisposable  = new CompositeDisposable();
+    private NonPaymentFragment nonPaymentFragment = new NonPaymentFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +63,6 @@ public class NonPaymentActivity extends BaseActivity {
         Toolbar toolbar = findViewById(com.limkee1.R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("@string/confirmPlaceOrder");
 
         myBundle = getIntent().getExtras();
         activity = this;
@@ -92,6 +97,23 @@ public class NonPaymentActivity extends BaseActivity {
         totalPayable = String.valueOf((int) Math.round(tp * 100));
         totalAmt = String.valueOf((int) Math.round(totalAmount * 100));
 
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("customer",customer);
+        bundle.putString("language", isEnglish);
+        nonPaymentFragment.setArguments(bundle);
+        loadFragment(nonPaymentFragment);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    private void loadFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(com.limkee1.R.id.flContent, fragment);
+        fragmentTransaction.commit();
     }
 
     public void next(View view){
