@@ -1,6 +1,7 @@
 package com.limkee1.order;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -66,7 +67,6 @@ public class CurrentOrderDetailFragment extends Fragment {
         orderID = bundle.getString("orderID");
         date = bundle.getString("deliveryDate");
         numItems = bundle.getInt("numItems");
-
     }
 
     @Override
@@ -195,7 +195,7 @@ public class CurrentOrderDetailFragment extends Fragment {
                     }
                 }
 
-                TextView subtotalAmt, tax, totalAmt, paidAmt, lbl_paidAmt, lbl_walletDeductedAmt, walletDeductedAmt;
+                TextView subtotalAmt, tax, lbl_totalAmt, totalAmt, paidAmt, lbl_paidAmt, lbl_walletDeductedAmt, walletDeductedAmt;
                 DecimalFormat df = new DecimalFormat("#0.00");
                 subtotalAmt = view.findViewById(R.id.subtotalAmt);
                 double subtotal = od.getSubtotal();
@@ -208,9 +208,18 @@ public class CurrentOrderDetailFragment extends Fragment {
                 totalAmt = view.findViewById(R.id.totalAmt);
                 double totalPayable = taxAmt + subtotal;
                 totalAmt.setText("$" + df.format(totalPayable));
+                lbl_totalAmt = view.findViewById(R.id.lbl_total_amt);
 
+                double walletDeduction = (od.getSubtotal()*1.07) - od.getPaidAmt();
                 //show paid amt and wallet deducted amt
-                if (od.getSubtotal()*1.07 != od.getPaidAmt()){
+                if (walletDeduction <= 0){
+                    //do not show wallet deduction and paid amount
+                    //bold total amount and increase font size
+                    totalAmt.setTypeface(null, Typeface.BOLD);
+                    lbl_totalAmt.setTypeface(null, Typeface.BOLD);
+                    totalAmt.setTextSize(20);
+                    lbl_totalAmt.setTextSize(20);
+                } else {
                     lbl_paidAmt  = view.findViewById(R.id.lbl_paid_amt);
                     paidAmt = view.findViewById(R.id.paidAmt);
 
@@ -223,7 +232,13 @@ public class CurrentOrderDetailFragment extends Fragment {
 
                     lbl_walletDeductedAmt.setVisibility(View.VISIBLE);
                     walletDeductedAmt.setVisibility(View.VISIBLE);
-                    walletDeductedAmt.setText("-$" + df.format((od.getSubtotal()*1.07) - od.getPaidAmt()));
+                    walletDeductedAmt.setText("-$" + df.format(walletDeduction));
+
+                    //unbold totalamount and font size
+                    totalAmt.setTextSize(18);
+                    totalAmt.setTypeface(null, Typeface.NORMAL);
+                    lbl_totalAmt.setTextSize(18);
+                    lbl_totalAmt.setTypeface(null, Typeface.NORMAL);
                 }
 
                 TextView orderDateTxt = view.findViewById(R.id.orderDate);

@@ -52,7 +52,9 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     private ArrayList<Product> orderList;
     private String isEnglish;
     private String paperBagNeeded;
-
+    private String walletDeduction;
+    private double reduceAmt;
+    private String totalAmt;
 
     BackgroundPayment(Context ctx, Activity act) {
         context = ctx;
@@ -93,6 +95,10 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         String post_data;
         isEnglish = params[3];
         paperBagNeeded = params[4];
+        walletDeduction = params[5];
+        totalAmt = params[6];
+        reduceAmt = Double.parseDouble(walletDeduction);
+
         if(type.equals("pay_with_new_card")){
             String token = params[2];
             try {
@@ -195,7 +201,9 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             it.putExtra("totalPayable", tp);
             it.putExtra("customer", customer);
             it.putExtra("language", isEnglish);
-            it.putExtra("paperBagRequired", paperBagNeeded);
+            it.putExtra("paperBagRequired", Integer.parseInt(paperBagNeeded));
+            it.putExtra("walletDeduction", reduceAmt);
+            it.putExtra("totalAmount", totalAmt);
             it.putParcelableArrayListExtra("orderList", orderList);
             context.startActivity(it);
 
@@ -239,11 +247,9 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         if (orderNo != null || orderNo.length() != 0) {
             //create Sales Order Details
             newOrderID = orderNo;
-            System.out.println("SALES ORDER CREATED " + newOrderID);
             createSalesOrderDetails(newOrderID);
         } else {
-            System.out.println("Background payment failed in line 244. SALES ORDER NOT CREATED " + orderNo);
-            //show error msg
+            System.out.println("Background payment failed in line 251. SALES ORDER NOT CREATED " + orderNo);
         }
     }
 
@@ -263,11 +269,15 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
                 .client(client)
                 .build().create(PostData.class);
 
+
         DecimalFormat df = new DecimalFormat("#0.00");
-        double totalAmt = tp*(100.0/107.0);
-        totalAmt = Double.parseDouble(df.format(totalAmt));
-        System.out.println("tocheck" +orderNo);
-        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, totalAmt,0, orderNo)
+
+        double totalAmount = Double.parseDouble(totalAmt);
+        double subtotalAmt = totalAmount*(100.0/107.0);
+        subtotalAmt = Double.parseDouble(df.format(subtotalAmt));
+        double paidAmt = Double.parseDouble(df.format(tp));
+
+        compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, subtotalAmt, paidAmt, orderNo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleSalesOrderDetailsResponse, this::handleError));
@@ -298,7 +308,6 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             itemQuantity.add(p.getItemCode() + "&" + p.getDefaultQty());
         }
 
-        System.out.println("quantity + " + itemQuantity);
         compositeDisposable.add(postData.addSalesOrderQuantity(itemQuantity, newOrderID)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -307,10 +316,8 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     }
 
     private void handleSalesOrderQuantityResponse(int numProducts) {
-        System.out.println("SALES ORDER NUMBER OF PRODUCTS " + numProducts + " and order list size is " + orderList.size());
 
         if (numProducts == orderList.size()) {
-
             //concatenate zeros
             if (newOrderID.length() == 1) {
                 newOrderID = "00000" + newOrderID;
@@ -360,18 +367,15 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             it.putExtra("customer", customer);
             it.putExtra("orderId", newOrderID);
             it.putExtra("language", isEnglish);
+            it.putExtra("walletDeduction", reduceAmt);
             it.putExtra("deliveryDate", deliveryDate);
+            it.putExtra("totalAmount", totalAmt);
             it.putParcelableArrayListExtra("orderList", orderList);
             context.startActivity(it);
-
             activity.finish();
-
         } else {
-            System.out.println("Background payment failed in line 376");
-            //show error msg
+            System.out.println("Background payment failed in line 369");
             //delete sales order and sales order detail record
         }
-
     }
-
 }

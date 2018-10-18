@@ -66,8 +66,13 @@
 
         <activity android:name=".dashboard.DashboardActivity" />
         <activity android:name=".payment.ScanActivity" />
-        <activity android:name=".wallet.TransactionHistoryActivity"
-            android:parentActivityName=".wallet.TransactionHistoryActivity"/>
+        <activity
+            android:name=".wallet.TransactionHistoryActivity"
+            android:parentActivityName=".wallet.TransactionHistoryActivity" />
+        <activity android:name=".order.NonPaymentActivity"
+            android:theme="@style/AppTheme"/>
+        <activity android:name=".order.NonPaymentConfirmationActivity"
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>

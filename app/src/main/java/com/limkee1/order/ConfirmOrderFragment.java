@@ -25,6 +25,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.limkee1.R;
 import com.limkee1.Utility.DateUtility;
+import com.limkee1.constant.HttpConstant;
+import com.limkee1.constant.PostData;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
 import com.limkee1.payment.PaymentActivity;
@@ -37,6 +39,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import io.reactivex.disposables.CompositeDisposable;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ConfirmOrderFragment extends Fragment {
 
@@ -50,7 +57,7 @@ public class ConfirmOrderFragment extends Fragment {
     private TextView subtotalAmt;
     private double subtotal;
     private double taxAmt;
-    private double totalPayable;
+    private double totalAmount;
     private ConfirmOrderAdapter mAdapter;
     private ArrayList<Product> orderList;
     private String isEnglish;
@@ -62,6 +69,8 @@ public class ConfirmOrderFragment extends Fragment {
     private int year;
     private String cutoffTime;
     private int paperBagNeeded;
+    public static Retrofit retrofit;
+    private double walletDeduction;
 
     public ConfirmOrderFragment() {
     }
@@ -133,8 +142,8 @@ public class ConfirmOrderFragment extends Fragment {
         tax.setText("$" + df.format(taxAmt));
 
         TextView totalAmt = view.findViewById(R.id.totalAmt);
-        totalPayable = taxAmt + subtotal;
-        totalAmt.setText("$" + df.format(totalPayable));
+        totalAmount = taxAmt + subtotal;
+        totalAmt.setText("$" + df.format(totalAmount));
 
         if (isEnglish.equals("Yes")) {
             TextView  lbl_item_details;
@@ -395,7 +404,6 @@ public class ConfirmOrderFragment extends Fragment {
                         } else {
 
                             Calendar c = Calendar.getInstance();
-
                             // set the calendar to start of today
                             c.set(Calendar.HOUR_OF_DAY, 0);
                             c.set(Calendar.MINUTE, 0);
@@ -404,7 +412,6 @@ public class ConfirmOrderFragment extends Fragment {
 
                             //and get that as a Date
                             Date today = c.getTime();
-
                             //reuse the calendar to set user specified's delivery date
                             c.set(Calendar.YEAR, year);
                             c.set(Calendar.MONTH, month);
@@ -451,7 +458,6 @@ public class ConfirmOrderFragment extends Fragment {
                             } catch (Exception e){
                                 deliveryDate.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
                             }
-
 
                             if (selectedMonth < 10){
                                 ETADeliveryDate = selectedYear + "-0" + selectedMonth + "-" + selectedDay;
@@ -520,19 +526,10 @@ public class ConfirmOrderFragment extends Fragment {
 
                         //compare current time is < cut off time
                         if (currentTimestamp.before(cutoffTimestamp)) {
-                            System.out.println("delivery time before cut off");
 
-                            //go to payment activity
-                            Intent intent = new Intent(view.getContext(), PaymentActivity.class);
-                            intent.putParcelableArrayListExtra("orderList", orderList);
-                            intent.putExtra("customer", customer);
-                            intent.putExtra("subtotal", subtotal);
-                            intent.putExtra("taxAmt", taxAmt);
-                            intent.putExtra("deliveryDate", ETADeliveryDate);
-                            intent.putExtra("totalPayable", totalPayable);
-                            intent.putExtra("language", isEnglish);
-                            intent.putExtra("paperBagRequired", paperBagNeeded);
-                            getActivity().startActivity(intent);
+                            //check total payable
+                            doGetWalletAmt(customer.getDebtorCode());
+
                         } else {
                             System.out.println("delivery time after cut off");
                             //show error message
@@ -568,7 +565,6 @@ public class ConfirmOrderFragment extends Fragment {
         });
     }
 
-
     private double calculateSubtotal(ArrayList<Product> orderList) {
         double subtotal = 0;
         for (Product p : orderList) {
@@ -576,6 +572,77 @@ public class ConfirmOrderFragment extends Fragment {
             subtotal += p.getUnitPrice() * qty;
         }
         return subtotal;
+    }
+
+    private void doGetWalletAmt(String customerCode) {
+        if (retrofit == null) {
+
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(HttpConstant.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        PostData service = retrofit.create(PostData.class);
+        Call<Double> call = service.getCustomerWallet(customerCode);
+        call.enqueue(new Callback<Double>() {
+
+            @Override
+            public void onResponse(Call<Double> call, Response<Double> response) {
+                double data = response.body();
+                DecimalFormat df = new DecimalFormat("#0.00");
+
+                if (data == 0) {
+                    walletDeduction = 0;
+                } else if (data > Double.parseDouble(df.format(totalAmount))) {
+                    //no need to pay
+                    //303 > 77, wallet deduction is 77
+                    walletDeduction = Double.parseDouble(df.format(totalAmount));
+
+                } else {
+                    //data <= wallet
+                    //empty the wallet
+                    walletDeduction = data;
+                }
+
+                //if payable is 0, dun need payment
+                double totalPayable = Double.parseDouble(df.format(totalAmount)) - Double.parseDouble(df.format(walletDeduction));
+                System.out.println("total payable " + totalPayable);
+                if (totalPayable != 0.00){
+                    System.out.println("total amt is " + Double.parseDouble(df.format(totalAmount)) + " and wallet deduction is " + Double.parseDouble(df.format(walletDeduction)) + " and total payable is " + Double.parseDouble(df.format(totalPayable)));
+                    //go to payment activity
+                    Intent intent = new Intent(view.getContext(), PaymentActivity.class);
+                    intent.putParcelableArrayListExtra("orderList", orderList);
+                    intent.putExtra("customer", customer);
+                    intent.putExtra("subtotal", subtotal);
+                    intent.putExtra("deliveryDate", ETADeliveryDate);
+                    intent.putExtra("totalAmount", Double.parseDouble(df.format(totalAmount)));
+                    intent.putExtra("walletDeduction", Double.parseDouble(df.format(walletDeduction)));
+                    intent.putExtra("totalPayable", Double.parseDouble(df.format(totalPayable)));
+                    intent.putExtra("language", isEnglish);
+                    intent.putExtra("paperBagRequired", paperBagNeeded);
+                    getActivity().startActivity(intent);
+                } else {
+                    //do not need to pay
+                    System.out.println("no need to pay");
+                    Intent intent = new Intent(view.getContext(), NonPaymentActivity.class);
+                    intent.putParcelableArrayListExtra("orderList", orderList);
+                    intent.putExtra("customer", customer);
+                    intent.putExtra("subtotal", subtotal);
+                    intent.putExtra("deliveryDate", ETADeliveryDate);
+                    intent.putExtra("totalAmount", Double.parseDouble(df.format(totalAmount)));
+                    intent.putExtra("walletDeduction", Double.parseDouble(df.format(walletDeduction)));
+                    intent.putExtra("totalPayable", Double.parseDouble(df.format(totalPayable)));
+                    intent.putExtra("language", isEnglish);
+                    intent.putExtra("paperBagRequired", paperBagNeeded);
+                    getActivity().startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Double> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
     }
 
     @Override

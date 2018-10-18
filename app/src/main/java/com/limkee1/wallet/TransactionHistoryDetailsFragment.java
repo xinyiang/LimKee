@@ -1,6 +1,7 @@
 package com.limkee1.wallet;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -132,33 +133,6 @@ public class TransactionHistoryDetailsFragment extends Fragment {
         String currentStatus = od.getStatus();
 
         if (isEnglish.equals("Yes")){
-            TextView lbl_subtotal_amt, lbl_total_amt, lbl_tax_amt, lbl_orderDetails, lbl_amtDetails, lbl_deliveryDetails;
-            TextView lbl_orderID, lbl_orderDate, lbl_status, lbl_date, lbl_companyName;
-            lbl_orderID  = (TextView) view.findViewById(R.id.lbl_orderID);
-            lbl_orderDate  = (TextView) view.findViewById(R.id.lbl_orderDate);
-            lbl_status  = (TextView) view.findViewById(R.id.lbl_status);
-            lbl_subtotal_amt = (TextView) view.findViewById(R.id.lbl_subtotal_amt);
-            lbl_total_amt = (TextView) view.findViewById(R.id.lbl_total_amt);
-            lbl_tax_amt = (TextView) view.findViewById(R.id.lbl_tax_amt);
-            lbl_date = (TextView) view.findViewById(R.id.lbl_deliveryDate);
-            lbl_companyName = (TextView) view.findViewById(R.id.lbl_companyName);
-            lbl_orderDetails = (TextView) view.findViewById(R.id.lbl_order_details);
-            lbl_deliveryDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
-            lbl_amtDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
-
-            lbl_orderDetails.setText(" Order Details");
-            lbl_orderID.setText("Order ID");
-            lbl_orderDate.setText("Order Date");
-            lbl_status.setText("Status");
-            lbl_deliveryDetails.setText(" Delivery Details");
-            lbl_status.setText("Status");
-            lbl_companyName.setText("Company Name");
-            lbl_date.setText("Delivery Date");
-            lbl_amtDetails.setText(" Amount Details");
-            lbl_subtotal_amt.setText("Sub Total");
-            lbl_tax_amt.setText("GST (7%)");
-            lbl_total_amt.setText("Total Amount");
-
             if (currentStatus.equals("Pending Delivery")) {
                 status.setText("Pending Delivery");
             } else if (currentStatus.equals("Delivered")){
@@ -182,13 +156,16 @@ public class TransactionHistoryDetailsFragment extends Fragment {
 
         company.setText(customer.getCompanyName());
 
-        TextView subtotalAmt, tax, totalAmt, paidAmt, lbl_paidAmt, lbl_walletDeductedAmt, walletDeductedAmt;
+        TextView subtotalAmt, tax, lbl_totalAmt, totalAmt, paidAmt, lbl_paidAmt, lbl_walletDeductedAmt, walletDeductedAmt;
         DecimalFormat df = new DecimalFormat("#0.00");
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
         lbl_paidAmt  = view.findViewById(R.id.lbl_paid_amt);
         paidAmt = view.findViewById(R.id.paidAmt);
         lbl_walletDeductedAmt  = view.findViewById(R.id.lbl_walletDeducted_amt);
         walletDeductedAmt = view.findViewById(R.id.walletDeductedAmt);
+        tax = view.findViewById(R.id.taxAmt);
+        totalAmt = view.findViewById(R.id.totalAmt);
+        lbl_totalAmt = view.findViewById(R.id.lbl_total_amt);
 
         double subtotal = 0;
         if (od.getRefundSubtotal() == 0){
@@ -204,15 +181,16 @@ public class TransactionHistoryDetailsFragment extends Fragment {
 
         } else {
             subtotal = od.getRefundSubtotal();
+            //bold total amount and increase font size
+            totalAmt.setTypeface(null, Typeface.BOLD);
+            lbl_totalAmt.setTypeface(null, Typeface.BOLD);
+            totalAmt.setTextSize(20);
+            lbl_totalAmt.setTextSize(20);
         }
 
         subtotalAmt.setText("$" + df.format(subtotal));
-
-        tax = view.findViewById(R.id.taxAmt);
         double taxAmt = subtotal * 0.07;
         tax.setText("$" + df.format(taxAmt));
-
-        totalAmt = view.findViewById(R.id.totalAmt);
         double totalPayable = taxAmt + subtotal;
         totalAmt.setText("$" + df.format(totalPayable));
 

@@ -68,6 +68,8 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
     public static Activity activity;
     private Integer expMth = 0 ;
     private Integer expYr = 0;
+    double walletDeduction;
+    double totalAmount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,25 +91,51 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
         totalPayable = myBundle.getString("totalPayable");
         paperBagNeeded = myBundle.getString("paperBagNeeded");
         Double tp = Double.parseDouble(totalPayable);
+        walletDeduction = myBundle.getDouble("walletDeduction");
+        totalAmount = myBundle.getDouble("totalAmount");
 
-        TextView tv = (TextView)findViewById(R.id.totalPayable);
-        tv.setText(String.format("$%.2f", tp));
+        if (walletDeduction != 0) {
+            TextView tv_totalAmt = (TextView) findViewById(R.id.tv_totalAmt);
+            tv_totalAmt.setVisibility(View.VISIBLE);
+
+            TextView tv_walletDeduction = (TextView) findViewById(R.id.tv_walletDeduction);
+            tv_walletDeduction.setVisibility(View.VISIBLE);
+
+            if (isEnglish.equals("Yes")){
+                tv_totalAmt.setText("Total amount is " + String.format("$%.2f", totalAmount));
+                tv_walletDeduction.setText("Wallet Deduction of " + String.format("$%.2f", walletDeduction));
+            } else {
+                tv_totalAmt.setText("总额是 " + String.format("$%.2f", totalAmount));
+                tv_walletDeduction.setText("钱包扣除 " + String.format("$%.2f", walletDeduction));
+            }
+        }
+
+        TextView tv_totalPayable = (TextView)findViewById(R.id.totalPayable);
+        tv_totalPayable.setText(String.format("$%.2f", tp));
 
         totalPayable = String.valueOf((int) Math.round(tp * 100));
         Bundle bundle = new Bundle();
 
         payButton = (Button) findViewById(R.id.btnPlaceOrder);
+        if (isEnglish.equals("Yes")){
+            payButton.setText("Pay " + String.format("$%.2f", tp));
+        } else {
+            payButton.setText("付款 " + String.format("$%.2f", tp));
+        }
         payButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 pay("pay_with_new_card", null);
             }
         });
+
         bundle.putParcelable("customer", customer);
         bundle.putString("language", isEnglish);
         bundle.putParcelableArrayList("orderList", orderList);
         bundle.putString("paperBagNeeded", paperBagNeeded);
         bundle.putString("deliveryDate", deliveryDate);
         bundle.putDouble("totalPayable", tp);
+        bundle.putDouble("walletDeduction", walletDeduction);
+        bundle.putDouble("totalAmount", totalAmount);
         bundle.putString("cardNumber", cardnum);
 
         scanFragment.setArguments(bundle);

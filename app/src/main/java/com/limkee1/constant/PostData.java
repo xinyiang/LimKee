@@ -92,7 +92,7 @@ public interface PostData {
 
     @FormUrlEncoded
     @POST("wallet/reducecustomerwalletamt")
-    Observable<Boolean> addSalesOrder(@Field("customerCode") String customerCode, @Field("reduceAmt") double reduceAmt);
+    Observable<Boolean> reduceCustomerWalletAmount(@Field("customerCode") String customerCode, @Field("reduceAmt") double reduceAmt);
 
 }
 

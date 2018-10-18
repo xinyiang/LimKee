@@ -9,21 +9,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
 import com.limkee1.R;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
 import com.stripe.android.view.CardInputWidget;
-
 import java.util.ArrayList;
-
 import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
 import io.reactivex.disposables.CompositeDisposable;
 
 public class PaymentFragment extends Fragment {
     private com.limkee1.payment.PaymentFragment.OnFragmentInteractionListener mListener;
-
     CompositeDisposable compositeDisposable;
     private View view;
     private Customer customer;
@@ -34,7 +30,8 @@ public class PaymentFragment extends Fragment {
     private String paperBagNeeded;
     private String deliveryDate;
     private ArrayList<Product> orderList;
-
+    private  double totalAmount;
+    private  double walletDeduction;
     static PaymentFragment fragment;
 
     public PaymentFragment() {
@@ -61,6 +58,8 @@ public class PaymentFragment extends Fragment {
         paperBagNeeded = bundle.getString("paperBagRequired");
         deliveryDate = bundle.getString("deliveryDate");
         orderList = bundle.getParcelableArrayList("orderList");
+        totalAmount = bundle.getDouble("totalAmount");
+        walletDeduction = bundle.getDouble("walletDeduction");
 
         if (getActivity() instanceof PaymentActivity) {
             if (isEnglish.equals("Yes")) {
@@ -79,6 +78,8 @@ public class PaymentFragment extends Fragment {
                 CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
                 Intent intent = new Intent(getActivity().getBaseContext(), ScanActivity.class);
                 intent.putExtra("totalPayable", totalPayable);
+                intent.putExtra("walletDeduction", walletDeduction);
+                intent.putExtra("totalAmount", totalAmount);
                 intent.putExtra("cardnum", ""+ scanResult.getFormattedCardNumber());
                 intent.putExtra("language", isEnglish);
                 intent.putExtra("paperBagNeeded", paperBagNeeded);
@@ -86,7 +87,7 @@ public class PaymentFragment extends Fragment {
                 intent.putExtra("deliveryDate", deliveryDate);
                 intent.putParcelableArrayListExtra("orderList", orderList);
                 getActivity().startActivity(intent);
-            }else{
+            } else{
                 getActivity().getFragmentManager().popBackStack();
             }
         }

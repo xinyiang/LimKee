@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.limkee1.payment.PaymentActivity">
+    tools:context="com.limkee1.order.NonPaymentActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
+
         <include layout="@layout/main_toolbar" />
 
     </android.support.design.widget.AppBarLayout>
@@ -70,32 +71,14 @@
         android:layout_width="397dp"
         android:layout_height="53dp"
         android:background="@color/colorPrimary"
-        android:text="@string/pay"
+        android:text="@string/btn_PlaceOrder"
+        android:onClick="next"
         android:textColor="@color/colorPrimaryFont"
         android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.461"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/select_saved_card"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="116dp"
-        android:layout_marginLeft="116dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="452dp"
-        android:text="@string/pay_with_saved_cards"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toTopOf="@+id/btnPlaceOrder"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/tv_totalAmt"
@@ -106,8 +89,8 @@
         android:layout_marginTop="16dp"
         android:textColor="@color/colorAccent"
         android:textSize="22sp"
-        android:visibility="invisible"
         android:textStyle="italic"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/totalPayable" />
@@ -121,10 +104,23 @@
         android:layout_marginTop="8dp"
         android:textColor="@color/colorAccent"
         android:textSize="22sp"
-        android:visibility="invisible"
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_totalAmt" />
+
+    <TextView
+        android:id="@+id/tv_noPayment"
+        android:layout_width="wrap_content"
+        android:layout_height="102dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="48dp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/colorAccent"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_walletDeduction" />
 
 </android.support.constraint.ConstraintLayout>

@@ -70,7 +70,8 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
     private int paperBagNeeded;
     private CheckBox paperBagRequired;
     public static Retrofit retrofit;
-
+    private double walletDeduction;
+    private double totalAmount;
 
     public QuickReorderConfirmOrderFragment() {
         // Required empty public constructor
@@ -142,24 +143,23 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
         subtotalAmt.setText("$" + df.format(subtotal));
 
+
+
         TextView tax = view.findViewById(R.id.taxAmt);
         taxAmt = subtotal * 0.07;
         tax.setText("$" + df.format(taxAmt));
 
         TextView totalAmt = view.findViewById(R.id.totalAmt);
-        totalPayable = taxAmt + subtotal;
-        totalAmt.setText("$" + df.format(totalPayable));
+       // totalPayable = taxAmt + subtotal;
+        totalAmount = taxAmt + subtotal;
+        totalAmt.setText("$" + df.format(totalAmount));
 
         //if english, change label to english
         if (isEnglish.equals("Yes")) {
 
             TextView lbl_item_details;
-            Button btnNext;
             lbl_item_details = (TextView) view.findViewById(R.id.lbl_items);
-            btnNext = (Button) view.findViewById(R.id.btnPlaceOrder);
-
             lbl_item_details.setText(" " + orderList.size() + "items");
-            btnNext.setText("Place Order");
         }
 
         //display delivery details data
@@ -251,11 +251,9 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
 
                     deliverDate = currentDay + "/" + month + "/" + yr;
                 } else {
-
                     if (month.length() == 1){
                         month = "0" + month;
                     }
-
                     deliverDate = day + "/" + month + "/" + yr;
                 }
                 //System.out.println("delivery time before cut off " + deliverDate + " last day " + lastDay);
@@ -350,8 +348,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             System.out.println(e.getMessage());
         }
 
-
-        //format date to display in textview
         SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
 
@@ -364,11 +360,12 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             String month = deliverDate.substring(3,5);
             String yr = deliverDate.substring(6);
             ETADeliveryDate = yr + "-" + month + "-" + day;
-            System.out.println("ETA in QuickReorder Confirm Order line 352 is " + ETADeliveryDate);
+            System.out.println("ETA in Quick Reorder Confirm Order line in line 323 is " + ETADeliveryDate);
 
         } catch (Exception e) {
-            System.out.println("Error in QuickReorder Confirm Order line in line 355 " + e.getMessage());
+            System.out.println("Error in Quick Reorder Confirm Order line in line 326 " + e.getMessage());
         }
+
         return view;
     }
 
@@ -428,7 +425,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                         } else {
 
                             Calendar c = Calendar.getInstance();
-
                             // set the calendar to start of today
                             c.set(Calendar.HOUR_OF_DAY, 0);
                             c.set(Calendar.MINUTE, 0);
@@ -531,7 +527,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                 .show();
                     }
                 } else {
-
                     //check if paper bag is required
                     if (paperBagRequired.isChecked()) {
                         paperBagNeeded = 1;
@@ -552,18 +547,9 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                         //compare delivery datetime is < cut off time
                         if (currentTimestamp.before(cutoffTimestamp)) {
                             System.out.println("delivery time before cut off");
+                            //check total payable
+                            doGetWalletAmt(customer.getDebtorCode());
 
-                            //go to payment activity
-                            Intent intent = new Intent(view.getContext(), PaymentActivity.class);
-                            intent.putParcelableArrayListExtra("orderList", orderList);
-                            intent.putExtra("customer", customer);
-                            intent.putExtra("subtotal", subtotal);
-                            intent.putExtra("taxAmt", taxAmt);
-                            intent.putExtra("deliveryDate", ETADeliveryDate);
-                            intent.putExtra("totalPayable", totalPayable);
-                            intent.putExtra("language", isEnglish);
-                            intent.putExtra("paperBagRequired", paperBagNeeded);
-                            getActivity().startActivity(intent);
                         } else {
                             System.out.println("delivery time after cut off");
                             //show error message
@@ -628,7 +614,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                 System.out.println(t.getMessage());
             }
         });
-
     }
 
 
@@ -639,6 +624,78 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             subtotal += p.getUnitPrice() * qty;
         }
         return subtotal;
+    }
+
+    private void doGetWalletAmt(String customerCode) {
+        if (retrofit == null) {
+
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(HttpConstant.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+
+        PostData service = retrofit.create(PostData.class);
+        Call<Double> call = service.getCustomerWallet(customerCode);
+        call.enqueue(new Callback<Double>() {
+
+            @Override
+            public void onResponse(Call<Double> call, Response<Double> response) {
+                double data = response.body();
+                DecimalFormat df = new DecimalFormat("#0.00");
+
+                if (data == 0) {
+                    walletDeduction = 0;
+                } else if (data > Double.parseDouble(df.format(totalAmount))) {
+                    //no need to pay
+                    //303 > 77, wallet deduction is 77
+                    walletDeduction = Double.parseDouble(df.format(totalAmount));
+
+                } else {
+                    //data <= wallet
+                    //empty the wallet
+                    walletDeduction = data;
+                }
+
+                //if payable is 0, dun need payment
+                double totalPayable = Double.parseDouble(df.format(totalAmount)) - Double.parseDouble(df.format(walletDeduction));
+
+                if (totalPayable != 0.00) {
+                    //go to payment activity
+                    Intent intent = new Intent(view.getContext(), PaymentActivity.class);
+                    intent.putParcelableArrayListExtra("orderList", orderList);
+                    intent.putExtra("customer", customer);
+                    intent.putExtra("subtotal", subtotal);
+                    intent.putExtra("deliveryDate", ETADeliveryDate);
+                    intent.putExtra("totalAmount", Double.parseDouble(df.format(totalAmount)));
+                    intent.putExtra("walletDeduction", Double.parseDouble(df.format(walletDeduction)));
+                    intent.putExtra("totalPayable", Double.parseDouble(df.format(totalPayable)));
+                    intent.putExtra("language", isEnglish);
+                    intent.putExtra("paperBagRequired", paperBagNeeded);
+                    getActivity().startActivity(intent);
+                } else {
+                    //do not need to pay
+                    System.out.println("no need to pay");
+                    System.out.println("quick reorder totalAmount is " + totalAmount);
+                    Intent intent = new Intent(view.getContext(), NonPaymentActivity.class);
+                    intent.putParcelableArrayListExtra("orderList", orderList);
+                    intent.putExtra("customer", customer);
+                    intent.putExtra("subtotal", subtotal);
+                    intent.putExtra("deliveryDate", ETADeliveryDate);
+                    intent.putExtra("totalAmount", Double.parseDouble(df.format(totalAmount)));
+                    intent.putExtra("walletDeduction", Double.parseDouble(df.format(walletDeduction)));
+                    intent.putExtra("totalPayable", Double.parseDouble(df.format(totalPayable)));
+                    intent.putExtra("language", isEnglish);
+                    intent.putExtra("paperBagRequired", paperBagNeeded);
+                    getActivity().startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Double> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
     }
 
     @Override

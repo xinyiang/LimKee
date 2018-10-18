@@ -55,6 +55,7 @@
                         android:layout_marginBottom="8dp"
                         android:ellipsize="end"
                         android:textSize="25dp"
+                        android:textColor="@color/colorAccent"
                         android:textStyle="bold" />
 
                     <TextView
@@ -63,6 +64,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="8dp"
                         android:textSize="25dp"
+                        android:textColor="@color/colorAccent"
                         android:textStyle="bold" />
 
 

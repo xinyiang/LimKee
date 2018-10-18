@@ -27,10 +27,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.limkee1.BaseActivity;
 import com.limkee1.R;
-
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
 import com.stripe.android.TokenCallback;
@@ -38,12 +36,11 @@ import com.stripe.android.model.Card;
 import com.stripe.android.view.CardMultilineWidget;
 import com.stripe.android.Stripe;
 import com.stripe.android.model.Token;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
+import retrofit2.Retrofit;
 
 public class PaymentActivity extends BaseActivity implements PaymentFragment.OnFragmentInteractionListener{
     private View rootView;
@@ -67,6 +64,11 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
     private CardMultilineWidget mCardMultilineWidget;
     private RadioOnClick radioOnClick = new RadioOnClick(0);
     public static Activity activity; //used to finish this activity in backgroundPayment activity
+    public static Retrofit retrofit;
+    double walletDeduction;
+    double totalAmount;
+    double tp;
+    String totalAmt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,15 +85,34 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         customer = myBundle.getParcelable("customer");
         deliveryDate = myBundle.getString("deliveryDate");
         orderList = myBundle.getParcelableArrayList("orderList");
-        double tp = myBundle.getDouble("totalPayable");
+        tp = myBundle.getDouble("totalPayable");
+        walletDeduction = myBundle.getDouble("walletDeduction");
+        totalAmount = myBundle.getDouble("totalAmount");
         subtotal = tp;
         isEnglish = myBundle.getString("language");
         paperBagNeeded = myBundle.getInt("paperBagRequired");
 
-        TextView tv = (TextView)findViewById(R.id.totalPayable);
-        tv.setText(String.format("$%.2f", tp));
+        if (walletDeduction != 0) {
+            TextView tv_totalAmt = (TextView) findViewById(R.id.tv_totalAmt);
+            tv_totalAmt.setVisibility(View.VISIBLE);
+
+            TextView tv_walletDeduction = (TextView) findViewById(R.id.tv_walletDeduction);
+            tv_walletDeduction.setVisibility(View.VISIBLE);
+
+            if (isEnglish.equals("Yes")){
+                tv_totalAmt.setText("Total amount is " + String.format("$%.2f", totalAmount));
+                tv_walletDeduction.setText("Wallet Deduction of " + String.format("$%.2f", walletDeduction));
+            } else {
+                tv_totalAmt.setText("总额是 " + String.format("$%.2f", totalAmount));
+                tv_walletDeduction.setText("钱包扣除 " + String.format("$%.2f", walletDeduction));
+            }
+        }
+
+        TextView tv_totalPayable = (TextView)findViewById(R.id.totalPayable);
+        tv_totalPayable.setText(String.format("$%.2f", tp));
 
         totalPayable = String.valueOf((int) Math.round(tp * 100));
+        totalAmt = String.valueOf((int) Math.round(totalAmount * 100));
         Bundle bundle = new Bundle();
         selectSavedCard = (Button)findViewById(R.id.select_saved_card);
         selectSavedCard.setOnClickListener(new View.OnClickListener() {
@@ -101,6 +122,12 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         });
 
         payButton = (Button) findViewById(R.id.btnPlaceOrder);
+        if (isEnglish.equals("Yes")){
+            payButton.setText("Pay " + String.format("$%.2f", tp));
+        } else {
+            payButton.setText("付款 " + String.format("$%.2f", tp));
+        }
+
         payButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 pay("pay_with_new_card", null);
@@ -112,6 +139,8 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         bundle.putInt("paperBagRequired", paperBagNeeded);
         bundle.putString("deliveryDate", deliveryDate);
         bundle.putDouble("totalPayable", tp);
+        bundle.putDouble("walletDeduction", walletDeduction);
+        bundle.putDouble("totalAmount", totalAmount);
 
         paymentFragment.setArguments(bundle);
         loadFragment(paymentFragment);
@@ -141,8 +170,8 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                                         bp.saveCustomer(customer);
                                         bp.saveDeliveryDate(deliveryDate);
                                         bp.saveOrderList(orderList);
-                                        bp.execute(type, totalPayable, lastFourDigit, isEnglish, Integer.toString(paperBagNeeded));
-                                    }else{
+                                        bp.execute(type, totalPayable, lastFourDigit, isEnglish, Integer.toString(paperBagNeeded), Double.toString(walletDeduction), Double.toString(totalAmount));
+                                    } else{
                                         progressBar.setVisibility(View.INVISIBLE);
                                         Toast.makeText(context, getResources().getString(R.string.cvc_error), Toast.LENGTH_SHORT).show();
                                     }
@@ -159,7 +188,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
             });
             ad.show();
 
-        }else{
+        } else {
             nameOnCard = (EditText) findViewById(R.id.nameOnCard);
             err = (TextInputLayout) findViewById(R.id.nameOnCard_inputLayout);
             mCardMultilineWidget = (CardMultilineWidget)findViewById(R.id.card_multiline_widget);
@@ -193,7 +222,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                                     bp.saveCard(card);
                                     //Send card details to db
                                 }
-                                bp.execute(type, totalPayable, token.getId(), isEnglish, Integer.toString(paperBagNeeded));
+                                bp.execute(type, totalPayable, token.getId(), isEnglish, Integer.toString(paperBagNeeded), Double.toString(walletDeduction), totalAmt);
                                 // Send token to your server
                             }
                             public void onError(Exception error) {
@@ -252,7 +281,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                     public void processFinish(String output) {
                         if (output == null){
                             Toast.makeText(context, getResources().getString(R.string.no_saved_card), Toast.LENGTH_SHORT).show();
-                        }else{
+                        } else{
                             try{
                                 loadIntoAlertDialog(output);
                             }catch (Exception e){
@@ -262,7 +291,6 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                     }
                 }
         ).execute(customer.getDebtorCode());
-
     }
 
     private void loadIntoAlertDialog(String json) throws JSONException{
@@ -359,4 +387,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
 
         }
     };
+
+
+
 }

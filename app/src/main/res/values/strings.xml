@@ -23,7 +23,7 @@
     <string name="wallet">钱包</string>
     <string name="lbl_walletAmt">数目</string>
     <string name="lblwallet_autodeduct">将自动在付款扣钱</string>
-    <string name="lbl_paid_amt">总付款</string>
+    <string name="lbl_paid_amt">已缴付金额</string>
     <string name="lbl_walletDeducted_amt">钱包扣钱</string>
     <string name="lbl_orderDetails">订单详情</string>
     <string name="lbl_order_details"> 订单详情</string>
@@ -43,6 +43,7 @@
     <string name="subtotal">小计</string>
     <string name="tax">7% 税</string>
     <string name="totalAmount">总额</string>
+    <string name="totalPayableAmount">待缴付金额</string>
     <string name="deliveryDetails"> 送货详情</string>
     <string name="lbl_deliveryDate"> 送货日期</string>
     <string name="date">日/月/年</string>
@@ -61,6 +62,8 @@
     <string name="title_activity_confirmation">ConfirmationActivity</string>
     <string name="paymentdetails">付款详情</string>
     <string name="pay">付款</string>
+    <string name="confirmPlaceOrder">下单</string>
+    <string name="btn_PlaceOrder">下单</string>
     <string name="dashboard">仪表板</string>
     <string name="scan">扫描卡片</string>
 </resources>

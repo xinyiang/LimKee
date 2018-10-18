@@ -169,8 +169,8 @@ public class NavigationActivity extends BaseActivity implements
             fragmentClass = UserProfileFragment.class;
             loadFragment(fragmentClass);
         } else if (id == R.id.nav_orderhistory) {
-             fragmentClass = MainOrderHistoryFragment.class;
-             loadFragment(fragmentClass);
+            fragmentClass = MainOrderHistoryFragment.class;
+            loadFragment(fragmentClass);
         } else if (id == R.id.nav_currentorder) {
             fragmentClass = CurrentOrderFragment.class;
             loadFragment(fragmentClass);
@@ -199,7 +199,8 @@ public class NavigationActivity extends BaseActivity implements
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.flContent, fragment);
-        fragmentTransaction.commit();
+        //fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
     }
 
     public void setActionBarTitle(String title){

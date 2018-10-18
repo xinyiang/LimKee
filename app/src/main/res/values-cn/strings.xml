@@ -25,7 +25,7 @@
     <string name="wallet">钱包</string>
     <string name="lbl_walletAmt">数目</string>
     <string name="lblwallet_autodeduct">将自动在付款扣钱</string>
-    <string name="lbl_paid_amt">总付款</string>
+    <string name="lbl_paid_amt">已缴付金额</string>
     <string name="lbl_walletDeducted_amt">钱包扣钱</string>
     <string name="lbl_orderDetails">订单详情</string>
     <string name="lbl_order_details"> 订单详情</string>
@@ -45,12 +45,15 @@
     <string name="subtotal">小计</string>
     <string name="tax">7% 税</string>
     <string name="totalAmount">总额</string>
+    <string name="totalPayableAmount">待缴付金额</string>
     <string name="deliveryDetails"> 送货详情</string>
     <string name="amountDetails"> 价钱详情</string>
     <string name="lbl_numItemsHeader">数量</string>
     <string name="save_this_card">保存此卡</string>
     <string name="pay_with_saved_cards">使用已储存的卡支付</string>
     <string name="confirm">确定</string>
+    <string name="confirmPlaceOrder">下单</string>
+    <string name="btn_PlaceOrder">下单</string>
     <string name="cancel">取消</string>
     <string name="key_in_cvc">请输入您的CVC号码：</string>
     <string name="cvc_error">CVC错误</string>
