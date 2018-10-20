@@ -11,6 +11,7 @@ import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -22,8 +23,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.limkee1.R;
-import com.limkee1.Utility.ChineseCharUtility;
 import com.limkee1.Utility.DateUtility;
 import com.limkee1.constant.HttpConstant;
 import com.limkee1.constant.PostData;
@@ -33,16 +34,18 @@ import com.limkee1.entity.Product;
 import com.limkee1.navigation.NavigationActivity;
 import com.limkee1.notification.AlarmReceiver;
 import com.limkee1.order.ConfirmOrderActivity;
-import android.support.annotation.Nullable;
+
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import java.text.SimpleDateFormat;
+
 import static android.content.Context.MODE_PRIVATE;
 
 public class CatalogueFragment extends Fragment {
@@ -251,8 +254,9 @@ public class CatalogueFragment extends Fragment {
             ad.show();
             */
         }
-
-        scheduleNotification(getContext(), notif);
+        if (! isEnglish.equals("Yes")) {
+            scheduleNotification(getContext(), notif);
+        }
     }
 
     public void scheduleNotification(Context context, String content) {
