@@ -16,6 +16,8 @@ import com.limkee1.constant.PostData;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
 import com.limkee1.navigation.NavigationActivity;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -32,7 +34,7 @@ public class ConfirmationActivity extends BaseActivity {
     Customer customer;
     private View view;
     double tp = 0.00;
-    private String orderId;
+    private String orderID;
     private String language;
     private ArrayList<Product> orderList;
     private String paperBagNeeded;
@@ -40,7 +42,6 @@ public class ConfirmationActivity extends BaseActivity {
     public static Retrofit retrofit;
     private double walletDeduction;
     CompositeDisposable compositeDisposable  = new CompositeDisposable();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,7 @@ public class ConfirmationActivity extends BaseActivity {
         result = myBundle.getString("result");
         tp = getIntent().getDoubleExtra("totalPayable",0.00);
         customer = myBundle.getParcelable("customer");
-        orderId = myBundle.getString("orderId");
+        orderID = myBundle.getString("orderId");
         language = myBundle.getString("language");
         paperBagNeeded = myBundle.getString("paperBagNeeded");
         deliveryDate = myBundle.getString("deliveryDate");
@@ -69,19 +70,30 @@ public class ConfirmationActivity extends BaseActivity {
             //description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_successful_description));
 
             if (language.equals("Yes")){
-                pmtResult.setText("Order ID: #" + orderId + "\n" + getResources().getString(R.string.payment_successful));
+                pmtResult.setText("Order ID: #" + orderID + "\n" + getResources().getString(R.string.payment_successful));
                 notifDescription.setText("A SMS will be sent to +65 " + customer.getDeliveryContact() + ". \n Please contact Lim Kee for mobile updates");
-                //wallet balance also deducted
-                description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_successful_description) + "\n" + String.format("$%.2f", walletDeduction) + " is deducted from your wallet balance");
+                if (walletDeduction != 0){
+                    //wallet balance also deducted
+                    description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_successful_description) + "\n" + String.format("$%.2f", walletDeduction) + " is deducted from your wallet balance");
+                } else {
+                    description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_successful_description));
+                }
 
             } else {
-                pmtResult.setText("订单号: #" + orderId + "\n" + getResources().getString(R.string.payment_successful));
+                pmtResult.setText("订单号: #" + orderID + "\n" + getResources().getString(R.string.payment_successful));
                 notifDescription.setText("确认短信会发至 +65 " + customer.getDeliveryContact() + " \n 如果电话号码变更，请告知林记包点");
-                description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_successful_description) + "\n" + String.format("$%.2f", walletDeduction) + "已从您的钱包扣除");
-
+                if (walletDeduction != 0){
+                    //wallet balance also deducted
+                    description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_successful_description) + "\n" + String.format("$%.2f", walletDeduction) + "已从您的钱包扣除");
+                } else {
+                    description.setText(String.format("$%.2f", tp) + getResources().getString(R.string.payment_successful_description));
+                }
             }
-            //process deduction in wallet
-            doUpdateCustomerWallet(customer.getDebtorCode(), walletDeduction);
+
+            //process deduction in wallet and add wallet transaction only if there is wallet deduction
+            if (walletDeduction != 0){
+                doUpdateCustomerWallet(customer.getDebtorCode(), walletDeduction);
+            }
 
         } else {
             //pmtResult.setText(getResources().getString(R.string.payment_unsuccessful));
@@ -125,15 +137,40 @@ public class ConfirmationActivity extends BaseActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleUpdateWalletResponse, this::handleError));
-
     }
 
     private void handleUpdateWalletResponse(boolean result) {
         if (result) {
             System.out.println("Wallet amount is updated");
+            addTransaction(orderID, walletDeduction);
         } else {
             System.out.println("Wallet amount did not get updated");
-            //show error msg
+        }
+    }
+
+    private void addTransaction(String orderNo, double amount) {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+        PostData postData = new Retrofit.Builder()
+                .baseUrl(HttpConstant.BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build().create(PostData.class);
+
+        compositeDisposable.add(postData.addTransaction(orderNo, amount)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleAddTransactionResponse, this::handleError));
+    }
+
+    private void handleAddTransactionResponse(boolean added) {
+        if (added) {
+            System.out.println("Transaction is added");
+        } else {
+            System.out.println("Transaction is not added");
         }
     }
 

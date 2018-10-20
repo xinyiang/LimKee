@@ -129,7 +129,6 @@ public class Chart {
                 l.setYOffset(3f);
                 l.setWordWrapEnabled(true);
 
-
                 chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener()
                 {
                     @Override
@@ -148,6 +147,7 @@ public class Chart {
 
                 chart.moveViewTo(month.size() - 1, 0, YAxis.AxisDependency.LEFT);
             } else {
+               /*
                 chart.setData(null);
                 chart.invalidate();
                 chart.setNoDataTextColor(R.color.colorAccent);
@@ -158,6 +158,7 @@ public class Chart {
                 } else {
                     chart.setNoDataText("没有数据");
                 }
+                */
             }
         } catch (Exception e){
             chart.setData(null);

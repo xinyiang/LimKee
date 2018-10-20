@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <TextView
             android:id="@+id/lbl_orderIDHeader"
             android:layout_width="wrap_content"
@@ -22,12 +21,11 @@
             android:text="订单号"
             android:textStyle="bold"
             android:textColor="@color/colorPrimary"
-            android:textSize="18dp"
+            android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
 
         <TextView
             android:id="@+id/lbl_deliveryDateHeader"
@@ -60,7 +58,7 @@
             android:text="数量"
             android:textStyle="bold"
             android:textColor="@color/colorPrimary"
-            android:textSize="18dp"
+            android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -87,9 +85,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:textSize="18dp"
+            android:textSize="22sp"
             android:textColor="@color/colorAccent"
-            android:textStyle="bold"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

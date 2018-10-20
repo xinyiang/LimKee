@@ -64,7 +64,11 @@ public class NonPaymentConfirmationActivity extends BaseActivity  {
             result.setText("订单号: #" + orderID + "\n" + "订单已成功下单!");
             notifDescription.setText("确认短信会发至 +65 " + customer.getDeliveryContact() + "\n 如果电话号码变更，请告知林记包点");
         }
-        doUpdateCustomerWallet(customer.getDebtorCode(), walletDeduction);
+
+        //process deduction in wallet and add wallet transaction only if there is wallet deduction
+        if (walletDeduction != 0) {
+            doUpdateCustomerWallet(customer.getDebtorCode(), walletDeduction);
+        }
     }
 
     private void doUpdateCustomerWallet(String customerCode, double walletDeduction) {
@@ -89,8 +93,35 @@ public class NonPaymentConfirmationActivity extends BaseActivity  {
     private void handleUpdateWalletResponse(boolean result) {
         if (result) {
             System.out.println("Wallet amount is updated");
+            addTransaction(orderID, walletDeduction);
         } else {
             System.out.println("Wallet amount did not get updated");
+        }
+    }
+
+    private void addTransaction(String orderNo, double amount) {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+        PostData postData = new Retrofit.Builder()
+                .baseUrl(HttpConstant.BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build().create(PostData.class);
+
+        compositeDisposable.add(postData.addTransaction(orderNo, amount)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleAddTransactionResponse, this::handleError));
+    }
+
+    private void handleAddTransactionResponse(boolean added) {
+        if (added) {
+            System.out.println("Transaction is added");
+        } else {
+            System.out.println("Transaction is not added");
         }
     }
 

@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.support.v4.app.Fragment;
 import com.limkee1.R;
@@ -36,7 +35,6 @@ public class WalletFragment extends Fragment {
     private Customer customer;
     public static View view;
     public static Retrofit retrofit;
-    private ProgressBar progressBar;
     public static RecyclerView recyclerView;
     public static TextView walletAmt;
     public static TextView lbl_noOrders;
@@ -74,7 +72,6 @@ public class WalletFragment extends Fragment {
         doGetWalletAmt(customer.getDebtorCode());
 
         lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
-        progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
         walletAmt = view.findViewById(R.id.walletAmt);
 
@@ -87,17 +84,6 @@ public class WalletFragment extends Fragment {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
-
-        new CountDownTimer(400, 100) {
-
-            public void onTick(long millisUntilFinished) {
-            }
-
-            public void onFinish() {
-                progressBar.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.VISIBLE);
-            }
-        }.start();
 
         return view;
     }

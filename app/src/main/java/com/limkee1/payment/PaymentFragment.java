@@ -27,7 +27,7 @@ public class PaymentFragment extends Fragment {
     private Context context;
     private String totalPayable;
     private String isEnglish;
-    private String paperBagNeeded;
+    private int paperBagNeeded;
     private String deliveryDate;
     private ArrayList<Product> orderList;
     private  double totalAmount;
@@ -38,7 +38,7 @@ public class PaymentFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static PaymentFragment newInstance(String param1, String param2) {
+    public static PaymentFragment newInstance() {
         fragment = new PaymentFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -55,7 +55,7 @@ public class PaymentFragment extends Fragment {
         customer = bundle.getParcelable("customer");
         totalPayable = String.valueOf(bundle.getDouble("totalPayable"));
         isEnglish = bundle.getString("language");
-        paperBagNeeded = bundle.getString("paperBagRequired");
+        paperBagNeeded = bundle.getInt("paperBagRequired");
         deliveryDate = bundle.getString("deliveryDate");
         orderList = bundle.getParcelableArrayList("orderList");
         totalAmount = bundle.getDouble("totalAmount");

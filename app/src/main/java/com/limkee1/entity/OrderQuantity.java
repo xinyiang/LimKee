@@ -27,16 +27,6 @@ public class OrderQuantity {
         this.uom = uom;
     }
 
-    public OrderQuantity(String orderID, String description, String description2, double unitPrice, String uom, int qty) {
-        this.orderID = orderID;
-        this.description = description;
-        this.description2 = description2;
-        this.unitPrice = unitPrice;
-        this.uom = uom;
-        this.qty = qty;
-
-    }
-
     public String getDescription() {
         return description;
     }

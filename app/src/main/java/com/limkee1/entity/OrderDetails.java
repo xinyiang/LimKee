@@ -11,7 +11,11 @@ public class OrderDetails implements Parcelable {
     String deliveryDate;
     int paperBagRequired;
     double paidAmt;
-    double refundSubtotal;
+    int transactionID;
+    String transactionStatus;
+    int deduction;
+    double amount;
+
 
     public OrderDetails(){
     }
@@ -26,20 +30,17 @@ public class OrderDetails implements Parcelable {
         this.paidAmt = paidAmt;
     }
 
-    public OrderDetails(String orderID, double refundSubtotal){
+    public OrderDetails(int transactionID, String orderID, String transactionStatus, int deduction, double amount, double subtotal, double paidAmt, String orderDate, String status, String deliveryDate){
+        this.transactionID = transactionID;
         this.orderID = orderID;
-        this.subtotal = refundSubtotal;
-    }
-
-    public OrderDetails(String orderID, double subtotal, String orderDate, String status, String deliveryDate, double paidAmt, double refundSubtotal){
-        this.orderID = orderID;
+        this.transactionStatus = transactionStatus;
+        this.deduction = deduction;
+        this.amount = amount;
         this.subtotal = subtotal;
         this.orderDate = orderDate;
         this.status = status;
         this.deliveryDate = deliveryDate;
         this.paidAmt = paidAmt;
-        this.refundSubtotal = refundSubtotal;
-
     }
 
     public String getOrderID() {
@@ -98,19 +99,43 @@ public class OrderDetails implements Parcelable {
         this.paidAmt = paidAmt;
     }
 
+    public int getTransactionID() {
+        return transactionID;
+    }
+
+    public void setTransactionID(int transactionID) {
+        this.transactionID = transactionID;
+    }
+
+    public String getTransactionStatus() {
+        return transactionStatus;
+    }
+
+    public void setTransactionStatus(String transactionStatus) {
+        this.transactionStatus = transactionStatus;
+    }
+
+    public int getDeduction() {
+        return deduction;
+    }
+
+    public void setDeduction(int deduction) {
+        this.deduction = deduction;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
 
     public OrderDetails(Parcel in) {
         super();
         readFromParcel(in);
     }
 
-    public double getRefundSubtotal() {
-        return refundSubtotal;
-    }
-
-    public void setRefundSubtotal(double refundSubtotal) {
-        this.refundSubtotal = refundSubtotal;
-    }
 
     public static final Parcelable.Creator<OrderDetails> CREATOR = new Parcelable.Creator<OrderDetails>() {
         public OrderDetails createFromParcel(Parcel in) {
@@ -118,7 +143,6 @@ public class OrderDetails implements Parcelable {
         }
 
         public OrderDetails[] newArray(int size) {
-
             return new OrderDetails[size];
         }
 
@@ -132,7 +156,10 @@ public class OrderDetails implements Parcelable {
         subtotal = in.readDouble();
         paperBagRequired = in.readInt();
         paidAmt = in.readDouble();
-        refundSubtotal = in.readDouble();
+        transactionID = in.readInt();
+        transactionStatus = in.readString();
+        amount = in.readDouble();
+        deduction = in.readInt();
     }
 
     public int describeContents() {
@@ -147,6 +174,9 @@ public class OrderDetails implements Parcelable {
         dest.writeDouble(subtotal);
         dest.writeInt(paperBagRequired);
         dest.writeDouble(paidAmt);
-        dest.writeDouble(refundSubtotal);
+        dest.writeInt(transactionID);
+        dest.writeString(transactionStatus);
+        dest.writeInt(deduction);
+        dest.writeDouble(amount);
     }
 }

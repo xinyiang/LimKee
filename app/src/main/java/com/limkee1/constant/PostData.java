@@ -88,11 +88,16 @@ public interface PostData {
     Call<ArrayList<OrderDetails>> getTransaction(@Query("customerCode") String customerCode);
 
     @GET("wallet/gettransactionproductdetails")
-    Call<ArrayList<OrderQuantity>> getTransactionProductDetails(@Query("orderNo") String orderNo, @Query("refundAmt") double refundAmt);
+    Call<ArrayList<OrderQuantity>> getTransactionProductDetails(@Query("orderNo") String orderNo,  @Query("transactionID") int transactionID, @Query("transactionStatus") String transactionStatus);
 
     @FormUrlEncoded
     @POST("wallet/reducecustomerwalletamt")
     Observable<Boolean> reduceCustomerWalletAmount(@Field("customerCode") String customerCode, @Field("reduceAmt") double reduceAmt);
+
+    @FormUrlEncoded
+    @POST("wallet/addtransaction")
+    Observable<Boolean> addTransaction(@Field("orderNo") String orderNo, @Field("amount") double amount);
+
 
 }
 

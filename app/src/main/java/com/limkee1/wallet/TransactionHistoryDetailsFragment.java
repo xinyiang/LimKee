@@ -46,6 +46,9 @@ public class TransactionHistoryDetailsFragment extends Fragment {
     private int numItems = 0;
     private OrderDetails od;
     private TextView itemCount;
+    private int deduction;
+    private double transactionAmt;
+    private double subtotal;
 
     public TransactionHistoryDetailsFragment() {
     }
@@ -66,7 +69,9 @@ public class TransactionHistoryDetailsFragment extends Fragment {
         isEnglish = bundle.getString("language");
         orderID = bundle.getString("orderID");
         od = bundle.getParcelable("orderDetails");
-
+        deduction = bundle.getInt("deduction");
+        transactionAmt = bundle.getDouble("transactionAmount");
+        subtotal  = bundle.getDouble("subtotal");
     }
 
     @Override
@@ -167,9 +172,8 @@ public class TransactionHistoryDetailsFragment extends Fragment {
         totalAmt = view.findViewById(R.id.totalAmt);
         lbl_totalAmt = view.findViewById(R.id.lbl_total_amt);
 
-        double subtotal = 0;
-        if (od.getRefundSubtotal() == 0){
-            subtotal = od.getSubtotal();
+       // subtotal = transactionAmt;
+        if (deduction == 1){
             //show paid amt and wallet deducted amt
             lbl_paidAmt.setVisibility(View.VISIBLE);
             paidAmt.setVisibility(View.VISIBLE);
@@ -177,10 +181,11 @@ public class TransactionHistoryDetailsFragment extends Fragment {
 
             lbl_walletDeductedAmt.setVisibility(View.VISIBLE);
             walletDeductedAmt.setVisibility(View.VISIBLE);
-            walletDeductedAmt.setText("-$" + df.format((od.getSubtotal()*1.07) - od.getPaidAmt()));
-
+            double walletDeductionAmt = Double.parseDouble(df.format((transactionAmt)));
+            walletDeductedAmt.setText("-$" + walletDeductionAmt);
         } else {
-            subtotal = od.getRefundSubtotal();
+            //subtotal remove 7% gst
+            subtotal = transactionAmt*(100.0/107.0);
             //bold total amount and increase font size
             totalAmt.setTypeface(null, Typeface.BOLD);
             lbl_totalAmt.setTypeface(null, Typeface.BOLD);
@@ -232,7 +237,7 @@ public class TransactionHistoryDetailsFragment extends Fragment {
                     .build();
         }
         PostData service = retrofit.create(PostData.class);
-        Call<ArrayList<OrderQuantity>> call = service.getTransactionProductDetails(orderID, od.getRefundSubtotal());
+        Call<ArrayList<OrderQuantity>> call = service.getTransactionProductDetails(orderID, od.getTransactionID(), od.getTransactionStatus());
         call.enqueue(new Callback<ArrayList<OrderQuantity>>() {
 
             @Override

@@ -62,8 +62,10 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.MyViewHold
                 intent.putExtra("language", isEnglish);
                 intent.putExtra("customer", customer);
                 intent.putExtra("orderDetails", od);
+                intent.putExtra("deduction", od.getDeduction());
+                intent.putExtra("transactionAmount", od.getAmount());
+                intent.putExtra("subtotal", od.getSubtotal());
                 fragment.startActivity(intent);
-
             }
         });
 
@@ -78,6 +80,9 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.MyViewHold
                 intent.putExtra("language", isEnglish);
                 intent.putExtra("customer", customer);
                 intent.putExtra("orderDetails", od);
+                intent.putExtra("deduction", od.getDeduction());
+                intent.putExtra("transactionAmount", od.getAmount());
+                intent.putExtra("subtotal", od.getSubtotal());
                 fragment.startActivity(intent);
 
             }
@@ -94,6 +99,9 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.MyViewHold
                 intent.putExtra("language", isEnglish);
                 intent.putExtra("customer", customer);
                 intent.putExtra("orderDetails", od);
+                intent.putExtra("deduction", od.getDeduction());
+                intent.putExtra("transactionAmount", od.getAmount());
+                intent.putExtra("subtotal", od.getSubtotal());
                 fragment.startActivity(intent);
 
             }
@@ -110,8 +118,10 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.MyViewHold
                 intent.putExtra("language", isEnglish);
                 intent.putExtra("customer", customer);
                 intent.putExtra("orderDetails", od);
+                intent.putExtra("deduction", od.getDeduction());
+                intent.putExtra("transactionAmount", od.getAmount());
+                intent.putExtra("subtotal", od.getSubtotal());
                 fragment.startActivity(intent);
-
             }
         });
     }
@@ -135,31 +145,14 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.MyViewHold
                  lbl.setText("从订单号");
             }
 
-            double subtotalAmt = od.getSubtotal();
-            double paidAmt = od.getPaidAmt();
-            double refundAmt = od.getRefundSubtotal();
-
-            //negative is redemption (paid with wallet)
-            //positive is refunds (reduce, return, cancelled)
-
-            //if refund is $0, then is redemption
-            if (refundAmt == 0) {
-                if (paidAmt < subtotalAmt) {
-                    //wallet deduction is the difference
-                    subtotal.setText("- $" + df.format((subtotalAmt*1.07) - paidAmt));
-                    subtotal.setTextColor(Color.parseColor("#FF0000"));     //red
-                } else if (paidAmt == 0) {
-                    //full deduction from wallet
-                    subtotal.setText("- $" + df.format(subtotalAmt*1.07));
-                    subtotal.setTextColor(Color.parseColor("#FF0000"));     //red
-
-
-                } else {
-                    //do not show transaction
-                }
+            if(od.getDeduction() == 1){
+                //negative
+                //deduction amount already includes gst
+                subtotal.setText("- $" + df.format(od.getAmount()));
+                subtotal.setTextColor(Color.parseColor("#FF0000"));     //red
             } else {
-                //refunds
-                subtotal.setText("+ $" + df.format(refundAmt*1.07));
+                //positive refunds
+                subtotal.setText("+ $" + df.format(od.getAmount()));
                 subtotal.setTextColor(Color.parseColor("#008000"));     //green
             }
 

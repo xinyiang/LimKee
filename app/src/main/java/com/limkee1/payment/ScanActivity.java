@@ -62,7 +62,7 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
     private Button payButton;
     private CheckBox saveCard;
     private Customer customer;
-    private String paperBagNeeded;
+    private int paperBagNeeded;
     private ArrayList<Product> orderList;
     private ScanActivity.RadioOnClick radioOnClick = new RadioOnClick(0);
     public static Activity activity;
@@ -89,7 +89,7 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
         deliveryDate = myBundle.getString("deliveryDate");
         orderList = myBundle.getParcelableArrayList("orderList");
         totalPayable = myBundle.getString("totalPayable");
-        paperBagNeeded = myBundle.getString("paperBagNeeded");
+        paperBagNeeded = myBundle.getInt("paperBagNeeded");
         Double tp = Double.parseDouble(totalPayable);
         walletDeduction = myBundle.getDouble("walletDeduction");
         totalAmount = myBundle.getDouble("totalAmount");
@@ -131,7 +131,7 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
         bundle.putParcelable("customer", customer);
         bundle.putString("language", isEnglish);
         bundle.putParcelableArrayList("orderList", orderList);
-        bundle.putString("paperBagNeeded", paperBagNeeded);
+        bundle.putInt("paperBagNeeded", paperBagNeeded);
         bundle.putString("deliveryDate", deliveryDate);
         bundle.putDouble("totalPayable", tp);
         bundle.putDouble("walletDeduction", walletDeduction);
@@ -189,7 +189,7 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
                             if (saveCard.isChecked()){
                                 bp.saveCard(card);
                             }
-                            bp.execute(type, totalPayable, token.getId(), isEnglish, paperBagNeeded);
+                            bp.execute(type, totalPayable, token.getId(), isEnglish, Integer.toString(paperBagNeeded), Double.toString(walletDeduction), Double.toString(totalAmount));
                         }
                         public void onError(Exception error) {
                             Toast.makeText(context, "Error processing charge", Toast.LENGTH_LONG).show();
