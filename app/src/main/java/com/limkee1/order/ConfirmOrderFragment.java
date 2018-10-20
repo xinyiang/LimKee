@@ -30,8 +30,6 @@ import com.limkee1.constant.PostData;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
 import com.limkee1.payment.PaymentActivity;
-import com.stripe.android.model.Source;
-
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -536,7 +534,7 @@ public class ConfirmOrderFragment extends Fragment {
                             if (isEnglish.equals("Yes")) {
 
                                 new AlertDialog.Builder(view.getContext())
-                                        .setMessage("Today's delivery is over. Please choose another delivery date.")
+                                        .setMessage("Today's delivery is over! Please choose another delivery date.")
                                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {

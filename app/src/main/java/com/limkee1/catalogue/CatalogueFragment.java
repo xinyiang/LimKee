@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,9 +22,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.limkee1.R;
 import com.limkee1.Utility.ChineseCharUtility;
+import com.limkee1.Utility.DateUtility;
 import com.limkee1.constant.HttpConstant;
 import com.limkee1.constant.PostData;
 import com.limkee1.dao.CatalogueDAO;
@@ -43,7 +42,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
+import java.text.SimpleDateFormat;
 import static android.content.Context.MODE_PRIVATE;
 
 public class CatalogueFragment extends Fragment {
@@ -119,10 +118,12 @@ public class CatalogueFragment extends Fragment {
             if(isEnglish.equals("Yes")) {
                 //format cut off time to remove seconds
                 notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery";
-                builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
+                builder.setMessage("For today's delivery, please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM today");
+                //builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
             } else {
-                notif = "今日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单";
-                builder.setMessage("今日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
+                notif = "今日订单请在早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单";
+                builder.setMessage("若要今日送货，请在今天早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单");
+                //builder.setMessage("今日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
             }
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
@@ -133,6 +134,107 @@ public class CatalogueFragment extends Fragment {
             ad.show();
         } else {
             System.out.println("current time after cut off");
+            //check if tomorrow is sunday
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                SimpleDateFormat sundayFormat = new SimpleDateFormat("EEEE");
+
+                String dayOfWeek = "";
+                String currentDate = "";
+
+                Date timeNow = new Date();
+                currentDate = sdf.format(timeNow);
+
+                String date = currentDate.substring(0, 10);
+
+                //tomorrow date is +1 of today date
+                int tmrDate = Integer.parseInt(date.substring(8, date.length()));
+                tmrDate+=1;
+                String day = Integer.toString(tmrDate);
+                String month = date.substring(5, 7);
+                String yr = date.substring(0, 4);
+
+                //need to check if is new month/new year
+                int lastDay = DateUtility.getLastDayOfMonth(month);
+
+                Date tomorrowDate = new Date(yr + "/" +  month + "/" + day);
+
+                dayOfWeek = sundayFormat.format(tomorrowDate);
+
+                int followingDay = Integer.parseInt(day);
+                if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
+                    followingDay = tmrDate + 1;
+
+                    if (followingDay > lastDay) {
+                        followingDay = lastDay;
+                    }
+
+                    String currentDay = "";
+                    if (followingDay < 10){
+                        currentDay = "0" + followingDay;
+                    } else {
+                        currentDay = Integer.toString(followingDay);
+                    }
+
+                    if (month.length() == 1){
+                        month = "0" + month;
+                    }
+
+                    if(isEnglish.equals("Yes")) {
+                        //do not push message on Sunday
+                        notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM on Monday for Monday's delivery";
+                        builder.setMessage("Today's delivery is over! For Monday's delivery, please place order before Monday ("  + currentDay + "/" + month + "/" + yr + ") " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM");
+                    } else {
+                        //do not push message on Sunday
+                        notif = "星期一订单请在当日早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单";
+                        builder.setMessage("今日送货已结束! 若要在星期一送货，请在当日 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单");
+                        //builder.setMessage("今日送货已结束! 若要在星期一送货，请在" + currentDay + "/" + month + "/" + yr + "早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
+                    }
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+                    final AlertDialog ad = builder.create();
+                    ad.show();
+                } else {
+
+                    if (tmrDate > lastDay) {
+                        tmrDate = lastDay;
+                    }
+
+                    String currentDay = "";
+                    if (tmrDate < 10){
+                        currentDay = "0" + followingDay;
+                    } else {
+                        currentDay = Integer.toString(followingDay);
+                    }
+
+                    if (month.length() == 1){
+                        month = "0" + month;
+                    }
+
+                    if(isEnglish.equals("Yes")) {
+                        notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for tomorrow's delivery";
+                        builder.setMessage("Today's delivery is over! For tomorrow's delivery, please place order before tomorrow (" +  currentDay + "/" + month + "/" + yr  + ") " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM");
+                    } else {
+                        notif = "明日订单请在早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单";
+                        builder.setMessage("今日送货已结束! 若要在明天送货，请在明天 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0,cutoffTime.length()-3) +"前下单");
+                       // builder.setMessage("今日送货已结束! 若要在明日送货，请在" + currentDay + "/" + month + "/" + yr + "早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) +"前下单");
+                    }
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+                    final AlertDialog ad = builder.create();
+                    ad.show();
+                }
+
+            } catch (Exception e){
+                System.out.println("Error" + e.getMessage());
+            }
+            /*
             if(isEnglish.equals("Yes")) {
                 notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for tomorrow's delivery";
                 builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for tomorrow's delivery");
@@ -147,6 +249,7 @@ public class CatalogueFragment extends Fragment {
             });
             final AlertDialog ad = builder.create();
             ad.show();
+            */
         }
 
         scheduleNotification(getContext(), notif);
