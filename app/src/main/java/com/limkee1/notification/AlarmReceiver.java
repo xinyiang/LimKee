@@ -45,45 +45,67 @@ public class AlarmReceiver extends BroadcastReceiver {
         cutoffTimeCalendar.set(Calendar.MINUTE, Integer.parseInt(mins));
         Date cutoffTimestamp = cutoffTimeCalendar.getTime();
 
-        if (currentTimestamp.before(cutoffTimestamp)) {
-            if (isEnglish.equals("Yes")) {
-                content = "Please place order before " + cutofftime + " AM for today's delivery";
-            } else {
-                content = "今日订单请在早上 " + cutofftime + " 前下单";
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        java.text.SimpleDateFormat sundayFormat = new java.text.SimpleDateFormat("EEEE");
+        String dayOfWeek = "";
+        String currentDate = "";
+        Date timeNow = new Date();
+        currentDate = sdf.format(timeNow);
+        String date = currentDate.substring(0, 10);
+        String day = date.substring(8, date.length());
+        String month = date.substring(5, 7);
+        String yr = date.substring(0, 4);
+
+        //only remind 1 hour before cut off time
+        if (currentTimestamp.after(cutoffTimestamp)) {
+            //check if today is sunday
+            try {
+                Date todayDate = new Date(yr + "/" + month + "/" + day);
+                dayOfWeek = sundayFormat.format(todayDate);
+
+                if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
+                    //do not push notification
+                } else {
+                    if (isEnglish.equals("Yes")) {
+                        content = "For today's delivery, please place order before " + cutofftime + " AM today";
+                    } else {
+                        content = "若要今日送货，请在今天早上" + cutofftime + " 前下单";
+                    }
+                }
+            } catch(Exception e){
+                System.out.println("Exception e " + e.getMessage());
             }
-        } else {
-            //check if tomorrow is sunday
-            if (isEnglish.equals("Yes")) {
-                content = "Please place order before " + cutofftime + " AM for tomorrow's delivery";
-            } else {
-                content = "明日订单请在早上 " + cutofftime + " 前下单";
-            }
+
         }
 
-        Intent notificationIntent = new Intent(context, AlarmReceiver.class);
-        notificationIntent.putExtra("notif_id", Integer.parseInt(new SimpleDateFormat("ddHHmmss").format(new Date())));
-        notificationIntent.putExtra("hour", hour);
-        notificationIntent.putExtra("mins", mins);
-        notificationIntent.putExtra("isEnglish", isEnglish);
-        notificationIntent.putExtra("notif_content", content);
+        if (content == null || !content.equals("")){
+            //no need to push
+        } else {
+            Intent notificationIntent = new Intent(context, AlarmReceiver.class);
+            notificationIntent.putExtra("notif_id", Integer.parseInt(new SimpleDateFormat("ddHHmmss").format(new Date())));
+            notificationIntent.putExtra("hour", hour);
+            notificationIntent.putExtra("mins", mins);
+            notificationIntent.putExtra("isEnglish", isEnglish);
+            notificationIntent.putExtra("notif_content", content);
 
-        NotificationChannel mChannel = new NotificationChannel(id, name, importance);
-        mChannel.setDescription(description);
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.createNotificationChannel(mChannel);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, id)
-                .setContentTitle("Gentle reminder")
-                .setContentText(content)
-                .setSmallIcon(R.drawable.logo)
-                .setAutoCancel(true);
-        Intent notifIntent = new Intent(context, LoginActivity.class);
-        PendingIntent activity = PendingIntent.getActivity(context, notificationId, notifIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        builder.setContentIntent(activity);
-        Notification notification = builder.build();
-        notificationManager.notify(notificationId, notification);
+            NotificationChannel mChannel = new NotificationChannel(id, name, importance);
+            mChannel.setDescription(description);
+            NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.createNotificationChannel(mChannel);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, id)
+                    .setContentTitle("Gentle reminder")
+                    .setContentText(content)
+                    .setSmallIcon(R.drawable.logo)
+                    .setAutoCancel(true);
+            Intent notifIntent = new Intent(context, LoginActivity.class);
+            PendingIntent activity = PendingIntent.getActivity(context, notificationId, notifIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            builder.setContentIntent(activity);
+            Notification notification = builder.build();
+            notificationManager.notify(notificationId, notification);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + 24*60*60*1000, pendingIntent);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + 24 * 60 * 60 * 1000, pendingIntent);
+        }
     }
 }
