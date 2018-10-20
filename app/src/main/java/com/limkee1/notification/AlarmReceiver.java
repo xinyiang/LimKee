@@ -57,7 +57,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         String yr = date.substring(0, 4);
 
         //only remind 1 hour before cut off time
-        if (currentTimestamp.after(cutoffTimestamp)) {
+        if (currentTimestamp.before(cutoffTimestamp)) {
             //check if today is sunday
             try {
                 Date todayDate = new Date(yr + "/" + month + "/" + day);
@@ -75,7 +75,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             } catch(Exception e){
                 System.out.println("Exception e " + e.getMessage());
             }
-
         }
 
         if (content == null || !content.equals("")){
