@@ -234,29 +234,12 @@ public class CatalogueFragment extends Fragment {
                     ad.show();
                 }
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("Error" + e.getMessage());
             }
-            /*
-            if(isEnglish.equals("Yes")) {
-                notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for tomorrow's delivery";
-                builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for tomorrow's delivery");
-            } else {
-                notif = "明日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单";
-                builder.setMessage("明日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
-            }
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-                }
-            });
-            final AlertDialog ad = builder.create();
-            ad.show();
-            */
         }
-        if (! isEnglish.equals("Yes")) {
-            scheduleNotification(getContext(), notif);
-        }
+
+           // scheduleNotification(getContext(), notif);
     }
 
     public void scheduleNotification(Context context, String content) {
