@@ -77,7 +77,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             }
         }
 
-        if (content == null || !content.equals("")){
+        if (content == null || content.equals("")){
             //no need to push
         } else {
             Intent notificationIntent = new Intent(context, AlarmReceiver.class);
