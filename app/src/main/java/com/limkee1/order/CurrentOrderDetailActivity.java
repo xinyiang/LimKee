@@ -30,7 +30,6 @@ public class CurrentOrderDetailActivity extends BaseActivity implements ConfirmO
         //getSupportActionBar().setTitle("Order details");
        // getSupportActionBar().setTitle("订单详情");
 
-
         CurrentOrderDetailFragment currentOrderDetailFragment = new CurrentOrderDetailFragment();
         currentOrderDetailFragment.setArguments(myBundle);
 

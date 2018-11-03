@@ -25,14 +25,6 @@ import com.squareup.picasso.Picasso;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import com.limkee1.R;
-import com.limkee1.constant.HttpConstant;
-import com.limkee1.constant.PostData;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.Retrofit;
 
 public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.ViewHolder>  {
     private ArrayList<Product> catalogueList;
@@ -44,12 +36,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
     String isEnglish;
     private RecyclerView mRecyclerView;
     private String uom ="";
-    private EditText qty;
-    private String itemCode;
-    private Customer customer;
-    public static Retrofit retrofit;
-    private String selectedProductName;
-    private String selectedProductUOM;
+    public EditText qty;
+    public Customer customer;
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -63,22 +51,12 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
         this.customer = customer;
     }
 
-    public CatalogueAdapter(CatalogueFragment fragment, ArrayList<Product> catalogueList, String[] qtyDataSet, ArrayList<Product> tempOrderList, String isEnglish, Customer customer) {
-        this.fragment = fragment;
-        this.catalogueList = catalogueList;
-        this.qtyDataSet = qtyDataSet;
-        this.orderList = tempOrderList;
-        this.isEnglish = isEnglish;
-        this.customer = customer;
-    }
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.catalogue_products, parent, false);
         ViewHolder vh = new ViewHolder(itemView, new QuantityEditTextListener());
         CatalogueFragment.confirmOrder.setVisibility(View.VISIBLE);
-
 
         return vh;
     }
@@ -210,13 +188,12 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         //finish();
-                                                        //reset quantity to default prefix
-                                                        int quantity = product.getDefaultQty();
-                                                        product.setDefaultQty(product.getDefaultQty());
+                                                        //reset quantity to 0 if input is wrong
+                                                        int quantity = 0;
+                                                        product.setDefaultQty(quantity);
                                                         qty.setText(Integer.toString(product.getDefaultQty()));
                                                         DecimalFormat df = new DecimalFormat("#0.00");
                                                         double unitSub = quantity * product.getUnitPrice();
-                                                        //double unitSub = product.getDefaultQty() * product.getUnitPrice();
                                                         unitSubtotal.setText("$" + df.format(unitSub));
                                                     }
                                                 })
@@ -228,17 +205,17 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         //finish();
-                                                        //reset quantity to default prefix
-                                                        int quantity = product.getDefaultQty();
-                                                        product.setDefaultQty(product.getDefaultQty());
+                                                        //reset quantity to 0 if input is wrong
+                                                        int quantity = 0;
+                                                        product.setDefaultQty(quantity);
                                                         qty.setText(Integer.toString(product.getDefaultQty()));
                                                         DecimalFormat df = new DecimalFormat("#0.00");
                                                         double unitSub = quantity * product.getUnitPrice();
+                                                        unitSubtotal.setText("$" + df.format(unitSub));
                                                     }
                                                 })
                                                 .show();
                                     }
-
                                 } else {
 
                                     //recalculate unit subtotal and total subtotal
@@ -263,9 +240,7 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                 int quantity = 0;
                 public void afterTextChanged(Editable s) {
                     try {
-
                         quantity = Integer.parseInt(qty.getText().toString());
-
                         product.setDefaultQty(quantity);           //did not validate qty multiples, do it at Next button
                         //update unit subtotal
                         DecimalFormat df = new DecimalFormat("#0.00");

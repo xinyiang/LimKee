@@ -49,9 +49,6 @@ public class MainOrderHistoryFragment extends Fragment {
         }
     }
 
-
-
-
     // Add Fragments to Tabs
     private void setupViewPager(ViewPager viewPager) {
         MainOrderHistoryFragment.Adapter adapter = new MainOrderHistoryFragment.Adapter(getChildFragmentManager());
@@ -74,7 +71,6 @@ public class MainOrderHistoryFragment extends Fragment {
         }
 
         viewPager.setAdapter(adapter);
-
     }
 
         static class Adapter extends FragmentPagerAdapter {
@@ -163,7 +159,6 @@ public class MainOrderHistoryFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onDetach() {
         super.onDetach();
@@ -173,5 +168,4 @@ public class MainOrderHistoryFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
-
 }

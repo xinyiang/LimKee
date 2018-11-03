@@ -197,6 +197,15 @@ public class Chart {
         }
     }
 
+    public void hideWithNoInternet(){
+        chart.setData(null);
+        chart.invalidate();
+        chart.setNoDataTextColor(R.color.colorAccent);
+        Paint p = chart.getPaint(com.github.mikephil.charting.charts.Chart.PAINT_INFO);
+        chart.setNoDataText("");
+
+    }
+
     public void loading(){
         chart.setData(null);
         chart.invalidate();

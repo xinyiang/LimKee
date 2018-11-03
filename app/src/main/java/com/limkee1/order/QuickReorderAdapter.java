@@ -19,19 +19,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.limkee1.catalogue.ProductDetailsActivity;
-import com.limkee1.constant.HttpConstant;
-import com.limkee1.constant.PostData;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
 import com.squareup.picasso.Picasso;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import com.limkee1.R;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapter.ViewHolder>  {
     private ArrayList<Product> catalogueList;
@@ -40,14 +33,11 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
     private String[] qtyDataSet;
     boolean valueChanged;
     View itemView;
-    boolean focus = true;
     String isEnglish;
-    private RecyclerView mRecyclerView;
+    public RecyclerView mRecyclerView;
     private String uom ="";
-    private Customer customer;
-    public static Retrofit retrofit;
-    private String selectedProductName;
-    private String selectedProductUOM;
+    public Customer customer;
+
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -57,13 +47,6 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
 
     public QuickReorderAdapter(QuickReorderFragment fragment, String isEnglish, Customer customer) {
         this.fragment = fragment;
-        this.isEnglish = isEnglish;
-        this.customer = customer;
-    }
-
-    public QuickReorderAdapter(QuickReorderFragment fragment, ArrayList<Product> orderList, String isEnglish, Customer customer) {
-        this.fragment = fragment;
-        this.orderList = orderList;
         this.isEnglish = isEnglish;
         this.customer = customer;
     }
@@ -187,11 +170,12 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         //finish();
-                                                        //reset quantity to default prefix
-                                                        product.setDefaultQty(product.getDefaultQty());
+                                                        //reset quantity to 0 if input is wrong
+                                                        int quantity = 0;
+                                                        product.setDefaultQty(quantity);
                                                         qty.setText(Integer.toString(product.getDefaultQty()));
                                                         DecimalFormat df = new DecimalFormat("#0.00");
-                                                        double unitSub = product.getDefaultQty() * product.getUnitPrice();
+                                                        double unitSub = quantity * product.getUnitPrice();
                                                         unitSubtotal.setText("$" + df.format(unitSub));
                                                     }
                                                 })
@@ -203,11 +187,12 @@ public class QuickReorderAdapter extends RecyclerView.Adapter<QuickReorderAdapte
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         //finish();
-                                                        //reset quantity to default prefix
-                                                        product.setDefaultQty(product.getDefaultQty());
+                                                        //reset quantity to 0 if input is wrong
+                                                        int quantity = 0;
+                                                        product.setDefaultQty(quantity);
                                                         qty.setText(Integer.toString(product.getDefaultQty()));
                                                         DecimalFormat df = new DecimalFormat("#0.00");
-                                                        double unitSub = product.getDefaultQty() * product.getUnitPrice();
+                                                        double unitSub = quantity * product.getUnitPrice();
                                                         unitSubtotal.setText("$" + df.format(unitSub));
                                                     }
                                                 })

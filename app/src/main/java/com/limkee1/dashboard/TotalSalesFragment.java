@@ -1,6 +1,8 @@
 package com.limkee1.dashboard;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,12 +15,17 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
+import android.widget.TextView;
+
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.limkee1.R;
 import com.limkee1.constant.HttpConstant;
 import com.limkee1.constant.PostData;
 import com.limkee1.entity.Customer;
 import com.limkee1.order.CancelledOrderFragment;
+
+import org.w3c.dom.Text;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +57,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
     private CheckBox checkBox;
     private Chart chart;
     private boolean checkBoxStatus;
+    boolean hasInternet;
 
     public TotalSalesFragment(){}
 
@@ -98,70 +106,86 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_total_sales, container, false);
-      
-        ddlYear = (Spinner)view.findViewById(R.id.ddl_year);
-        boolean isChecked = ((CheckBox) view.findViewById(R.id.cb_onlyMe)).isChecked();
-        chart = new Chart((HorizontalBarChart)view.findViewById(R.id.chart));
+        TextView lbl_noInternet = view.findViewById(R.id.lbl_noOrders);
+        ddlYear = (Spinner) view.findViewById(R.id.ddl_year);
+        chart = new Chart((HorizontalBarChart) view.findViewById(R.id.chart));
         checkBox = ((CheckBox) view.findViewById(R.id.cb_onlyMe));
 
-        chart.loading();
+        hasInternet = isNetworkAvailable();
+        if (!hasInternet) {
+            lbl_noInternet.setVisibility(View.VISIBLE);
+            ddlYear.setVisibility(View.INVISIBLE);
+            checkBox.setVisibility(View.INVISIBLE);
+            chart.hideWithNoInternet();
 
-        if (isEnglish.equals("Yes")){
-            checkBox.setText("Show only me");
+            if (isEnglish.equals("Yes")) {
+                lbl_noInternet.setText("No internet connection");
+            } else {
+                lbl_noInternet.setText("没有网络");
+            }
         } else {
-            checkBox.setText("只是我");
-        }
-        checkBox.setChecked(true);
-        checkBoxStatus = checkBox.isChecked();
-        ArrayAdapter<String>adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ddlYear.setAdapter(adapter);
-        ddlYear.setOnItemSelectedListener(fragment);
 
-        for (int i = 1; i < years.length; i++) {
-            if (ddlYear.getItemAtPosition(i).equals(systemYear)) {
-                ddlYear.setSelection(i);
-                break;
+            boolean isChecked = ((CheckBox) view.findViewById(R.id.cb_onlyMe)).isChecked();
+
+            chart.loading();
+
+            if (isEnglish.equals("Yes")) {
+                checkBox.setText("Show only me");
+            } else {
+                checkBox.setText("只是我");
             }
-        }
+            checkBox.setChecked(true);
+            checkBoxStatus = checkBox.isChecked();
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            ddlYear.setAdapter(adapter);
+            ddlYear.setOnItemSelectedListener(fragment);
 
-        chart.loading();
-
-        ddlYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
-                selectedYear = arg0.getItemAtPosition(position).toString();
-                if (selectedYear.equals("Year") || selectedYear.equals("年")){
-                    chart.hide(isEnglish);
-                } else {
-                    if (!isChecked) {
-                        doGetAverageSales(selectedYear);
-                    }
-                    doGetCustomerSales(customer.getDebtorCode(), selectedYear);
+            for (int i = 1; i < years.length; i++) {
+                if (ddlYear.getItemAtPosition(i).equals(systemYear)) {
+                    ddlYear.setSelection(i);
+                    break;
                 }
             }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
 
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                checkBoxStatus = isChecked;
-                if (selectedYear.equals("Year") || selectedYear.equals("年")){
-                    chart.hide(isEnglish);
-                } else {
-                    if (isChecked) {
-                        doGetCustomerSales(customer.getDebtorCode(), selectedYear);
+            chart.loading();
+
+            ddlYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
+                    selectedYear = arg0.getItemAtPosition(position).toString();
+                    if (selectedYear.equals("Year") || selectedYear.equals("年")) {
+                        chart.hide(isEnglish);
                     } else {
+                        if (!isChecked) {
+                            doGetAverageSales(selectedYear);
+                        }
                         doGetCustomerSales(customer.getDebtorCode(), selectedYear);
-                        doGetAverageSales(selectedYear);
                     }
                 }
-            }
-        });
 
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                }
+            });
+
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    checkBoxStatus = isChecked;
+                    if (selectedYear.equals("Year") || selectedYear.equals("年")) {
+                        chart.hide(isEnglish);
+                    } else {
+                        if (isChecked) {
+                            doGetCustomerSales(customer.getDebtorCode(), selectedYear);
+                        } else {
+                            doGetCustomerSales(customer.getDebtorCode(), selectedYear);
+                            doGetAverageSales(selectedYear);
+                        }
+                    }
+                }
+            });
+        }
         return view;
     }
 
@@ -296,6 +320,12 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                 System.out.println("error : " + t.getMessage());
             }
         });
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override

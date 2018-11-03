@@ -118,15 +118,26 @@ public class NavigationActivity extends BaseActivity implements
                         Intent it = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(it);
                     }
-                }else{
-                    builder.setMessage("Fail to get cutoff time");
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.dismiss();
-                        }
-                    });
-                    final AlertDialog ad = builder.create();
-                    ad.show();
+                } else{
+                    if (isEnglish.equals("Yes")){
+                        builder.setMessage("No internet connection");
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                        final AlertDialog ad = builder.create();
+                        ad.show();
+                    } else {
+                        builder.setMessage("没有网络");
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                        final AlertDialog ad = builder.create();
+                        ad.show();
+                    }
                 }
             }
         }

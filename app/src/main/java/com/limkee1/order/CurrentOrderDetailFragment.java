@@ -2,11 +2,14 @@ package com.limkee1.order;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -46,6 +49,7 @@ public class CurrentOrderDetailFragment extends Fragment {
     private String date;
     private int numItems;
     private int paperBagRequiredNeeded;
+    boolean hasInternet;
 
     public CurrentOrderDetailFragment() {
     }
@@ -94,32 +98,6 @@ public class CurrentOrderDetailFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_current_order_detail, container, false);
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
-
-        recyclerView = (RecyclerView) view.findViewById(com.limkee1.R.id.recyclerView);
-
-        mAdapter = new CurrentOrderDetailAdapter(this, isEnglish);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.setNestedScrollingEnabled(false);
-
-        new CountDownTimer(400, 100) {
-
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            public void onFinish() {
-                progressBar.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.VISIBLE);
-            }
-        }.start();
-
-        doGetOrderDetails(orderID);
-        doGetOrderQuantity(orderID);
-
         TextView orderNo, pendingStatus, deliveryDate, company, itemCount, orderDetails, amountDetails, deliveryDetails;
         orderNo = (TextView) view.findViewById(R.id.orderID);
         pendingStatus = (TextView) view.findViewById(R.id.pendingStatus);
@@ -130,35 +108,76 @@ public class CurrentOrderDetailFragment extends Fragment {
         amountDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
         deliveryDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
 
-        orderNo.setText("#" + orderID);
+        //useful only if got swipe refresh
+        hasInternet = isNetworkAvailable();
+        if (!hasInternet) {
+            orderNo.setVisibility(View.INVISIBLE);
+            pendingStatus.setVisibility(View.INVISIBLE);
+            deliveryDate.setVisibility(View.INVISIBLE);
+            company.setVisibility(View.INVISIBLE);
+            orderDetails.setVisibility(View.INVISIBLE);
+            amountDetails.setVisibility(View.INVISIBLE);
+            deliveryDetails.setVisibility(View.INVISIBLE);
+            itemCount.setVisibility(View.INVISIBLE);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
-        SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
-        try {
-            Date datetime = expectedPattern.parse(date);
-            String timestamp = formatter.format(datetime);
-            deliveryDate.setText(timestamp);
-        } catch (Exception e){
-            deliveryDate.setText(date);
-        }
-
-        if (isEnglish.equals("Yes")){
-            orderDetails.setText(" Order Details");
-            amountDetails.setText(" Amount Details");
-            deliveryDetails.setText(" Delivery Details");
-            if (numItems == 1){
-                itemCount.setText(" Product Details (" + numItems + " item)");
-            } else {
-                itemCount.setText(" Product Details (" + numItems + " items)");
-            }
+            //call methods to hide visibility of labels and show message
+            noNetwork();
 
         } else {
-            pendingStatus.setText("待送货");
-            itemCount.setText(" 订单样品 (" + numItems + " 样)");
+            recyclerView = (RecyclerView) view.findViewById(com.limkee1.R.id.recyclerView);
+
+            mAdapter = new CurrentOrderDetailAdapter(this, isEnglish);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+            recyclerView.setAdapter(mAdapter);
+            recyclerView.setNestedScrollingEnabled(false);
+
+            new CountDownTimer(400, 100) {
+
+                public void onTick(long millisUntilFinished) {
+
+                }
+
+                public void onFinish() {
+                    progressBar.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
+            }.start();
+
+            doGetOrderDetails(orderID);
+            doGetOrderQuantity(orderID);
+
+            orderNo.setText("#" + orderID);
+
+            SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
+            SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
+            try {
+                Date datetime = expectedPattern.parse(date);
+                String timestamp = formatter.format(datetime);
+                deliveryDate.setText(timestamp);
+            } catch (Exception e) {
+                deliveryDate.setText(date);
+            }
+
+            if (isEnglish.equals("Yes")) {
+                orderDetails.setText(" Order Details");
+                amountDetails.setText(" Amount Details");
+                deliveryDetails.setText(" Delivery Details");
+                if (numItems == 1) {
+                    itemCount.setText(" Product Details (" + numItems + " item)");
+                } else {
+                    itemCount.setText(" Product Details (" + numItems + " items)");
+                }
+
+            } else {
+                pendingStatus.setText("待送货");
+                itemCount.setText(" 订单样品 (" + numItems + " 样)");
+            }
+
+            company.setText(customer.getCompanyName());
         }
-
-        company.setText(customer.getCompanyName());
-
         return view;
     }
 
@@ -301,6 +320,46 @@ public class CurrentOrderDetailFragment extends Fragment {
         });
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void noNetwork(){
+        TextView lbl_noInternet = view.findViewById(R.id.lbl_noInternet);
+        lbl_noInternet.setVisibility(View.VISIBLE);
+
+        TextView lbl_orderID = (TextView) view.findViewById(R.id.lbl_orderID);
+        TextView lbl_orderDate = (TextView) view.findViewById(R.id.lbl_orderDate);
+        TextView lbl_companyName = (TextView) view.findViewById(R.id.lbl_companyName);
+        TextView lbl_deliveryDate = (TextView) view.findViewById(R.id.lbl_deliveryDate);
+        TextView lbl_status = (TextView) view.findViewById(R.id.lbl_status);
+        TextView lbl_paperBag = (TextView) view.findViewById(R.id.lbl_paperBag);
+        TextView lbl_subtotal = (TextView) view.findViewById(R.id.lbl_companyName);
+        TextView lbl_tax = (TextView) view.findViewById(R.id.lbl_tax_amt);
+        TextView lbl_totalPayable = (TextView) view.findViewById(R.id.lbl_totalPayable);
+        TextView lbl_wallet = (TextView) view.findViewById(R.id.lbl_walletAmt);
+        TextView lbl_paidAmt = (TextView) view.findViewById(R.id.lbl_paid_amt);
+
+        lbl_orderID.setVisibility(View.INVISIBLE);
+        lbl_orderDate.setVisibility(View.INVISIBLE);
+        lbl_companyName.setVisibility(View.INVISIBLE);
+        lbl_deliveryDate.setVisibility(View.INVISIBLE);
+        lbl_status.setVisibility(View.INVISIBLE);
+        lbl_paperBag.setVisibility(View.INVISIBLE);
+        lbl_subtotal.setVisibility(View.INVISIBLE);
+        lbl_tax.setVisibility(View.INVISIBLE);
+        lbl_totalPayable.setVisibility(View.INVISIBLE);
+        lbl_wallet.setVisibility(View.INVISIBLE);
+        lbl_paidAmt.setVisibility(View.INVISIBLE);
+
+        if (isEnglish.equals("Yes")) {
+            lbl_noInternet.setText("No internet connection");
+        } else {
+            lbl_noInternet.setText("没有网络");
+        }
+    }
 
     @Override
     public void onAttach(Context context) {

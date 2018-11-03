@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -20,7 +22,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.limkee1.R;
-import com.limkee1.Utility.ChineseCharUtility;
 import com.limkee1.Utility.DateUtility;
 import com.limkee1.constant.HttpConstant;
 import com.limkee1.constant.PostData;
@@ -64,6 +65,7 @@ public class QuickReorderFragment extends Fragment {
     private String selectedProductUOM;
     private String selectedItemCode;
     private int orderedQty;
+    boolean hasInternet;
 
     public QuickReorderFragment(){
     }
@@ -88,7 +90,7 @@ public class QuickReorderFragment extends Fragment {
             ((NavigationActivity)getActivity()).setActionBarTitle("快速下单");
         }
 
-        builder= new AlertDialog.Builder(getContext());
+        builder = new AlertDialog.Builder(getContext());
         // AlertDialog ad = builder.create();
         //TextView textView = (TextView) ad.findViewById(android.R.id.message);
         //textView.setTextSize(40);
@@ -101,9 +103,9 @@ public class QuickReorderFragment extends Fragment {
 
         //alert dialogue show is for today/tmr's time based on current timestamp
         Date currentTimestamp = new Date();
-        String time = cutoffTime.substring(0,cutoffTime.length()-3);
-        String hour = time.substring(0,2);
-        String mins = time.substring(3,5);
+        String time = cutoffTime.substring(0, cutoffTime.length() - 3);
+        String hour = time.substring(0, 2);
+        String mins = time.substring(3, 5);
 
         Date cutoffTimestamp = new Date();
         cutoffTimestamp.setHours(Integer.parseInt(hour));
@@ -111,13 +113,11 @@ public class QuickReorderFragment extends Fragment {
 
         //compare current time is < cut off time
         if (currentTimestamp.before(cutoffTimestamp)) {
-            if(isEnglish.equals("Yes")) {
+            if (isEnglish.equals("Yes")) {
                 //format cut off time to remove seconds
-                builder.setMessage("For today's delivery, please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM today");
-                //builder.setMessage("Please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM for today's delivery");
+                builder.setMessage("For today's delivery, please place order before " + cutoffTime.substring(0, cutoffTime.length() - 3) + " AM today");
             } else {
-                builder.setMessage("若要今日送货，请在今天早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单");
-                //builder.setMessage("今日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0, cutoffTime.length()-3)) + "前下单");
+                builder.setMessage("若要今日送货，请在今天早上" + cutoffTime.substring(0, cutoffTime.length() - 3) + "前下单");
             }
 
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -145,7 +145,7 @@ public class QuickReorderFragment extends Fragment {
 
                 //tomorrow date is +1 of today date
                 int tmrDate = Integer.parseInt(date.substring(8, date.length()));
-                tmrDate+=1;
+                tmrDate += 1;
                 String day = Integer.toString(tmrDate);
                 String month = date.substring(5, 7);
                 String yr = date.substring(0, 4);
@@ -153,7 +153,7 @@ public class QuickReorderFragment extends Fragment {
                 //need to check if is new month/new year
                 int lastDay = DateUtility.getLastDayOfMonth(month);
 
-                Date tomorrowDate = new Date(yr + "/" +  month + "/" + day);
+                Date tomorrowDate = new Date(yr + "/" + month + "/" + day);
 
                 dayOfWeek = sundayFormat.format(tomorrowDate);
 
@@ -166,21 +166,20 @@ public class QuickReorderFragment extends Fragment {
                     }
 
                     String currentDay = "";
-                    if (followingDay < 10){
+                    if (followingDay < 10) {
                         currentDay = "0" + followingDay;
                     } else {
                         currentDay = Integer.toString(followingDay);
                     }
 
-                    if (month.length() == 1){
+                    if (month.length() == 1) {
                         month = "0" + month;
                     }
 
-                    if(isEnglish.equals("Yes")) {
-                        builder.setMessage("Today's delivery is over! For Monday's delivery, please place order before Monday ("  + currentDay + "/" + month + "/" + yr + ") " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM");
+                    if (isEnglish.equals("Yes")) {
+                        builder.setMessage("Today's delivery is over! For Monday's delivery, please place order before Monday (" + currentDay + "/" + month + "/" + yr + ") " + cutoffTime.substring(0, cutoffTime.length() - 3) + " AM");
                     } else {
-                        builder.setMessage("今日送货已结束! 若要在星期一送货，请在当日 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单");
-                        //builder.setMessage("今日送货已结束! 若要在星期一送货，请在" + currentDay + "/" + month + "/" + yr + "早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
+                        builder.setMessage("今日送货已结束! 若要在星期一送货，请在当日 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0, cutoffTime.length() - 3) + "前下单");
                     }
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -196,13 +195,13 @@ public class QuickReorderFragment extends Fragment {
                     }
 
                     String currentDay = "";
-                    if (tmrDate < 10){
+                    if (tmrDate < 10) {
                         currentDay = "0" + followingDay;
                     } else {
                         currentDay = Integer.toString(followingDay);
                     }
 
-                    if (month.length() == 1){
+                    if (month.length() == 1) {
                         month = "0" + month;
                     }
 
@@ -213,12 +212,11 @@ public class QuickReorderFragment extends Fragment {
 
                     dayOfWeek = sundayFormat.format(todayDate);
 
-                    if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")){
-                        if(isEnglish.equals("Yes")) {
-                            builder.setMessage("For tomorrow's delivery, please place order before tomorrow (" +  currentDay + "/" + month + "/" + yr  + ") " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM");
+                    if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
+                        if (isEnglish.equals("Yes")) {
+                            builder.setMessage("For tomorrow's delivery, please place order before tomorrow (" + currentDay + "/" + month + "/" + yr + ") " + cutoffTime.substring(0, cutoffTime.length() - 3) + " AM");
                         } else {
-                            builder.setMessage("若要在明天送货，请在明天 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0,cutoffTime.length()-3) +"前下单");
-                            // builder.setMessage("今日送货已结束! 若要在明日送货，请在" + currentDay + "/" + month + "/" + yr + "早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) +"前下单");
+                            builder.setMessage("若要在明天送货，请在明天 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0, cutoffTime.length() - 3) + "前下单");
                         }
                         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -233,7 +231,6 @@ public class QuickReorderFragment extends Fragment {
                             builder.setMessage("Today's delivery is over! For tomorrow's delivery, please place order before tomorrow (" + currentDay + "/" + month + "/" + yr + ") " + cutoffTime.substring(0, cutoffTime.length() - 3) + " AM");
                         } else {
                             builder.setMessage("今日送货已结束! 若要在明天送货，请在明天 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0, cutoffTime.length() - 3) + "前下单");
-                            // builder.setMessage("今日送货已结束! 若要在明日送货，请在" + currentDay + "/" + month + "/" + yr + "早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) +"前下单");
                         }
                         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -245,9 +242,10 @@ public class QuickReorderFragment extends Fragment {
                     }
                 }
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("Error" + e.getMessage());
             }
+
         }
     }
 
@@ -255,42 +253,54 @@ public class QuickReorderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_quick_reorder, container, false);
-
-        doGetLastOrder(customer.getDebtorCode());
-
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
         confirmOrder = view.findViewById(R.id.btnPlaceOrder);
         lbl_subtotal = (TextView) view.findViewById(R.id.lblSubtotalAmt);
 
-        if (isEnglish.equals("Yes")) {
-            lbl_subtotal.setText("Sub Total");
-            confirmOrder.setText("Next");
+        hasInternet = isNetworkAvailable();
+        if (!hasInternet) {
+            TextView lbl_noInternet = view.findViewById(R.id.lbl_noOrders);
+            lbl_noInternet.setVisibility(View.VISIBLE);
+
+            if (isEnglish.equals("Yes")) {
+                lbl_noInternet.setText("No internet connection");
+            } else {
+                lbl_noInternet.setText("没有网络");
+            }
+
         } else {
-            lbl_subtotal.setText("小计");
-            confirmOrder.setText("下订单");
+
+            doGetLastOrder(customer.getDebtorCode());
+
+            if (isEnglish.equals("Yes")) {
+                lbl_subtotal.setText("Sub Total");
+                confirmOrder.setText("Next");
+            } else {
+                lbl_subtotal.setText("小计");
+                confirmOrder.setText("下订单");
+            }
+
+            mAdapter = new QuickReorderAdapter(this, isEnglish, customer);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+            recyclerView.setAdapter(mAdapter);
+
+            new CountDownTimer(400, 100) {
+
+                public void onTick(long millisUntilFinished) {
+
+                }
+
+                public void onFinish() {
+                    progressBar.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
+            }.start();
         }
-
-        mAdapter = new QuickReorderAdapter(this, isEnglish, customer);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        recyclerView.setAdapter(mAdapter);
-
-        new CountDownTimer(400, 100) {
-
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            public void onFinish() {
-                progressBar.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.VISIBLE);
-            }
-        }.start();
-
         return view;
     }
 
@@ -330,7 +340,7 @@ public class QuickReorderFragment extends Fragment {
                                 qtyMultiples = p.getQtyMultiples();
                                 selectedItemCode = p.getItemCode();
                                 selectedProductUOM = p.getUom();
-                                orderedQty = p.getDefaultQty();
+                                orderedQty = 0;
                             }
                         } else {
                             orderList.add(p);
@@ -338,6 +348,7 @@ public class QuickReorderFragment extends Fragment {
                     }
                 }
 
+                //for the last product that has qty being edited: when user did not click tick in keyboard and click back and Next button
                 if (invalidItem >= 1) {
                     if (isEnglish.equals("Yes")) {
                         new android.support.v7.app.AlertDialog.Builder(view.getContext())
@@ -346,8 +357,7 @@ public class QuickReorderFragment extends Fragment {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
-                                        //reset quantity to default prefix
-                                        //p.setDefaultQty(p.getDefaultQty());
+                                        //reset edit text quantity to 0 in edit text
                                     }
                                 })
                                 .show();
@@ -358,8 +368,7 @@ public class QuickReorderFragment extends Fragment {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
-                                        //reset quantity to default prefix
-                                        // p.setDefaultQty(p.getDefaultQty());
+                                        //reset edit text quantity to 0 in edit text
                                     }
                                 })
                                 .show();
@@ -429,7 +438,7 @@ public class QuickReorderFragment extends Fragment {
                 CatalogueDAO.quickReorder_list = data;
 
                 if (data == null || data.size() == 0) {
-                    //show default catalogue
+                    //show default catalogue where all qty is 0
                     doGetCatalogue();
                 } else {
 
@@ -457,7 +466,6 @@ public class QuickReorderFragment extends Fragment {
                 System.out.println(t.getMessage());
             }
         });
-
     }
 
     private double calculateSubtotal(ArrayList<Product> orderList) {
@@ -523,7 +531,12 @@ public class QuickReorderFragment extends Fragment {
                 System.out.println(t.getMessage());
             }
         });
+    }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override

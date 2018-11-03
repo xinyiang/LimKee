@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -72,6 +74,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     private int length;
     private Chart chart;
     private int numMonth;
+    boolean hasInternet;
 
     public TopPurchasedFragment() {
     }
@@ -138,104 +141,119 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_top_purchased, container, false);
-        chart = new Chart((HorizontalBarChart)view.findViewById(R.id.chart));
-
-        doGetTopProducts(customer.getDebtorCode(), systemMonth, selectedYear, language);
-        doGetTopProducts(customer.getDebtorCode(), systemMonth, selectedYear, language);
-
-        ddlYear = (Spinner)view.findViewById(R.id.ddl_year);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ddlYear.setAdapter(adapter);
-        ddlYear.setOnItemSelectedListener(fragment);
-
-        for (int i = 1; i < years.length; i++) {
-            if (ddlYear.getItemAtPosition(i).equals(systemYear)) {
-                ddlYear.setSelection(i);
-                break;
-            }
-        }
-
-        ddlYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
-                selectedYear = arg0.getItemAtPosition(position).toString();
-                if (selectedYear.equals("Year") || selectedYear.equals("年")){
-                    chart.hide(isEnglish);
-                } else {
-                    doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
-                    doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-
+        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
+        ddlYear = (Spinner) view.findViewById(R.id.ddl_year);
         ddlMonth = (Spinner) view.findViewById(R.id.ddl_month);
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, months);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ddlMonth.setAdapter(adapter2);
-        ddlMonth.setOnItemSelectedListener(fragment);
+        chart = new Chart((HorizontalBarChart) view.findViewById(R.id.chart));
 
-        for (int i = 1; i <= 12; i++) {
-            if (ddlMonth.getItemAtPosition(i).equals(systemMonth) || ddlMonth.getItemAtPosition(i).equals(systemMonthInChinese)) {
-                ddlMonth.setSelection(i);
-                break;
+        hasInternet = isNetworkAvailable();
+        if (!hasInternet) {
+            lbl_noOrders.setVisibility(View.VISIBLE);
+            ddlYear.setVisibility(View.INVISIBLE);
+            ddlMonth.setVisibility(View.INVISIBLE);
+            chart.hideWithNoInternet();
+
+            if (isEnglish.equals("Yes")) {
+                lbl_noOrders.setText("No internet connection");
+            } else {
+                lbl_noOrders.setText("没有网络");
             }
-        }
+        } else {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-        String today = sdf.format(new Date());
-        numMonth = Integer.parseInt(today.substring(5, 7));
-        ddlMonth.setSelection(numMonth);
-        ddlMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
-                selectedMonth = arg0.getItemAtPosition(position).toString();
+            doGetTopProducts(customer.getDebtorCode(), systemMonth, selectedYear, language);
+            doGetTopProducts(customer.getDebtorCode(), systemMonth, selectedYear, language);
 
-                if (selectedMonth.equals("一月")){
-                    selectedMonth = "Jan";
-                } else if (selectedMonth.equals("二月")){
-                    selectedMonth = "Feb";
-                } else if (selectedMonth.equals("三月")){
-                    selectedMonth = "Mar";
-                } else if (selectedMonth.equals("四月")){
-                    selectedMonth = "Apr";
-                } else if (selectedMonth.equals("五月")){
-                    selectedMonth = "May";
-                } else if (selectedMonth.equals("六月")){
-                    selectedMonth = "Jun";
-                } else if (selectedMonth.equals("七月")){
-                    selectedMonth = "Jul";
-                } else if (selectedMonth.equals("八月")){
-                    selectedMonth = "Aug";
-                } else if (selectedMonth.equals("九月")){
-                    selectedMonth = "Sep";
-                } else if (selectedMonth.equals("十月")){
-                    selectedMonth = "Oct";
-                } else if (selectedMonth.equals("十一月")){
-                    selectedMonth = "Nov";
-                } else if (selectedMonth.equals("十二月")) {
-                    selectedMonth = "Dec";
-                } else {
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            ddlYear.setAdapter(adapter);
+            ddlYear.setOnItemSelectedListener(fragment);
+
+            for (int i = 1; i < years.length; i++) {
+                if (ddlYear.getItemAtPosition(i).equals(systemYear)) {
+                    ddlYear.setSelection(i);
+                    break;
+                }
+            }
+
+            ddlYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
+                    selectedYear = arg0.getItemAtPosition(position).toString();
+                    if (selectedYear.equals("Year") || selectedYear.equals("年")) {
+                        chart.hide(isEnglish);
+                    } else {
+                        doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
+                        doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                }
+            });
+
+            ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, months);
+            adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            ddlMonth.setAdapter(adapter2);
+            ddlMonth.setOnItemSelectedListener(fragment);
+
+            for (int i = 1; i <= 12; i++) {
+                if (ddlMonth.getItemAtPosition(i).equals(systemMonth) || ddlMonth.getItemAtPosition(i).equals(systemMonthInChinese)) {
+                    ddlMonth.setSelection(i);
+                    break;
+                }
+            }
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+            String today = sdf.format(new Date());
+            numMonth = Integer.parseInt(today.substring(5, 7));
+            ddlMonth.setSelection(numMonth);
+            ddlMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                     selectedMonth = arg0.getItemAtPosition(position).toString();
+
+                    if (selectedMonth.equals("一月")) {
+                        selectedMonth = "Jan";
+                    } else if (selectedMonth.equals("二月")) {
+                        selectedMonth = "Feb";
+                    } else if (selectedMonth.equals("三月")) {
+                        selectedMonth = "Mar";
+                    } else if (selectedMonth.equals("四月")) {
+                        selectedMonth = "Apr";
+                    } else if (selectedMonth.equals("五月")) {
+                        selectedMonth = "May";
+                    } else if (selectedMonth.equals("六月")) {
+                        selectedMonth = "Jun";
+                    } else if (selectedMonth.equals("七月")) {
+                        selectedMonth = "Jul";
+                    } else if (selectedMonth.equals("八月")) {
+                        selectedMonth = "Aug";
+                    } else if (selectedMonth.equals("九月")) {
+                        selectedMonth = "Sep";
+                    } else if (selectedMonth.equals("十月")) {
+                        selectedMonth = "Oct";
+                    } else if (selectedMonth.equals("十一月")) {
+                        selectedMonth = "Nov";
+                    } else if (selectedMonth.equals("十二月")) {
+                        selectedMonth = "Dec";
+                    } else {
+                        selectedMonth = arg0.getItemAtPosition(position).toString();
+                    }
+
+                    if (selectedMonth.equals("Month") || selectedMonth.equals("月")) {
+                        chart.hide(isEnglish);
+                    } else {
+                        doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
+                        doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
+                    }
                 }
 
-                if (selectedMonth.equals("Month") || selectedMonth.equals("月")){
-                    chart.hide(isEnglish);
-                } else {
-                    doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
-                    doGetTopProducts(customer.getDebtorCode(), selectedMonth, selectedYear, language);
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
                 }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-
+            });
+        }
         return view;
     }
 
@@ -476,7 +494,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 System.out.println(t.getMessage());
             }
         });
-
     }
 
     private String getChineseMonth(String engMonth){
@@ -539,6 +556,12 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             engMonth = "Dec";
         }
         return engMonth;
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override

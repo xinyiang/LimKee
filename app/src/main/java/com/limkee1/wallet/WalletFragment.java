@@ -1,9 +1,13 @@
 package com.limkee1.wallet;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.speech.tts.TextToSpeech;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,6 +42,7 @@ public class WalletFragment extends Fragment {
     public static RecyclerView recyclerView;
     public static TextView walletAmt;
     public static TextView lbl_noOrders;
+    boolean hasInternet;
 
     private WalletAdapter mAdapter;
 
@@ -69,22 +74,36 @@ public class WalletFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_wallet, container, false);
-        doGetWalletAmt(customer.getDebtorCode());
-
         lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
-        recyclerView = view.findViewById(R.id.recyclerView);
-        walletAmt = view.findViewById(R.id.walletAmt);
+        CardView cv = view.findViewById(R.id.cardDetails);
 
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        hasInternet = isNetworkAvailable();
+        if (!hasInternet) {
+            lbl_noOrders.setVisibility(View.VISIBLE);
+            cv.setVisibility(View.INVISIBLE);
 
-        doGetTransactionHistory(customer.getDebtorCode());
-        mAdapter = new WalletAdapter(this, customer, isEnglish, WalletDAO.refundTransaction);
+            if (isEnglish.equals("Yes")) {
+                lbl_noOrders.setText("No internet connection");
+            } else {
+                lbl_noOrders.setText("没有网络");
+            }
+        } else {
 
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        recyclerView.setAdapter(mAdapter);
+            doGetWalletAmt(customer.getDebtorCode());
 
+            recyclerView = view.findViewById(R.id.recyclerView);
+            walletAmt = view.findViewById(R.id.walletAmt);
+
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+
+            doGetTransactionHistory(customer.getDebtorCode());
+            mAdapter = new WalletAdapter(this, customer, isEnglish, WalletDAO.refundTransaction);
+
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+            recyclerView.setAdapter(mAdapter);
+        }
         return view;
     }
 
@@ -150,7 +169,12 @@ public class WalletFragment extends Fragment {
                 System.out.println(t.getMessage());
             }
         });
+    }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override

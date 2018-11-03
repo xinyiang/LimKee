@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.util.Calendar;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -72,6 +74,7 @@ public class CatalogueFragment extends Fragment {
     private String selectedProductUOM;
     private String selectedItemCode;
     private int orderedQty;
+    boolean hasInternet;
 
     public CatalogueFragment(){
     }
@@ -86,6 +89,7 @@ public class CatalogueFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
@@ -118,11 +122,9 @@ public class CatalogueFragment extends Fragment {
                 //format cut off time to remove seconds
                 notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery";
                 builder.setMessage("For today's delivery, please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM today");
-                //builder.setMessage("Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery");
             } else {
                 notif = "今日订单请在早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单";
                 builder.setMessage("若要今日送货，请在今天早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单");
-                //builder.setMessage("今日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
             }
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
@@ -187,7 +189,6 @@ public class CatalogueFragment extends Fragment {
                         //do not push message on Sunday
                         notif = "星期一订单请在当日早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单";
                         builder.setMessage("今日送货已结束! 若要在星期一送货，请在当日 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单");
-                        //builder.setMessage("今日送货已结束! 若要在星期一送货，请在" + currentDay + "/" + month + "/" + yr + "早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) + "前下单");
                     }
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -227,7 +228,6 @@ public class CatalogueFragment extends Fragment {
                         } else {
                             notif = "若要在明天送货, 请在明天早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单";
                             builder.setMessage("若要在明天送货，请在明天 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0,cutoffTime.length()-3) +"前下单");
-                            // builder.setMessage("今日送货已结束! 若要在明日送货，请在" + currentDay + "/" + month + "/" + yr + "早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) +"前下单");
                         }
                         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -243,7 +243,6 @@ public class CatalogueFragment extends Fragment {
                         } else {
                             notif = "明日订单请在早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单";
                             builder.setMessage("今日送货已结束! 若要在明天送货，请在明天 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0,cutoffTime.length()-3) +"前下单");
-                            // builder.setMessage("今日送货已结束! 若要在明日送货，请在" + currentDay + "/" + month + "/" + yr + "早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) +"前下单");
                         }
                         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -260,6 +259,7 @@ public class CatalogueFragment extends Fragment {
             }
         }
 
+        //commented out for push notification
         //scheduleNotification(getContext(), notif);
     }
 
@@ -296,41 +296,56 @@ public class CatalogueFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_catalogue, container, false);
 
-        doGetAverageQty(customer.getCompanyCode());
-       // doGetCatalogue();
-
         progressBar = view.findViewById(R.id.progressBar);
         recyclerView = view.findViewById(R.id.recyclerView);
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
         confirmOrder = (Button) view.findViewById(R.id.btnNext);
         lbl_subtotal = (TextView) view.findViewById(R.id.lblSubtotalAmt);
 
-        if (isEnglish.equals("Yes")) {
-            lbl_subtotal.setText("Sub Total");
-            confirmOrder.setText("Next");
+        hasInternet = isNetworkAvailable();
+        if (!hasInternet) {
+            TextView lbl_noInternet = view.findViewById(R.id.lbl_noOrders);
+            lbl_noInternet.setVisibility(View.VISIBLE);
+
+            if (isEnglish.equals("Yes")) {
+                lbl_noInternet.setText("No internet connection");
+            } else {
+                lbl_noInternet.setText("没有网络");
+            }
+
         } else {
-            lbl_subtotal.setText("小计");
-            confirmOrder.setText("下订单");
+
+
+            doGetLastWeekAverageForCatalogue(customer.getCompanyCode());
+            // doGetCatalogue();
+
+
+            if (isEnglish.equals("Yes")) {
+                lbl_subtotal.setText("Sub Total");
+                confirmOrder.setText("Next");
+            } else {
+                lbl_subtotal.setText("小计");
+                confirmOrder.setText("下订单");
+            }
+
+            mAdapter = new CatalogueAdapter(this, isEnglish, customer);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+            recyclerView.setAdapter(mAdapter);
+
+            new CountDownTimer(400, 100) {
+
+                public void onTick(long millisUntilFinished) {
+                }
+
+                public void onFinish() {
+                    progressBar.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
+            }.start();
         }
-
-        mAdapter = new CatalogueAdapter(this, isEnglish, customer);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        recyclerView.setAdapter(mAdapter);
-
-        new CountDownTimer(400, 100) {
-
-            public void onTick(long millisUntilFinished) {
-            }
-
-            public void onFinish() {
-                progressBar.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.VISIBLE);
-            }
-        }.start();
-
         return view;
     }
 
@@ -367,7 +382,7 @@ public class CatalogueFragment extends Fragment {
                                 qtyMultiples = product.getQtyMultiples();
                                 selectedItemCode = product.getItemCode();
                                 selectedProductUOM = product.getUom();
-                                orderedQty = quantity;
+                                orderedQty = 0;
                             }
                         } else {
                             orderList.add(product);
@@ -375,6 +390,7 @@ public class CatalogueFragment extends Fragment {
                     }
                 }
 
+                //for the last product that has qty being edited: when user did not click tick in keyboard and click back and Next button
                 if (invalidItem >= 1) {
                     if (isEnglish.equals("Yes")) {
                         new android.support.v7.app.AlertDialog.Builder(view.getContext())
@@ -383,8 +399,7 @@ public class CatalogueFragment extends Fragment {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
-                                        //reset quantity to default prefix
-                                        //p.setDefaultQty(p.getDefaultQty());
+                                        //reset edit text quantity to 0 in edit text
                                     }
                                 })
                                 .show();
@@ -395,8 +410,7 @@ public class CatalogueFragment extends Fragment {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
-                                        //reset quantity to default prefix
-                                        // p.setDefaultQty(p.getDefaultQty());
+                                        //reset edit text quantity to 0 in edit text
                                     }
                                 })
                                 .show();
@@ -493,7 +507,7 @@ public class CatalogueFragment extends Fragment {
         });
     }
 
-    private void doGetAverageQty(String companyCode) {
+    private void doGetLastWeekAverageForCatalogue(String companyCode) {
         if (retrofit == null) {
 
             retrofit = new retrofit2.Retrofit.Builder()
@@ -511,7 +525,7 @@ public class CatalogueFragment extends Fragment {
                 CatalogueDAO.catalogue_list = data;
 
                 if (data == null || data.size() == 0){
-                    //show default catalogue
+                    //show default catalogue where all qty is 0
                     doGetCatalogue();
                 }
 
@@ -538,7 +552,6 @@ public class CatalogueFragment extends Fragment {
                 System.out.println(t.getMessage());
             }
         });
-
     }
 
     private double calculateSubtotal(ArrayList<Product> orderList) {
@@ -561,6 +574,12 @@ public class CatalogueFragment extends Fragment {
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
         subtotalAmt.setText("$" + df.format(subtotal));
         recyclerView.setItemViewCacheSize(orderList.size());
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override

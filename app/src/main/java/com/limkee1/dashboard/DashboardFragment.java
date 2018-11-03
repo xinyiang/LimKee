@@ -54,12 +54,12 @@ public class DashboardFragment extends Fragment {
         } else {
             ((NavigationActivity) getActivity()).setActionBarTitle("仪表板");
         }
+
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
 
     }
-
 
     // Add Fragments to Tabs
     private void setupViewPager(ViewPager viewPager) {
@@ -80,45 +80,10 @@ public class DashboardFragment extends Fragment {
             adapter.addFragment(salesFragment, "总花费");
             adapter.addFragment(topProductFragment, "频繁采购");
         }
+
         viewPager.setAdapter(adapter);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_main_order_history, container, false);
-
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
-        setupViewPager(viewPager);
-        TabLayout tabs = (TabLayout) view.findViewById(R.id.tabs);
-        tabs.bringToFront();
-        tabs.setupWithViewPager(viewPager);
-
-        return view;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof DashboardFragment.OnFragmentInteractionListener) {
-            mListener = (DashboardFragment.OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
-
-    //adaptor
     static class Adapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
@@ -176,5 +141,44 @@ public class DashboardFragment extends Fragment {
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_dashboard, container, false);
+
+        // Set ViewPager for each Tabs
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
+        setupViewPager(viewPager);
+        // Set Tabs inside Toolbar
+        TabLayout tabs = (TabLayout) view.findViewById(R.id.tabs);
+        //let tab be clickable
+        tabs.bringToFront();
+        tabs.setupWithViewPager(viewPager);
+
+        return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof NavigationActivity) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
     }
 }

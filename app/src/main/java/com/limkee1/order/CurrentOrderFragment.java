@@ -1,8 +1,11 @@
 package com.limkee1.order;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -38,6 +41,7 @@ public class CurrentOrderFragment extends Fragment {
     public static Retrofit retrofit;
     private  String isEnglish;
     TextView lbl_noOrders;
+    boolean hasInternet;
 
     public CurrentOrderFragment(){}
 
@@ -79,16 +83,28 @@ public class CurrentOrderFragment extends Fragment {
             lbl_numItemsHeader.setText("Total No.");
         }
 
-        recyclerView = view.findViewById(R.id.currentOrderRecyclerView);
-        recyclerView = (RecyclerView) view.findViewById(R.id.currentOrderRecyclerView);
-        mAdapter = new CurrentOrderAdapter(this, OrderDAO.currentOrdersList, customer, isEnglish);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-        recyclerView.setAdapter(mAdapter);
-        doGetCurrentOrders(customer.getDebtorCode());
+        hasInternet = isNetworkAvailable();
+        if (!hasInternet) {
+            TextView lbl_noInternet = view.findViewById(R.id.lbl_noOrders);
+            lbl_noInternet.setVisibility(View.VISIBLE);
 
+            if (isEnglish.equals("Yes")) {
+                lbl_noInternet.setText("No internet connection");
+            } else {
+                lbl_noInternet.setText("没有网络");
+            }
+
+        } else {
+            recyclerView = view.findViewById(R.id.currentOrderRecyclerView);
+            recyclerView = (RecyclerView) view.findViewById(R.id.currentOrderRecyclerView);
+            mAdapter = new CurrentOrderAdapter(this, OrderDAO.currentOrdersList, customer, isEnglish);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+            recyclerView.setAdapter(mAdapter);
+            doGetCurrentOrders(customer.getDebtorCode());
+        }
         return view;
     }
 
@@ -110,14 +126,13 @@ public class CurrentOrderFragment extends Fragment {
                 mAdapter.update(OrderDAO.currentOrdersList);
 
                 if (data.size() == 0) {
+                    lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
+                    view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
+
                     if (isEnglish.equals("Yes")) {
-                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
-                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
                         lbl_noOrders.setText("No Current Orders");
                     } else {
-                        lbl_noOrders = view.findViewById(R.id.lbl_noOrders);
                         lbl_noOrders.setText("没有当前订单");
-                        view.findViewById(R.id.lbl_noOrders).setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -130,6 +145,12 @@ public class CurrentOrderFragment extends Fragment {
 
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -140,7 +161,6 @@ public class CurrentOrderFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
     }
-
 
     @Override
     public void onDetach() {
