@@ -123,11 +123,14 @@ public class CancelledOrderDetailFragment extends Fragment {
         doGetOrderDetails(orderID);
         doGetOrderQuantity(orderID);
 
-        TextView orderNo, cancelledStatus, address, deliveryDate, company, itemCount;
+        TextView orderNo, cancelledStatus, address, deliveryDate, company, itemCount, orderDetails, amountDetails, deliveryDetails;
         orderNo = (TextView) view.findViewById(R.id.orderID);
         deliveryDate = (TextView) view.findViewById(R.id.deliveredDate);
         itemCount = (TextView) view.findViewById(R.id.lbl_itemsCount);
         company = (TextView) view.findViewById(R.id.companyName);
+        orderDetails = (TextView) view.findViewById(R.id.lbl_order_details);
+        amountDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
+        deliveryDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
 
         orderNo.setText("#" + orderID);
 
@@ -142,7 +145,9 @@ public class CancelledOrderDetailFragment extends Fragment {
         }
 
         if (isEnglish.equals("Yes")){
-
+            orderDetails.setText(" Order Details");
+            amountDetails.setText(" Amount Details");
+            deliveryDetails.setText(" Delivery Details");
 
             if (numItems == 1){
                 itemCount.setText(" Product Details (" + numItems + " item)");

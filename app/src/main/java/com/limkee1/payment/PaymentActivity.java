@@ -88,7 +88,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         tp = myBundle.getDouble("totalPayable");
         walletDeduction = myBundle.getDouble("walletDeduction");
         totalAmount = myBundle.getDouble("totalAmount");
-        subtotal = tp;
+        subtotal = myBundle.getDouble("subtotal");;
         isEnglish = myBundle.getString("language");
         paperBagNeeded = myBundle.getInt("paperBagRequired");
 
@@ -139,6 +139,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
         bundle.putInt("paperBagRequired", paperBagNeeded);
         bundle.putString("deliveryDate", deliveryDate);
         bundle.putDouble("totalPayable", tp);
+        bundle.putDouble("subtotal", subtotal);
         bundle.putDouble("walletDeduction", walletDeduction);
         bundle.putDouble("totalAmount", totalAmount);
 
@@ -170,7 +171,7 @@ public class PaymentActivity extends BaseActivity implements PaymentFragment.OnF
                                         bp.saveCustomer(customer);
                                         bp.saveDeliveryDate(deliveryDate);
                                         bp.saveOrderList(orderList);
-                                        bp.execute(type, totalPayable, lastFourDigit, isEnglish, Integer.toString(paperBagNeeded), Double.toString(walletDeduction), Double.toString(totalAmount));
+                                        bp.execute(type, totalPayable, lastFourDigit, isEnglish, Integer.toString(paperBagNeeded), Double.toString(walletDeduction), Double.toString(totalAmount), Double.toString(subtotal));
                                     } else{
                                         progressBar.setVisibility(View.INVISIBLE);
                                         Toast.makeText(context, getResources().getString(R.string.cvc_error), Toast.LENGTH_SHORT).show();

@@ -32,6 +32,7 @@ public class PaymentFragment extends Fragment {
     private ArrayList<Product> orderList;
     private  double totalAmount;
     private  double walletDeduction;
+    private double subtotal;
     static PaymentFragment fragment;
 
     public PaymentFragment() {
@@ -60,6 +61,7 @@ public class PaymentFragment extends Fragment {
         orderList = bundle.getParcelableArrayList("orderList");
         totalAmount = bundle.getDouble("totalAmount");
         walletDeduction = bundle.getDouble("walletDeduction");
+        subtotal = bundle.getDouble("subtotal");
 
         if (getActivity() instanceof PaymentActivity) {
             if (isEnglish.equals("Yes")) {
@@ -86,6 +88,7 @@ public class PaymentFragment extends Fragment {
                 intent.putExtra("customer", customer);
                 intent.putExtra("deliveryDate", deliveryDate);
                 intent.putParcelableArrayListExtra("orderList", orderList);
+                intent.putExtra("subtotal", subtotal);
                 getActivity().startActivity(intent);
             } else{
                 getActivity().getFragmentManager().popBackStack();

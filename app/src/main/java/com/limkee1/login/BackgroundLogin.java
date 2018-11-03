@@ -24,10 +24,6 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-/**
- * Created by Miaozi on 21/6/18.
- */
-
 public class BackgroundLogin extends AsyncTask<String,Void,String> {
     private Context context;
     private String password;

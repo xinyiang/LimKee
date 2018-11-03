@@ -150,13 +150,15 @@ public class ConfirmOrderFragment extends Fragment {
         }
 
         //display delivery details data
-        TextView contact, company, numItems;
+        TextView contact, company, productDetails, orderDetails, amountDetails;
         EditText deliveryDate;
 
         contact = (TextView) view.findViewById(R.id.phone);
         company = (TextView) view.findViewById(R.id.companyName);
         deliveryDate = (EditText) view.findViewById(R.id.date);
-        numItems = (TextView) view.findViewById(R.id.lbl_items);
+        productDetails = (TextView) view.findViewById(R.id.lbl_items);
+        orderDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
+        amountDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
 
         if (customer.getDeliveryContact2() == null || customer.getDeliveryContact2().length() == 0) {
             contact.setText(customer.getDeliveryContact());
@@ -168,13 +170,15 @@ public class ConfirmOrderFragment extends Fragment {
         company.setText(customer.getCompanyName());
 
         if (isEnglish.equals("Yes")) {
+            orderDetails.setText(" Order Details");
+            amountDetails.setText(" Amount Details");
             if (orderList.size() == 1) {
-                numItems.setText(" Product Details (" + orderList.size() + " item)");
+                productDetails.setText(" Product Details (" + orderList.size() + " item)");
             } else {
-                numItems.setText(" Product Details (" + orderList.size() + " items)");
+                productDetails.setText(" Product Details (" + orderList.size() + " items)");
             }
         } else {
-            numItems.setText(" 订单样品 (" + orderList.size() + " 样)");
+            productDetails.setText(" 订单样品 (" + orderList.size() + " 样)");
         }
 
         String deliverDate = "";

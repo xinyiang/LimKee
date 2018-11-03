@@ -163,13 +163,15 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
         }
 
         //display delivery details data
-        TextView contact, company, numItems;
+        TextView contact, company, numItems, orderDetails, amountDetails;
         EditText deliveryDate;
 
         contact = (TextView) view.findViewById(R.id.phone);
         deliveryDate = (EditText) view.findViewById(R.id.date);
         numItems = (TextView) view.findViewById(R.id.lbl_items);
         company = (TextView) view.findViewById(R.id.companyName);
+        orderDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
+        amountDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
 
         if (customer.getDeliveryContact2() == null || customer.getDeliveryContact2().length() == 0) {
             contact.setText(customer.getDeliveryContact());
@@ -182,6 +184,8 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
 
 
         if (isEnglish.equals("Yes")) {
+            orderDetails.setText(" Order Details");
+            amountDetails.setText(" Amount Details");
             if (orderList.size() == 1) {
                 numItems.setText(" Product details (" + orderList.size() + " item)");
             } else {

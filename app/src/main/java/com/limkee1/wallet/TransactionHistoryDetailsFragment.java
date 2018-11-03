@@ -161,7 +161,7 @@ public class TransactionHistoryDetailsFragment extends Fragment {
 
         company.setText(customer.getCompanyName());
 
-        TextView subtotalAmt, tax, lbl_totalAmt, totalAmt, paidAmt, lbl_paidAmt, lbl_walletDeductedAmt, walletDeductedAmt;
+        TextView subtotalAmt, tax, lbl_totalAmt, totalAmt, paidAmt, lbl_paidAmt, lbl_walletDeductedAmt, walletDeductedAmt, orderDetails, amountDetails, deliveryDetails;
         DecimalFormat df = new DecimalFormat("#0.00");
         subtotalAmt = view.findViewById(R.id.subtotalAmt);
         lbl_paidAmt  = view.findViewById(R.id.lbl_paid_amt);
@@ -171,6 +171,16 @@ public class TransactionHistoryDetailsFragment extends Fragment {
         tax = view.findViewById(R.id.taxAmt);
         totalAmt = view.findViewById(R.id.totalAmt);
         lbl_totalAmt = view.findViewById(R.id.lbl_total_amt);
+        orderDetails = (TextView) view.findViewById(R.id.lbl_order_details);
+        amountDetails = (TextView) view.findViewById(R.id.lbl_amountDetails);
+        deliveryDetails = (TextView) view.findViewById(R.id.lbl_deliveryDetails);
+
+
+        if (isEnglish.equals("Yes")) {
+            orderDetails.setText(" Order Details");
+            amountDetails.setText(" Amount Details");
+            deliveryDetails.setText(" Delivery Details");
+        }
 
        // subtotal = transactionAmt;
         if (deduction == 1){
@@ -202,12 +212,15 @@ public class TransactionHistoryDetailsFragment extends Fragment {
         TextView orderDateTxt = view.findViewById(R.id.orderDate);
         String orderDate = od.getOrderDate();
 
+
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy h.mmaa");
-            Date datetime = expectedPattern.parse(orderDate);
+            SimpleDateFormat expectedPatt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            Date datetime = expectedPatt.parse(orderDate);
             String createdTimestamp = sdf.format(datetime);
             orderDateTxt.setText(createdTimestamp);
         } catch (Exception e){
+            System.out.println("Line 223 for transaction: " + e.getMessage());
             String date = orderDate.substring(8,10);
             String month = orderDate.substring(5,7);
             String year = orderDate.substring(0,4);

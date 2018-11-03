@@ -55,6 +55,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
     private String walletDeduction;
     private double reduceAmt;
     private String totalAmt;
+    private  String subtotal;
 
     BackgroundPayment(Context ctx, Activity act) {
         context = ctx;
@@ -97,6 +98,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
         paperBagNeeded = params[4];
         walletDeduction = params[5];
         totalAmt = params[6];
+        subtotal = params[7];
         reduceAmt = Double.parseDouble(walletDeduction);
 
         if(type.equals("pay_with_new_card")){
@@ -203,6 +205,7 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
             it.putExtra("language", isEnglish);
             it.putExtra("paperBagRequired", Integer.parseInt(paperBagNeeded));
             it.putExtra("walletDeduction", reduceAmt);
+            it.putExtra("subtotal", subtotal);
             it.putExtra("totalAmount", totalAmt);
             it.putParcelableArrayListExtra("orderList", orderList);
             context.startActivity(it);
@@ -272,9 +275,8 @@ public class BackgroundPayment extends AsyncTask<String,Void,String> {
 
         DecimalFormat df = new DecimalFormat("#0.00");
 
-        double totalAmount = Double.parseDouble(totalAmt);
-        double subtotalAmt = totalAmount*(100.0/107.0);
-        subtotalAmt = Double.parseDouble(df.format(subtotalAmt));
+        double subtotalAmount = Double.parseDouble(subtotal);
+        double subtotalAmt = Double.parseDouble(df.format(subtotalAmount));
         double paidAmt = Double.parseDouble(df.format(tp));
 
         compositeDisposable.add(postData.addSalesOrderDetails(ETADeliveryDate, subtotalAmt, paidAmt, orderNo)

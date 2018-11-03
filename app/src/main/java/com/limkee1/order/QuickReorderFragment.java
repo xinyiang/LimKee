@@ -206,42 +206,49 @@ public class QuickReorderFragment extends Fragment {
                         month = "0" + month;
                     }
 
-                    if(isEnglish.equals("Yes")) {
-                        builder.setMessage("Today's delivery is over! For tomorrow's delivery, please place order before tomorrow (" +  currentDay + "/" + month + "/" + yr  + ") " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM");
-                    } else {
-                        builder.setMessage("今日送货已结束! 若要在明天送货，请在明天 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0,cutoffTime.length()-3) +"前下单");
-                        // builder.setMessage("今日送货已结束! 若要在明日送货，请在" + currentDay + "/" + month + "/" + yr + "早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) +"前下单");
-                    }
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.dismiss();
+                    //if today is sunday, do not show delivery is over
+                    String todayDay = date.substring(8, date.length());
+
+                    Date todayDate = new Date(yr + "/" + month + "/" + todayDay);
+
+                    dayOfWeek = sundayFormat.format(todayDate);
+
+                    if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")){
+                        if(isEnglish.equals("Yes")) {
+                            builder.setMessage("For tomorrow's delivery, please place order before tomorrow (" +  currentDay + "/" + month + "/" + yr  + ") " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM");
+                        } else {
+                            builder.setMessage("若要在明天送货，请在明天 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0,cutoffTime.length()-3) +"前下单");
+                            // builder.setMessage("今日送货已结束! 若要在明日送货，请在" + currentDay + "/" + month + "/" + yr + "早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) +"前下单");
                         }
-                    });
-                    final AlertDialog ad = builder.create();
-                    ad.show();
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                        final AlertDialog ad = builder.create();
+                        ad.show();
+                    } else {
+
+                        if (isEnglish.equals("Yes")) {
+                            builder.setMessage("Today's delivery is over! For tomorrow's delivery, please place order before tomorrow (" + currentDay + "/" + month + "/" + yr + ") " + cutoffTime.substring(0, cutoffTime.length() - 3) + " AM");
+                        } else {
+                            builder.setMessage("今日送货已结束! 若要在明天送货，请在明天 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0, cutoffTime.length() - 3) + "前下单");
+                            // builder.setMessage("今日送货已结束! 若要在明日送货，请在" + currentDay + "/" + month + "/" + yr + "早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0,cutoffTime.length()-3)) +"前下单");
+                        }
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                        final AlertDialog ad = builder.create();
+                        ad.show();
+                    }
                 }
 
             } catch (Exception e){
                 System.out.println("Error" + e.getMessage());
             }
-
-            /*
-            if(isEnglish.equals("Yes")) {
-                builder.setMessage("Please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM for tomorrow's delivery");
-            } else {
-                builder.setMessage("明日订单请在早上" + ChineseCharUtility.getChineseTime(cutoffTime.substring(0, cutoffTime.length()-3)) + "前下单");
-            }
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-
-                    dialog.dismiss();
-                }
-            });
-            final AlertDialog ad = builder.create();
-            ad.show();
-            */
         }
-
     }
 
     @Override
