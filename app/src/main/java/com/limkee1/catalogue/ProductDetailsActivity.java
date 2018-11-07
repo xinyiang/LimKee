@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import com.limkee1.R;
 import com.limkee1.entity.Product;
-import com.limkee1.order.QuickReorderFragment;
 
 public class ProductDetailsActivity extends AppCompatActivity implements CatalogueFragment.OnFragmentInteractionListener, QuickReorderFragment.OnFragmentInteractionListener, ProductDetailsFragment.OnFragmentInteractionListener {
 

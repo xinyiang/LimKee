@@ -1,4 +1,4 @@
-package com.limkee1.order;
+package com.limkee1.payment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,10 +9,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

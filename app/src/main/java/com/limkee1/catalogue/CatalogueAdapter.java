@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
-import com.limkee1.order.QuickReorderFragment;
 import com.squareup.picasso.Picasso;
 import java.text.DecimalFormat;
 import java.util.ArrayList;

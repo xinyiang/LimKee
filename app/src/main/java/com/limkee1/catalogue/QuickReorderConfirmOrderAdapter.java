@@ -1,4 +1,4 @@
-package com.limkee1.order;
+package com.limkee1.catalogue;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

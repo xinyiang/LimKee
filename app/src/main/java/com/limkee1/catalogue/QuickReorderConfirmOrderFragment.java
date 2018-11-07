@@ -1,4 +1,4 @@
-package com.limkee1.order;
+package com.limkee1.catalogue;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,9 +26,9 @@ import com.limkee1.R;
 import com.limkee1.Utility.DateUtility;
 import com.limkee1.constant.HttpConstant;
 import com.limkee1.constant.PostData;
-import com.limkee1.dao.CatalogueDAO;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
+import com.limkee1.payment.NonPaymentActivity;
 import com.limkee1.payment.PaymentActivity;
 import java.text.DecimalFormat;
 import java.text.ParseException;

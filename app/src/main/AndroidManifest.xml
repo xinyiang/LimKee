@@ -41,11 +41,11 @@
             android:parentActivityName=".login.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".order.ConfirmOrderActivity"
+            android:name=".catalogue.ConfirmOrderActivity"
             android:parentActivityName=".navigation.NavigationActivity" />
         <activity
             android:name=".order.CurrentOrderDetailActivity"
-            android:parentActivityName=".order.ConfirmOrderActivity" />
+            android:parentActivityName=".catalogue.ConfirmOrderActivity" />
         <activity
             android:name=".payment.PaymentActivity"
             android:parentActivityName=".order.CurrentOrderDetailActivity" />
@@ -54,8 +54,8 @@
             android:label="@string/title_activity_confirmation"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".order.QuickReorderConfirmOrderActivity"
-            android:parentActivityName=".order.QuickReorderConfirmOrderActivity" />
+            android:name=".catalogue.QuickReorderConfirmOrderActivity"
+            android:parentActivityName=".catalogue.QuickReorderConfirmOrderActivity" />
         <activity android:name=".order.OrderHistoryDetailActivity" />
         <activity android:name=".order.CancelledOrderDetailActivity" />
         <activity android:name=".order.CancelledOrderActivity" />
@@ -71,8 +71,8 @@
         <activity
             android:name=".wallet.TransactionHistoryActivity"
             android:parentActivityName=".wallet.TransactionHistoryActivity" />
-        <activity android:name=".order.NonPaymentActivity" />
-        <activity android:name=".order.NonPaymentConfirmationActivity" />
+        <activity android:name=".payment.NonPaymentActivity" />
+        <activity android:name=".payment.NonPaymentConfirmationActivity" />
     </application>
 
 </manifest>

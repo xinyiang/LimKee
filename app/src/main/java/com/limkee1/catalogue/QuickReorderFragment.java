@@ -1,4 +1,4 @@
-package com.limkee1.order;
+package com.limkee1.catalogue;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -29,6 +29,7 @@ import com.limkee1.dao.CatalogueDAO;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
 import com.limkee1.navigation.NavigationActivity;
+
 import android.support.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;

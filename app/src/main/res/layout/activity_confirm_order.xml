@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.limkee1.order.ConfirmOrderActivity">
+    tools:context="com.limkee1.catalogue.ConfirmOrderActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"

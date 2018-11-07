@@ -1,4 +1,4 @@
-package com.limkee1.order;
+package com.limkee1.payment;
 
 import android.content.Context;
 import android.net.Uri;
@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.limkee1.R;
 import com.limkee1.entity.Customer;
-import com.limkee1.navigation.NavigationActivity;
-import retrofit2.Retrofit;
 
 public class NonPaymentFragment extends Fragment {
     private NonPaymentFragment.OnFragmentInteractionListener mListener;

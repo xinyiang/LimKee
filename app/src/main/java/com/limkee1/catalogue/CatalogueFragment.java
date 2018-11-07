@@ -2,7 +2,6 @@ package com.limkee1.catalogue;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,7 +34,7 @@ import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
 import com.limkee1.navigation.NavigationActivity;
 import com.limkee1.notification.AlarmReceiver;
-import com.limkee1.order.ConfirmOrderActivity;
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

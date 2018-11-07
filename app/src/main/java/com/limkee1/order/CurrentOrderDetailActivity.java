@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 
 import com.limkee1.BaseActivity;
 import com.limkee1.R;
+import com.limkee1.catalogue.ConfirmOrderFragment;
 
 public class CurrentOrderDetailActivity extends BaseActivity implements ConfirmOrderFragment.OnFragmentInteractionListener, CurrentOrderFragment.OnFragmentInteractionListener, CurrentOrderDetailFragment.OnFragmentInteractionListener {
 
