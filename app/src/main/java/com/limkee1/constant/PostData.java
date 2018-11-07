@@ -78,7 +78,7 @@ public interface PostData {
     @GET("dashboard/getearliestyear")
     Call<Integer> getEarliestYear(@Query("customerCode") String customerCode);
 
-   @GET("dashboard/getaveragequantitycatalogue")
+    @GET("dashboard/getaveragequantitycatalogue")
     Call<ArrayList<Product>> getAverageQuantity(@Query("customerCode") String customerCode);
 
     @GET("wallet/getwalletamount")

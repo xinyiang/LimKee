@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.limkee1.R;
+import com.limkee1.Utility.DateUtility;
 import com.limkee1.constant.HttpConstant;
 import com.limkee1.constant.PostData;
 import com.limkee1.entity.Customer;
@@ -58,6 +59,8 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
     private Chart chart;
     private boolean checkBoxStatus;
     boolean hasInternet;
+    private int earliestYear;
+    private int length;
 
     public TotalSalesFragment(){}
 
@@ -75,11 +78,42 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
+        earliestYear = bundle.getInt("earliestYear");
+
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/M/dd hh:mm:ss");
+            String today = sdf.format(new Date());
+            systemYear = today.substring(0, 4);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        earliestYear = 2018;
+
+        if (earliestYear == 0 || earliestYear == Integer.parseInt(systemYear)){
+            earliestYear = Integer.parseInt(systemYear);
+            length = 0;
+        } else {
+            length = Integer.parseInt(systemYear) - earliestYear;
+        }
+
+        years = new String[length+2];
 
         if (isEnglish.equals("Yes")){
-            years = new String[]{"Year","2017","2018"};
+            //years = new String[]{"Year","2017","2018"};
+            years[0] = "Year";
         } else {
-            years = new String []{"年","2017","2018"};
+            //years = new String []{"年","2017","2018"};
+            years[0] = "年";
+
+        }
+
+        int size = 1;
+        for (int i = earliestYear; i<= Integer.parseInt(systemYear);i++){
+            years[size] = Integer.toString(i);
+            size ++;
         }
 
         try {

@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -33,6 +34,7 @@ import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.Utils;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.limkee1.R;
+import com.limkee1.Utility.DateUtility;
 import com.limkee1.constant.HttpConstant;
 import com.limkee1.constant.PostData;
 import com.limkee1.entity.Customer;
@@ -44,11 +46,11 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TopPurchasedFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private TopPurchasedFragment.OnFragmentInteractionListener mListener;
@@ -93,23 +95,21 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
+        earliestYear = bundle.getInt("earliestYear");
 
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/M/dd hh:mm:ss");
             String today = sdf.format(new Date());
             systemYear = today.substring(0, 4);
             numMonth = Integer.parseInt(today.substring(5, 6));
-            systemMonth = getMonth(numMonth);
-            systemMonthInChinese = getChineseMonth(systemMonth);
+            systemMonth = DateUtility.getMonth(numMonth);
+            systemMonthInChinese = DateUtility.getChineseMonth(systemMonth);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        //call api to get customer's earliest year of orders
-        earliestYear = 2017;
-        getEarliestYear(customer.getDebtorCode());
-
+        earliestYear = 2018;
 
         if (earliestYear == 0 || earliestYear == Integer.parseInt(systemYear)){
             earliestYear = Integer.parseInt(systemYear);
@@ -486,6 +486,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 int data = response.body();
+                System.out.println("data is " + data);
                 earliestYear = data;
             }
 
@@ -494,68 +495,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
                 System.out.println(t.getMessage());
             }
         });
-    }
-
-    private String getChineseMonth(String engMonth){
-        String chineseMth = "";
-
-        if (engMonth.equals("Jan")){
-            chineseMth = "一月";
-        } else if (engMonth.equals("Feb")){
-            chineseMth = "二月";
-        } else if (engMonth.equals("Mar")){
-            chineseMth = "三月";
-        } else if (engMonth.equals("Apr")){
-            chineseMth = "四月";
-        } else if (engMonth.equals("May")){
-            chineseMth = "五月";
-        } else if (engMonth.equals("Jun")){
-            chineseMth = "六月";
-        } else if (engMonth.equals("Jul")){
-            chineseMth = "七月";
-        } else if (engMonth.equals("Aug")){
-            chineseMth = "八月";
-        } else if (engMonth.equals("Sep")){
-            chineseMth = "九月";
-        } else if (engMonth.equals("Oct")){
-            chineseMth = "十月";
-        } else if (engMonth.equals("Nov")){
-            chineseMth = "十一月";
-        } else if (engMonth.equals("Dec")){
-            chineseMth = "十二月";
-        }
-        return  chineseMth;
-    }
-
-    private String getMonth(int numMonth){
-        String engMonth = "";
-
-        if (numMonth == 1) {
-            engMonth = "Jan";
-        } else if (numMonth == 2) {
-            engMonth = "Feb";
-        } else if (numMonth == 3) {
-            engMonth = "Mar";
-        } else if (numMonth == 4) {
-            engMonth = "Apr";
-        } else if (numMonth == 5) {
-            engMonth = "May";
-        } else if (numMonth == 6) {
-            engMonth = "Jun";
-        } else if (numMonth == 7) {
-            engMonth = "Jul";
-        } else if (numMonth == 8) {
-            engMonth = "Aug";
-        } else if (numMonth == 9) {
-            engMonth = "Sep";
-        } else if (numMonth == 10) {
-            engMonth = "Oct";
-        } else if (numMonth == 11) {
-            engMonth = "Nov";
-        }  else if (numMonth == 12) {
-            engMonth = "Dec";
-        }
-        return engMonth;
     }
 
     private boolean isNetworkAvailable() {
