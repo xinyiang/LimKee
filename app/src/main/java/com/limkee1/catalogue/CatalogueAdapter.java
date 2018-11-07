@@ -182,7 +182,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
 
                                 if (quantity % qtyMultiples != 0) {
                                     if (isEnglish.equals("Yes")) {
-                                        new AlertDialog.Builder(itemView.getContext())
+                                        final AlertDialog ad = new AlertDialog.Builder(itemView.getContext())
+                                        //new AlertDialog.Builder(itemView.getContext())
                                                 .setMessage("Incorrect quantity for " + product.getDescription() + ". Quantity must be in multiples of " + qtyMultiples + ". Eg: " + qtyMultiples + " , " + (qtyMultiples + qtyMultiples) + ", " + (qtyMultiples + qtyMultiples + qtyMultiples) + " and so on.")
                                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                     @Override
@@ -198,8 +199,11 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                                     }
                                                 })
                                                 .show();
+                                        TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                        textView.setTextSize(20);
                                     } else {
-                                        new AlertDialog.Builder(itemView.getContext())
+                                        final AlertDialog ad = new AlertDialog.Builder(itemView.getContext())
+                                        //new AlertDialog.Builder(itemView.getContext())
                                                 .setMessage(product.getDescription2() + "的数量有误, 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，" + (qtyMultiples + qtyMultiples) + "等等")
                                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                     @Override
@@ -215,6 +219,8 @@ public class CatalogueAdapter extends RecyclerView.Adapter<CatalogueAdapter.View
                                                     }
                                                 })
                                                 .show();
+                                        TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                        textView.setTextSize(20);
                                     }
                                 } else {
 

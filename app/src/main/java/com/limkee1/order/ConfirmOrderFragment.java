@@ -238,7 +238,6 @@ public class ConfirmOrderFragment extends Fragment {
                     }
                     deliverDate = day + "/" + month + "/" + yr;
                 }
-                //System.out.println("delivery time before cut off " + deliverDate + " last day " + lastDay);
             } else {
                 //System.out.println("delivery time after cut off");
                 //set delivery date to tomorrow's date by default if its not a sunday
@@ -258,7 +257,6 @@ public class ConfirmOrderFragment extends Fragment {
                     if (nextDay>lastDay){
                         nextDay = 1;
                     }
-                    //System.out.println("line 66 delivery time after cut off is a sunday " + nextDayDate);
                 }
 
                 if (nextDay == 1 && Integer.parseInt(month) != 12) {
@@ -288,7 +286,6 @@ public class ConfirmOrderFragment extends Fragment {
                         deliverDate = "01" + "/" + newMonth + "/" + yr;
                     }
 
-                    //System.out.println("line 281 delivery time after cut off for new MONTH " + deliverDate);
                 } else if (nextDay == 1 && Integer.parseInt(month) == 12) {
                     //new year
                     int newYr = Integer.parseInt(yr) + 1;
@@ -301,13 +298,11 @@ public class ConfirmOrderFragment extends Fragment {
 
                     if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
                         newDay = nextDay+1;
-                        //System.out.println("line 129 delivery time after cut off for a NEW YEAR is a sunday " + nextDayDate);
                     }
 
                     String newYearDay = "0" + newDay;   //either 1st Jan or 2nd Jan
 
                     deliverDate = newYearDay + "/" + "01" + "/" + newYr;
-                    //System.out.println("line 295 delivery time after cut off for new year " + deliverDate);
 
                 } else {
                     //within same month
@@ -323,7 +318,6 @@ public class ConfirmOrderFragment extends Fragment {
                     }
 
                     deliverDate = nextD + "/" + month + "/" + yr;
-                    //System.out.println("line 319 delivery time after cut off " + deliverDate);
                 }
             }
         } catch (ParseException e) {
@@ -342,10 +336,10 @@ public class ConfirmOrderFragment extends Fragment {
             String month = deliverDate.substring(3,5);
             String yr = deliverDate.substring(6);
             ETADeliveryDate = yr + "-" + month + "-" + day;
-            System.out.println("ETA in Confirm Order line in line 323 is " + ETADeliveryDate);
+            System.out.println("ETA in Confirm Order line in line 339 is " + ETADeliveryDate);
 
         } catch (Exception e) {
-            System.out.println("Error in Confirm Order line in line 326 " + e.getMessage());
+            System.out.println("Error in Confirm Order line in line 342 " + e.getMessage());
         }
 
         return view;
@@ -381,7 +375,7 @@ public class ConfirmOrderFragment extends Fragment {
                         if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
                             //show error msg for no delivery
                             if (isEnglish.equals("Yes")) {
-                                new AlertDialog.Builder(view.getContext())
+                                final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                         .setMessage("There is no delivery on Sunday. Please choose another date.")
                                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                             @Override
@@ -391,10 +385,12 @@ public class ConfirmOrderFragment extends Fragment {
                                             }
                                         })
                                         .show();
+                                TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                textView.setTextSize(20);
                             } else {
-                                new AlertDialog.Builder(view.getContext())
+                                final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                         .setMessage("星期日没有送货，请选其他送货日期")
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 //finish();
@@ -402,6 +398,8 @@ public class ConfirmOrderFragment extends Fragment {
                                             }
                                         })
                                         .show();
+                                TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                textView.setTextSize(20);
                             }
                         } else {
 
@@ -423,8 +421,7 @@ public class ConfirmOrderFragment extends Fragment {
                             if (dateSpecified.before(today)) {
 
                                 if (isEnglish.equals("Yes")) {
-
-                                    new AlertDialog.Builder(view.getContext())
+                                    final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                             .setMessage("Invalid delivery date! Please select another delivery date.")
                                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                 @Override
@@ -434,10 +431,12 @@ public class ConfirmOrderFragment extends Fragment {
                                                 }
                                             })
                                             .show();
+                                    TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                    textView.setTextSize(20);
                                 } else {
-                                    new AlertDialog.Builder(view.getContext())
+                                    final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                             .setMessage("送货日期错误, 请选送货日期")
-                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //finish();
@@ -445,6 +444,8 @@ public class ConfirmOrderFragment extends Fragment {
                                                 }
                                             })
                                             .show();
+                                    TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                    textView.setTextSize(20);
                                 }
                             }
                             SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
@@ -484,8 +485,7 @@ public class ConfirmOrderFragment extends Fragment {
                 String deliveryDateText = deliveryDate.getText().toString();
                 if (deliveryDateText.equals("DD/MM/YYYY") || deliveryDateText.equals("日/月/年")) {
                     if (isEnglish.equals("Yes")) {
-
-                        new AlertDialog.Builder(view.getContext())
+                        final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                 .setMessage("Please select delivery date")
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
@@ -494,8 +494,10 @@ public class ConfirmOrderFragment extends Fragment {
                                     }
                                 })
                                 .show();
+                        TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                        textView.setTextSize(20);
                     } else {
-                        new AlertDialog.Builder(view.getContext())
+                        final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                 .setMessage("请选送货日期")
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
@@ -504,6 +506,8 @@ public class ConfirmOrderFragment extends Fragment {
                                     }
                                 })
                                 .show();
+                        TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                        textView.setTextSize(20);
                     }
 
                 } else {
@@ -536,8 +540,7 @@ public class ConfirmOrderFragment extends Fragment {
                             System.out.println("delivery time after cut off");
                             //show error message
                             if (isEnglish.equals("Yes")) {
-
-                                new AlertDialog.Builder(view.getContext())
+                                final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                         .setMessage("Today's delivery is over! Please choose another delivery date.")
                                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                             @Override
@@ -546,16 +549,20 @@ public class ConfirmOrderFragment extends Fragment {
                                             }
                                         })
                                         .show();
+                                TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                textView.setTextSize(20);
                             } else {
-                                new AlertDialog.Builder(view.getContext())
+                                final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                         .setMessage("今日送货已结束，请选其他送货日期")
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 //finish();
                                             }
                                         })
                                         .show();
+                                TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                textView.setTextSize(20);
                             }
                         }
 

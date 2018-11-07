@@ -2,6 +2,7 @@ package com.limkee1.catalogue;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -122,17 +123,25 @@ public class CatalogueFragment extends Fragment {
                 //format cut off time to remove seconds
                 notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for today's delivery";
                 builder.setMessage("For today's delivery, please place order before " + cutoffTime.substring(0, cutoffTime.length()-3) + " AM today");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
             } else {
                 notif = "今日订单请在早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单";
                 builder.setMessage("若要今日送货，请在今天早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单");
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
             }
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-                }
-            });
+
             final AlertDialog ad = builder.create();
             ad.show();
+            TextView textView = (TextView) ad.findViewById(android.R.id.message);
+            textView.setTextSize(20);
         } else {
             System.out.println("current time after cut off");
             //check if tomorrow is sunday
@@ -185,18 +194,26 @@ public class CatalogueFragment extends Fragment {
                         //do not push message on Sunday
                         notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM on Monday for Monday's delivery";
                         builder.setMessage("Today's delivery is over! For Monday's delivery, please place order before Monday ("  + currentDay + "/" + month + "/" + yr + ") " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM");
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
                     } else {
                         //do not push message on Sunday
                         notif = "星期一订单请在当日早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单";
                         builder.setMessage("今日送货已结束! 若要在星期一送货，请在当日 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单");
+
+                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
                     }
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.dismiss();
-                        }
-                    });
                     final AlertDialog ad = builder.create();
                     ad.show();
+                    TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                    textView.setTextSize(20);
                 } else {
 
                     if (tmrDate > lastDay) {
@@ -225,32 +242,46 @@ public class CatalogueFragment extends Fragment {
                         if(isEnglish.equals("Yes")) {
                             notif = "Please place order before tomorrow " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for tomorrow's delivery";
                             builder.setMessage("For tomorrow's delivery, please place order before tomorrow (" +  currentDay + "/" + month + "/" + yr  + ") " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM");
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                }
+                            });
                         } else {
                             notif = "若要在明天送货, 请在明天早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单";
                             builder.setMessage("若要在明天送货，请在明天 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0,cutoffTime.length()-3) +"前下单");
+                            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                }
+                            });
                         }
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                            }
-                        });
                         final AlertDialog ad = builder.create();
                         ad.show();
+                        TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                        textView.setTextSize(20);
                     } else {
                         if(isEnglish.equals("Yes")) {
                             notif = "Please place order before " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM for tomorrow's delivery";
-                            builder.setMessage("Today's delivery is over! For tomorrow's delivery, please place order before tomorrow (" +  currentDay + "/" + month + "/" + yr  + ") " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM");
+                           builder.setMessage("Today's delivery is over! For tomorrow's delivery, please place order before tomorrow (" +  currentDay + "/" + month + "/" + yr  + ") " + cutoffTime.substring(0,cutoffTime.length()-3) + " AM");
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                }
+                            });
                         } else {
                             notif = "明日订单请在早上" + cutoffTime.substring(0,cutoffTime.length()-3) + "前下单";
                             builder.setMessage("今日送货已结束! 若要在明天送货，请在明天 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0,cutoffTime.length()-3) +"前下单");
+                            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                }
+                            });
                         }
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                            }
-                        });
                         final AlertDialog ad = builder.create();
                         ad.show();
+                        TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                        textView.setTextSize(20);
                     }
                 }
 
@@ -390,23 +421,30 @@ public class CatalogueFragment extends Fragment {
                     }
                 }
 
+
                 //for the last product that has qty being edited: when user did not click tick in keyboard and click back and Next button
                 if (invalidItem >= 1) {
                     if (isEnglish.equals("Yes")) {
-                        new android.support.v7.app.AlertDialog.Builder(view.getContext())
+                        final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                 .setMessage("Incorrect quantity for " + invalidDesc + ". Quantity must be in multiples of " + qtyMultiples + ". Eg: " + qtyMultiples + " , " + (qtyMultiples + qtyMultiples) + ", " + (qtyMultiples + qtyMultiples + qtyMultiples) + " and so on.")
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
                                         //reset edit text quantity to 0 in edit text
+                                        //dialog.getButton(Dialog.BUTTON_POSITIVE).setTextSize(40);
+
                                     }
                                 })
+
                                 .show();
+                        TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                        textView.setTextSize(20);
                     } else {
-                        new android.support.v7.app.AlertDialog.Builder(view.getContext())
+                        final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
+                        //new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                 .setMessage(invalidDesc2 + "的数量有误, 数量必须是" + qtyMultiples + "的倍数，例如" + qtyMultiples + "，" + (qtyMultiples + qtyMultiples) + "等等")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
@@ -414,12 +452,15 @@ public class CatalogueFragment extends Fragment {
                                     }
                                 })
                                 .show();
+                        TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                        textView.setTextSize(20);
                     }
                 } else {
                     //check if subtotal hits minimum requirements
                     if (calculateSubtotal(orderList) < 30) {
                         if (isEnglish.equals("Yes")) {
-                            new AlertDialog.Builder(getContext())
+                            final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(getContext())
+                            //new AlertDialog.Builder(getContext())
                                     .setMessage("Minimum order is $30.00.")
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
@@ -428,16 +469,21 @@ public class CatalogueFragment extends Fragment {
                                         }
                                     })
                                     .show();
+                            TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                            textView.setTextSize(20);
                         } else {
-                            new AlertDialog.Builder(getContext())
+                            final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(getContext())
+                            //new AlertDialog.Builder(getContext())
                                     .setMessage("订单总额最少要 $30.00")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             //finish();
                                         }
                                     })
                                     .show();
+                            TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                            textView.setTextSize(20);
                         }
 
                     } else {

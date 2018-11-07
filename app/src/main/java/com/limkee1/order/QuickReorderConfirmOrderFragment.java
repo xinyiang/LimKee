@@ -241,7 +241,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     if (todayDay>lastDay){
                         todayDay = lastDay;
                     }
-                    //System.out.println("line 56 delivery time before cut off time is a sunday " + todayDay);
                     String currentDay = "";
                     if (todayDay < 10){
                         currentDay = "0" + todayDay;
@@ -260,7 +259,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     }
                     deliverDate = day + "/" + month + "/" + yr;
                 }
-                //System.out.println("delivery time before cut off " + deliverDate + " last day " + lastDay);
             } else {
                 //System.out.println("delivery time after cut off");
                 //set delivery date to tomorrow's date by default if its not a sunday
@@ -280,7 +278,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     if (nextDay>lastDay){
                         nextDay = 1;
                     }
-                    //System.out.println("line 66 delivery time after cut off is a sunday " + nextDayDate);
                 }
 
                 if (nextDay == 1 && Integer.parseInt(month) != 12) {
@@ -317,20 +314,16 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     int newDay = 1;
 
                     //need to check new year day is a Sunday eg: 01/01/2023
-
                     Date newYear = new Date(newYr + "/" +  "01" + "/" + "01");
                     dayOfWeek = sundayFormat.format(newYear);
 
                     if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
                         newDay = nextDay+1;
-                        //System.out.println("line 129 delivery time after cut off for a NEW YEAR is a sunday " + nextDayDate);
                     }
 
                     String newYearDay = "0" + newDay;   //either 1st Jan or 2nd Jan
 
                     deliverDate = newYearDay + "/" + "01" + "/" + newYr;
-                    //System.out.println("line 295 delivery time after cut off for new year " + deliverDate);
-
                 } else {
                     //within same month
                     String nextD = "";
@@ -345,7 +338,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                     }
 
                     deliverDate = nextD + "/" + month + "/" + yr;
-                    //System.out.println("line 319 delivery time after cut off " + deliverDate);
                 }
             }
         } catch (ParseException e) {
@@ -364,10 +356,8 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             String month = deliverDate.substring(3,5);
             String yr = deliverDate.substring(6);
             ETADeliveryDate = yr + "-" + month + "-" + day;
-            System.out.println("ETA in Quick Reorder Confirm Order line in line 323 is " + ETADeliveryDate);
-
         } catch (Exception e) {
-            System.out.println("Error in Quick Reorder Confirm Order line in line 326 " + e.getMessage());
+            System.out.println("Error in Quick Reorder Confirm Order line in line 360 " + e.getMessage());
         }
 
         return view;
@@ -403,7 +393,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                         if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
                             //show error msg for no delivery
                             if (isEnglish.equals("Yes")) {
-                                new AlertDialog.Builder(view.getContext())
+                                final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                         .setMessage("There is no delivery on Sunday. Please choose another date.")
                                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                             @Override
@@ -413,10 +403,12 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                             }
                                         })
                                         .show();
+                                TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                textView.setTextSize(20);
                             } else {
-                                new AlertDialog.Builder(view.getContext())
+                                final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                         .setMessage("星期日没有送货，请选其他送货日期")
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 //finish();
@@ -424,6 +416,8 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                             }
                                         })
                                         .show();
+                                TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                textView.setTextSize(20);
                             }
 
                         } else {
@@ -447,8 +441,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                             if (dateSpecified.before(today)) {
 
                                 if (isEnglish.equals("Yes")) {
-
-                                    new AlertDialog.Builder(view.getContext())
+                                    final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                             .setMessage("Invalid delivery date! Please select another delivery date.")
                                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                 @Override
@@ -458,10 +451,12 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                                 }
                                             })
                                             .show();
+                                    TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                    textView.setTextSize(20);
                                 } else {
-                                    new AlertDialog.Builder(view.getContext())
+                                    final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                             .setMessage("送货日期错误, 请选送货日期")
-                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //finish();
@@ -469,6 +464,8 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                                 }
                                             })
                                             .show();
+                                    TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                    textView.setTextSize(20);
                                 }
                             }
 
@@ -510,7 +507,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                 if (deliveryDateText.equals("DD/MM/YYYY") || deliveryDateText.equals("日/月/年")) {
                     if (isEnglish.equals("Yes")) {
 
-                        new AlertDialog.Builder(view.getContext())
+                        final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                 .setMessage("Please select delivery date")
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
@@ -519,16 +516,20 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                     }
                                 })
                                 .show();
+                        TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                        textView.setTextSize(20);
                     } else {
-                        new AlertDialog.Builder(view.getContext())
+                        final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                 .setMessage("请选送货日期")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
                                     }
                                 })
                                 .show();
+                        TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                        textView.setTextSize(20);
                     }
                 } else {
                     //check if paper bag is required
@@ -558,8 +559,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                             System.out.println("delivery time after cut off");
                             //show error message
                             if (isEnglish.equals("Yes")) {
-
-                                new AlertDialog.Builder(view.getContext())
+                                final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                         .setMessage("Today's delivery is over. Please choose another delivery date.")
                                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                             @Override
@@ -568,16 +568,20 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                             }
                                         })
                                         .show();
+                                TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                textView.setTextSize(20);
                             } else {
-                                new AlertDialog.Builder(view.getContext())
+                                final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                         .setMessage("今日送货已结束，请选其他送货日期")
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 //finish();
                                             }
                                         })
                                         .show();
+                                TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                                textView.setTextSize(20);
                             }
                         }
 

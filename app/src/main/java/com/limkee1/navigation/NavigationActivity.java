@@ -130,7 +130,7 @@ public class NavigationActivity extends BaseActivity implements
                         ad.show();
                     } else {
                         builder.setMessage("没有网络");
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.dismiss();
                             }
