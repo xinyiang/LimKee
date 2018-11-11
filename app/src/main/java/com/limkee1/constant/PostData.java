@@ -1,7 +1,6 @@
 package com.limkee1.constant;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import com.limkee1.entity.Order;
@@ -26,6 +25,11 @@ public interface PostData {
 
     @GET("catalogue/getlastpaparbag")
     Call<Integer> getLastOrderPaperBag(@Query("customerCode") String customerCode);
+
+    //not used
+    @FormUrlEncoded
+    @POST("catalogue/getcutofftime")
+    Observable<String> getCutOffTime(@Field("customerCode") String customerCode);
 
     @GET("get-order/currentorder")
     Call<ArrayList<Order>> getCurrentOrders(@Query("customerCode") String customerCode);
@@ -75,8 +79,14 @@ public interface PostData {
     @GET("dashboard/getaveragesales")
     Call<LinkedHashMap<String,Double>> getAverageSales(@Query("selectedYear") String selectedYear);
 
-    @GET("dashboard/getearliestyear")
-    Call<Integer> getEarliestYear(@Query("customerCode") String customerCode);
+    //not used
+    @GET("catalogue/getearliestyear")
+    Call<Integer> getOrderYear(@Query("customerCode") String customerCode);
+
+    //not used
+    @FormUrlEncoded
+    @POST("dashboard/getearliestorderyear")
+    Observable<Integer> getEarliestOrderYear(@Field("customerCode") String customerCode);
 
     @GET("dashboard/getaveragequantitycatalogue")
     Call<ArrayList<Product>> getAverageQuantity(@Query("customerCode") String customerCode);
@@ -97,7 +107,5 @@ public interface PostData {
     @FormUrlEncoded
     @POST("wallet/addtransaction")
     Observable<Boolean> addTransaction(@Field("orderNo") String orderNo, @Field("amount") double amount);
-
-
 }
 

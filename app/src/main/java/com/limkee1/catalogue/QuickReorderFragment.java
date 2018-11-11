@@ -29,7 +29,6 @@ import com.limkee1.dao.CatalogueDAO;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
 import com.limkee1.navigation.NavigationActivity;
-
 import android.support.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -110,28 +109,99 @@ public class QuickReorderFragment extends Fragment {
 
         //compare current time is < cut off time
         if (currentTimestamp.before(cutoffTimestamp)) {
-            if (isEnglish.equals("Yes")) {
-                //format cut off time to remove seconds
-                builder.setMessage("For today's delivery, please place order before " + cutoffTime.substring(0, cutoffTime.length() - 3) + " AM today");
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                SimpleDateFormat sundayFormat = new SimpleDateFormat("EEEE");
 
-                        dialog.dismiss();
+                String dayOfWeek = "";
+                String currentDate = "";
+
+                Date timeNow = new Date();
+                currentDate = sdf.format(timeNow);
+
+                String date = currentDate.substring(0, 10);
+
+                //tomorrow date is +1 of today date
+                int tmrDate = Integer.parseInt(date.substring(8, date.length()));
+                tmrDate += 1;
+                String day = Integer.toString(tmrDate);
+                String month = date.substring(5, 7);
+                String yr = date.substring(0, 4);
+
+                //if today is sunday, do not show delivery is over
+                String todayDay = date.substring(8, date.length());
+
+                Date todayDate = new Date(yr + "/" + month + "/" + todayDay);
+
+                dayOfWeek = sundayFormat.format(todayDate);
+
+                int lastDay = DateUtility.getLastDayOfMonth(month);
+
+                if (dayOfWeek.equals("Sunday") || dayOfWeek.equals("Sun")) {
+
+                    int followingDay = Integer.parseInt(day);
+                    followingDay = followingDay + 1;
+
+                    if (followingDay > lastDay) {
+                        followingDay = lastDay;
                     }
-                });
-            } else {
-                builder.setMessage("若要今日送货，请在今天早上" + cutoffTime.substring(0, cutoffTime.length() - 3) + "前下单");
-                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
+
+                    String currentDay = "";
+                    if (followingDay < 10){
+                        currentDay = "0" + followingDay;
+                    } else {
+                        currentDay = Integer.toString(followingDay);
                     }
-                });
+
+                    if (month.length() == 1){
+                        month = "0" + month;
+                    }
+
+                    if (isEnglish.equals("Yes")) {
+                        builder.setMessage("For tomorrow's delivery, please place order before tomorrow (" + currentDay + "/" + month + "/" + yr + ") " + cutoffTime.substring(0, cutoffTime.length() - 3) + " AM");
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                    } else {
+                        builder.setMessage("若要在明天送货，请在明天 (" + currentDay + "/" + month + "/" + yr + ") 早上" + cutoffTime.substring(0, cutoffTime.length() - 3) + "前下单");
+                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                    }
+                    final AlertDialog ad = builder.create();
+                    ad.show();
+                    TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                    textView.setTextSize(20);
+                } else {
+                    if (isEnglish.equals("Yes")) {
+                        //format cut off time to remove seconds
+                        builder.setMessage("For today's delivery, please place order before " + cutoffTime.substring(0, cutoffTime.length() - 3) + " AM today");
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                    } else {
+                        builder.setMessage("若要今日送货，请在今天早上" + cutoffTime.substring(0, cutoffTime.length() - 3) + "前下单");
+                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                    }
+
+                    final AlertDialog ad = builder.create();
+                    ad.show();
+                    TextView textView = (TextView) ad.findViewById(android.R.id.message);
+                    textView.setTextSize(20);
+                }
+            } catch (Exception e){
+
             }
-
-            final AlertDialog ad = builder.create();
-            ad.show();
-            TextView textView = (TextView) ad.findViewById(android.R.id.message);
-            textView.setTextSize(20);
         } else {
 
             //check if tomorrow is sunday

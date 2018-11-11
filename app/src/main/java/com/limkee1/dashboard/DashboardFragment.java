@@ -13,18 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.limkee1.R;
-import com.limkee1.constant.HttpConstant;
-import com.limkee1.constant.PostData;
 import com.limkee1.entity.Customer;
 import com.limkee1.navigation.NavigationActivity;
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DashboardFragment extends Fragment {
     private DashboardFragment.OnFragmentInteractionListener mListener;
@@ -34,8 +26,6 @@ public class DashboardFragment extends Fragment {
     private String isEnglish;
     private Customer customer;
     private Bundle myBundle;
-    public static Retrofit retrofit;
-    public  int earliestYear;
 
     public DashboardFragment() {
     }
@@ -54,7 +44,6 @@ public class DashboardFragment extends Fragment {
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
-        getEarliestYear(customer.getDebtorCode());
     }
 
     @Override
@@ -69,8 +58,6 @@ public class DashboardFragment extends Fragment {
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
-        getEarliestYear(customer.getDebtorCode());
-
     }
 
     // Add Fragments to Tabs
@@ -82,8 +69,6 @@ public class DashboardFragment extends Fragment {
         myBundle = new Bundle();
         myBundle.putString("language", isEnglish);
         myBundle.putParcelable("customer", customer);
-        getEarliestYear(customer.getDebtorCode());
-        myBundle.putInt("earliestYear", earliestYear);
 
         salesFragment.setArguments(myBundle);
         topProductFragment.setArguments(myBundle);
@@ -173,31 +158,6 @@ public class DashboardFragment extends Fragment {
         tabs.setupWithViewPager(viewPager);
 
         return view;
-    }
-
-    private void getEarliestYear(String customerCode) {
-        if (retrofit == null) {
-            retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(HttpConstant.BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-        }
-        PostData service = retrofit.create(PostData.class);
-        Call<Integer> call = service.getEarliestYear(customerCode);
-        call.enqueue(new Callback<Integer>() {
-            @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
-                int data = response.body();
-                System.out.println("data in main dashboard is " + data + "CUSTOMER " + customerCode);
-                earliestYear = data;
-
-            }
-
-            @Override
-            public void onFailure(Call<Integer> call, Throwable t) {
-                System.out.println(t.getMessage());
-            }
-        });
     }
 
     @Override

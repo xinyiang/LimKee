@@ -18,6 +18,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.limkee1.R;
 import com.limkee1.Utility.DateUtility;
 import com.limkee1.constant.HttpConstant;
@@ -36,6 +39,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -61,6 +70,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
     boolean hasInternet;
     private int earliestYear;
     private int length;
+    CompositeDisposable compositeDisposable  = new CompositeDisposable();
 
     public TotalSalesFragment(){}
 
@@ -78,8 +88,6 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
-        earliestYear = bundle.getInt("earliestYear");
-
 
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/M/dd hh:mm:ss");
@@ -90,7 +98,10 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
             e.printStackTrace();
         }
 
-        earliestYear = 2018;
+        earliestYear = 2017;
+
+        //this method did not re-intialise earliestYear variable from server database
+        getEarliestYear(customer.getDebtorCode());
 
         if (earliestYear == 0 || earliestYear == Integer.parseInt(systemYear)){
             earliestYear = Integer.parseInt(systemYear);
@@ -123,6 +134,7 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         monthConvert.put("Dec",12);
         monthConvert.put("Nov",11);
         monthConvert.put("Oct",10);
@@ -356,6 +368,38 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
         });
     }
 
+    private void getEarliestYear(String customerCode) {
+
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        PostData postData = new Retrofit.Builder()
+                .baseUrl(HttpConstant.BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(client)
+                .build().create(PostData.class);
+
+        compositeDisposable.add(postData.getEarliestOrderYear(customerCode)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleResponse, this::handleError));
+    }
+
+    private void handleResponse(int year) {
+        //return the correct earliest year based on past orders but variable not set
+        earliestYear = year;
+    }
+
+    private void handleError(Throwable error) {
+        System.out.println("Error " + error.getMessage());
+    }
+
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -388,7 +432,6 @@ public class TotalSalesFragment extends Fragment implements AdapterView.OnItemSe
                 break;
             case 2:
                 break;
-
         }
     }
 

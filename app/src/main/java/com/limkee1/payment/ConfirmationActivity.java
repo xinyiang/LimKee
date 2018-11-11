@@ -16,8 +16,6 @@ import com.limkee1.constant.PostData;
 import com.limkee1.entity.Customer;
 import com.limkee1.entity.Product;
 import com.limkee1.navigation.NavigationActivity;
-
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;

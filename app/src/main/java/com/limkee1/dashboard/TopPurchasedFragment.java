@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -33,6 +32,9 @@ import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.Utils;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.limkee1.R;
 import com.limkee1.Utility.DateUtility;
 import com.limkee1.constant.HttpConstant;
@@ -46,6 +48,11 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.Call;
@@ -77,6 +84,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
     private Chart chart;
     private int numMonth;
     boolean hasInternet;
+    CompositeDisposable compositeDisposable  = new CompositeDisposable();
 
     public TopPurchasedFragment() {
     }
@@ -95,7 +103,6 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         Bundle bundle = getArguments();
         isEnglish = bundle.getString("language");
         customer = bundle.getParcelable("customer");
-        earliestYear = bundle.getInt("earliestYear");
 
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/M/dd hh:mm:ss");
@@ -109,7 +116,10 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             e.printStackTrace();
         }
 
-        earliestYear = 2018;
+        earliestYear = 2017;
+
+        //this method did not re-intialise earliestYear variable from server database
+        getEarliestYear(customer.getDebtorCode());
 
         if (earliestYear == 0 || earliestYear == Integer.parseInt(systemYear)){
             earliestYear = Integer.parseInt(systemYear);
@@ -166,6 +176,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, years);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             ddlYear.setAdapter(adapter);
+
             ddlYear.setOnItemSelectedListener(fragment);
 
             for (int i = 1; i < years.length; i++) {
@@ -195,6 +206,7 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
             ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, months);
             adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             ddlMonth.setAdapter(adapter2);
+
             ddlMonth.setOnItemSelectedListener(fragment);
 
             for (int i = 1; i <= 12; i++) {
@@ -473,29 +485,39 @@ public class TopPurchasedFragment extends Fragment implements AdapterView.OnItem
         });
     }
 
-    private void getEarliestYear(String customerCode) {
-        if (retrofit == null) {
-            retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(HttpConstant.BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-        }
-        PostData service = retrofit.create(PostData.class);
-        Call<Integer> call = service.getEarliestYear(customerCode);
-        call.enqueue(new Callback<Integer>() {
-            @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
-                int data = response.body();
-                System.out.println("data is " + data);
-                earliestYear = data;
-            }
 
-            @Override
-            public void onFailure(Call<Integer> call, Throwable t) {
-                System.out.println(t.getMessage());
-            }
-        });
+    private void getEarliestYear(String customerCode) {
+
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        PostData postData = new Retrofit.Builder()
+                .baseUrl(HttpConstant.BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(client)
+                .build().create(PostData.class);
+
+        compositeDisposable.add(postData.getEarliestOrderYear(customerCode)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleResponse, this::handleError));
     }
+
+    private void handleResponse(int year) {
+        //return the correct earliest year based on past orders but variable not set
+        earliestYear = year;
+    }
+
+    private void handleError(Throwable error) {
+        System.out.println("Error " + error.getMessage());
+    }
+
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);

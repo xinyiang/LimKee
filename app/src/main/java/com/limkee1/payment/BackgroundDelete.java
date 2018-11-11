@@ -1,7 +1,6 @@
 package com.limkee1.payment;
 
 import android.os.AsyncTask;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -69,18 +68,18 @@ protected String doInBackground(String... params) {
     }
 
 
-@Override
-protected void onPostExecute(String result) {
-    delegate.processFinish(result);
-}
+    @Override
+    protected void onPostExecute(String result) {
+        delegate.processFinish(result);
+    }
 
-@Override
-protected void onPreExecute() {
-    super.onPreExecute();
-}
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+    }
 
-@Override
-protected void onProgressUpdate(Void... values) {
-    super.onProgressUpdate(values);
-}
+    @Override
+    protected void onProgressUpdate(Void... values) {
+        super.onProgressUpdate(values);
+    }
 }

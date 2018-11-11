@@ -1,9 +1,7 @@
 package com.limkee1.payment;
 
-
 import android.os.AsyncTask;
 import android.util.Base64;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
