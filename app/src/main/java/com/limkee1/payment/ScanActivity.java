@@ -62,6 +62,7 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
     private Integer expYr = 0;
     double walletDeduction;
     double totalAmount;
+    double subtotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +84,7 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
         totalPayable = myBundle.getString("totalPayable");
         paperBagNeeded = myBundle.getInt("paperBagNeeded");
         Double tp = Double.parseDouble(totalPayable);
+        subtotal = myBundle.getDouble("subtotal");
         walletDeduction = myBundle.getDouble("walletDeduction");
         totalAmount = myBundle.getDouble("totalAmount");
 
@@ -153,7 +155,7 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
         Date date;
         saveCard = (CheckBox) findViewById(R.id.saveCard);
 
-        Card card = new Card(cardNumber.getText().toString(), expMth, expYr, cvc.getText().toString());
+        Card card = new Card("4242424242424242", expMth, expYr, cvc.getText().toString());
 
         if (card == null || nameOnCard.getText().toString().isEmpty() || !isValidFutureDate(""+expMth+"/01/20"+expYr) || cvc == null) {
             Toast.makeText(context, getResources().getString(R.string.invalid_card), Toast.LENGTH_LONG).show();
@@ -181,7 +183,7 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
                             if (saveCard.isChecked()){
                                 bp.saveCard(card);
                             }
-                            bp.execute(type, totalPayable, token.getId(), isEnglish, Integer.toString(paperBagNeeded), Double.toString(walletDeduction), Double.toString(totalAmount));
+                            bp.execute(type, totalPayable, token.getId(), isEnglish, Integer.toString(paperBagNeeded), Double.toString(walletDeduction), Double.toString(totalAmount), Double.toString(subtotal));
                         }
                         public void onError(Exception error) {
                             Toast.makeText(context, "Error processing charge", Toast.LENGTH_LONG).show();
