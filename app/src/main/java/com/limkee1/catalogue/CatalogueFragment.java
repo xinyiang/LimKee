@@ -419,10 +419,8 @@ public class CatalogueFragment extends Fragment {
 
         } else {
 
-
-            doGetLastWeekAverageForCatalogue(customer.getCompanyCode());
+            doGetLastWeekAverageForCatalogue(customer.getDebtorCode());
             // doGetCatalogue();
-
 
             if (isEnglish.equals("Yes")) {
                 lbl_subtotal.setText("Sub Total");
@@ -505,8 +503,6 @@ public class CatalogueFragment extends Fragment {
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();
                                         //reset edit text quantity to 0 in edit text
-                                        //dialog.getButton(Dialog.BUTTON_POSITIVE).setTextSize(40);
-
                                     }
                                 })
 
@@ -642,7 +638,6 @@ public class CatalogueFragment extends Fragment {
             public void onResponse(Call<ArrayList<Product>> call, Response<ArrayList<Product>> response) {
                 ArrayList<Product> data = response.body();
                 CatalogueDAO.catalogue_list = data;
-
                 if (data == null || data.size() == 0){
                     //show default catalogue where all qty is 0
                     doGetCatalogue();
