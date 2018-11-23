@@ -69,6 +69,9 @@ public class ConfirmOrderFragment extends Fragment {
     private int paperBagNeeded;
     public static Retrofit retrofit;
     private double walletDeduction;
+    private String deliverDate = "";
+    SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
+    SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
 
     public ConfirmOrderFragment() {
     }
@@ -181,7 +184,7 @@ public class ConfirmOrderFragment extends Fragment {
             productDetails.setText(" 订单样品 (" + orderList.size() + " 样)");
         }
 
-        String deliverDate = "";
+        //String deliverDate = "";
         //check if today's delivery is before cut off time and set delivery date field
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -324,9 +327,6 @@ public class ConfirmOrderFragment extends Fragment {
             System.out.println(e.getMessage());
         }
 
-        SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
-
         try {
             Date datetime = expectedPattern.parse(deliverDate);
             String timestamp = formatter.format(datetime);
@@ -381,7 +381,13 @@ public class ConfirmOrderFragment extends Fragment {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 //finish();
-                                                deliveryDate.setText("DD/MM/YYYY");
+                                                //deliveryDate.setText("DD/MM/YYYY");
+                                                try {
+                                                    Date datetime = expectedPattern.parse(deliverDate);
+                                                    String timestamp = formatter.format(datetime);
+                                                    deliveryDate.setText(timestamp);
+                                                } catch (Exception e) {
+                                                }
                                             }
                                         })
                                         .show();
@@ -394,7 +400,13 @@ public class ConfirmOrderFragment extends Fragment {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 //finish();
-                                                deliveryDate.setText("日/月/年");
+                                                //deliveryDate.setText("日/月/年");
+                                                try {
+                                                    Date datetime = expectedPattern.parse(deliverDate);
+                                                    String timestamp = formatter.format(datetime);
+                                                    deliveryDate.setText(timestamp);
+                                                } catch (Exception e) {
+                                                }
                                             }
                                         })
                                         .show();
@@ -427,7 +439,13 @@ public class ConfirmOrderFragment extends Fragment {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //finish();
-                                                    deliveryDate.setText("DD/MM/YYYY");
+                                                    //deliveryDate.setText("DD/MM/YYYY");
+                                                    try {
+                                                        Date datetime = expectedPattern.parse(deliverDate);
+                                                        String timestamp = formatter.format(datetime);
+                                                        deliveryDate.setText(timestamp);
+                                                    } catch (Exception e) {
+                                                    }
                                                 }
                                             })
                                             .show();
@@ -440,7 +458,13 @@ public class ConfirmOrderFragment extends Fragment {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //finish();
-                                                    deliveryDate.setText("日/月/年");
+                                                    //deliveryDate.setText("日/月/年");
+                                                    try {
+                                                        Date datetime = expectedPattern.parse(deliverDate);
+                                                        String timestamp = formatter.format(datetime);
+                                                        deliveryDate.setText(timestamp);
+                                                    } catch (Exception e) {
+                                                    }
                                                 }
                                             })
                                             .show();
@@ -448,8 +472,6 @@ public class ConfirmOrderFragment extends Fragment {
                                     textView.setTextSize(20);
                                 }
                             }
-                            SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
-                            SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
 
                             //month index start from 0, so + 1 to get correct actual month number
                             selectedMonth += 1;
@@ -483,7 +505,7 @@ public class ConfirmOrderFragment extends Fragment {
 
                 //check if delivery date is selected
                 String deliveryDateText = deliveryDate.getText().toString();
-                if (deliveryDateText.equals("DD/MM/YYYY") || deliveryDateText.equals("日/月/年")) {
+                if (deliveryDateText.equals("")) {
                     if (isEnglish.equals("Yes")) {
                         final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                 .setMessage("Please select delivery date")
@@ -499,7 +521,7 @@ public class ConfirmOrderFragment extends Fragment {
                     } else {
                         final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
                                 .setMessage("请选送货日期")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //finish();

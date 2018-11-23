@@ -71,6 +71,9 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
     public static Retrofit retrofit;
     private double walletDeduction;
     private double totalAmount;
+    private String deliverDate = "";
+    SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
+    SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
 
     public QuickReorderConfirmOrderFragment() {
         // Required empty public constructor
@@ -202,7 +205,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             paperBagNeeded = 0;
         }
 
-        String deliverDate = "";
+        //String deliverDate = "";
         //check if today's delivery is before cut off time and set delivery date field
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -343,9 +346,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
             System.out.println(e.getMessage());
         }
 
-        SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
-
         try {
             Date datetime = expectedPattern.parse(deliverDate);
             String timestamp = formatter.format(datetime);
@@ -398,7 +398,14 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 //finish();
-                                                deliveryDate.setText("DD/MM/YYYY");
+                                                //deliveryDate.setText("DD/MM/YYYY");
+
+                                                try {
+                                                    Date datetime = expectedPattern.parse(deliverDate);
+                                                    String timestamp = formatter.format(datetime);
+                                                    deliveryDate.setText(timestamp);
+                                                } catch (Exception e) {
+                                                }
                                             }
                                         })
                                         .show();
@@ -446,7 +453,13 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //finish();
-                                                    deliveryDate.setText("DD/MM/YYYY");
+                                                    //deliveryDate.setText("DD/MM/YYYY");
+                                                    try {
+                                                        Date datetime = expectedPattern.parse(deliverDate);
+                                                        String timestamp = formatter.format(datetime);
+                                                        deliveryDate.setText(timestamp);
+                                                    } catch (Exception e) {
+                                                    }
                                                 }
                                             })
                                             .show();
@@ -459,7 +472,13 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     //finish();
-                                                    deliveryDate.setText("日/月/年");
+                                                    //deliveryDate.setText("日/月/年");
+                                                    try {
+                                                        Date datetime = expectedPattern.parse(deliverDate);
+                                                        String timestamp = formatter.format(datetime);
+                                                        deliveryDate.setText(timestamp);
+                                                    } catch (Exception e) {
+                                                    }
                                                 }
                                             })
                                             .show();
@@ -467,9 +486,6 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
                                     textView.setTextSize(20);
                                 }
                             }
-
-                            SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd/MM/yyyy");
-                            SimpleDateFormat expectedPattern = new SimpleDateFormat("dd/MM/yyyy");
 
                             //month index start from 0, so + 1 to get correct actual month number
                             selectedMonth += 1;
@@ -503,7 +519,7 @@ public class QuickReorderConfirmOrderFragment extends Fragment {
 
                 //check if delivery date is selected
                 String deliveryDateText = deliveryDate.getText().toString();
-                if (deliveryDateText.equals("DD/MM/YYYY") || deliveryDateText.equals("日/月/年")) {
+                if (deliveryDateText.equals("")) {
                     if (isEnglish.equals("Yes")) {
 
                         final android.support.v7.app.AlertDialog ad = new android.support.v7.app.AlertDialog.Builder(view.getContext())
