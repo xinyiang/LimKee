@@ -155,7 +155,8 @@ public class ScanActivity extends BaseActivity implements ScanFragment.OnFragmen
         Date date;
         saveCard = (CheckBox) findViewById(R.id.saveCard);
 
-        Card card = new Card("4242424242424242", expMth, expYr, cvc.getText().toString());
+        Card card = new Card(cardNumber.toString(), expMth, expYr, cvc.getText().toString());
+        //Card card = new Card("4242424242424242", expMth, expYr, cvc.getText().toString());
 
         if (card == null || nameOnCard.getText().toString().isEmpty() || !isValidFutureDate(""+expMth+"/01/20"+expYr) || cvc == null) {
             Toast.makeText(context, getResources().getString(R.string.invalid_card), Toast.LENGTH_LONG).show();

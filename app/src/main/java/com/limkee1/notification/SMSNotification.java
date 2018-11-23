@@ -51,7 +51,6 @@ public class SMSNotification extends AsyncTask<String,Void,String> {
                 } else {
 
                     //get unicode for every character
-                    orderNo = "#" + orderNo;
                     String orderID = "";
                     for (int i = 0; i < orderNo.length(); i++) {
                         char c = orderNo.charAt(i);
